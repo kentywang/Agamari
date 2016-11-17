@@ -1,30 +1,12 @@
-import { init } from './engine';
+import React, { Component } from 'react';
+import ReactDOM from 'react-dom';
+import { Provider } from 'react-redux';
+import store from './store';
+import App from './components/App';
+console.log('APP', App);
 
-const room1 = 'room1';
-const room2 = 'room2';
-
-var socket = io('/');
-socket.on('connect', function(){
-	console.log("connected")
-
-	socket.on('start', function(){
-		init();
-	})
-
-	socket.on('message', console.log);
-})
-
-window.onClick1 = function(){
-	socket.emit('room', room1);
-};
-window.onClick2 = function(){
-	socket.emit('room', room2);
-};
-
-window.logToRoom1 = function() {
-	socket.emit('log', room1)
-}
-
-window.logToRoom2 = function() {
-	socket.emit('log', room2)
-}
+ReactDOM.render(
+	<Provider store={store}>
+		<App />
+	</Provider>,
+	document.getElementById('app'));

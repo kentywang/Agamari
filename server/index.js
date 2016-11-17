@@ -35,7 +35,7 @@ io.on('connection', function(socket){
   socket.on('room', room => {
     for (let room in socket.rooms) socket.leave(room);
     socket.join(room);
-    io.sockets.in(room).emit('start');
+    // io.sockets.in(room).emit('start');
   });
 
   socket.on('log', room => {
