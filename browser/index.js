@@ -3,28 +3,52 @@ import { init } from './engine';
 const room1 = 'room1';
 const room2 = 'room2';
 
-var socket = io('/');
-socket.on('connect', function(){
-	console.log("connected")
 
-	socket.on('start', function(){
-		init();
-	})
+import React, { Component } from 'react';
+import ReactDOM from 'react-dom';
 
-	socket.on('message', console.log);
-})
+class App extends Component {
+	constructor(props) {
+		super(props)
+		this.state = { room: null, socket: null };
+		this.onClick = this.onClick.bind(this);
+		this.logToRoom = this.logToRoom.bind(this);
+		this.start = this.start.bind(this);
+	}
 
-window.onClick1 = function(){
-	socket.emit('room', room1);
-};
-window.onClick2 = function(){
-	socket.emit('room', room2);
-};
+	onClick(room) {
+		this.state.socket.emit('room', room);
+	}
 
-window.logToRoom1 = function() {
-	socket.emit('log', room1)
+	logToRoom(room) {
+		this.state.socket.emit('log', room)
+	}
+
+	start() {
+			init();
+	}
+
+	componentDidMount() {
+		const socket = io('/');
+		socket.on('connect', function(){
+
+			socket.on('message', console.log);
+		});
+		this.setState({socket});
+	}
+
+	render() {
+		return (
+			<div>
+				<button className="btn" onClick={this.start}>Start</button>
+				<button className="btn" onClick={() => this.onClick(room1)}>Room 1</button>
+				<button className="btn" onClick={() => this.onClick(room2)}>Room 2</button>
+				<button className="btn" onClick={() => this.logToRoom(room1)}>Room 1</button>
+				<button className="btn" onClick={() => this.logToRoom(room2)}>Room 2</button>
+			</div>
+			);
+
+	}
 }
 
-window.logToRoom2 = function() {
-	socket.emit('log', room2)
-}
+ReactDOM.render(<App />, document.getElementById('app'));

@@ -5,13 +5,17 @@
 </head>
 <body>
   <script src="/jquery/jquery.min.js"></script>
+  <link rel="stylesheet" type="text/css" href="/materialize-css/css/materialize.min.css" />
   <script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
   <script src="/three/three.min.js"></script>
   <script src="/bundle.js" defer></script>
-<button onClick="onClick1()">Room 1</button>
-<button onClick="logToRoom1()">Log To Room 1</button>
-<button onClick="onClick2()">Room 2</button>
-<button onClick="logToRoom2()">Log To Room 2</button>
-<canvas id="canvas"></canvas>
+<div class="row">
+  <div class="col s3">
+    <div id="app"></div>
+  </div>
+  <div class="col s9">
+    <canvas id="canvas"></canvas>
+  </div>
+</div>
 </body>
 </html>
