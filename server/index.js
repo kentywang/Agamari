@@ -1,5 +1,10 @@
 'use strict';
 
+const gameState = {
+  room1: {color : "blue"},
+  room2: {color: "green"}
+}
+
 const express = require('express'),
       bodyParser = require('body-parser'),
       morgan = require('morgan'),
@@ -34,12 +39,15 @@ io.on('connection', function(socket){
 
   socket.on('room', room => {
     for (let room in socket.rooms) socket.leave(room);
-    socket.join(room);
+    socket.join(room, ()=> {
+      console.log("room joined", room)
+      //io.sockets.in(room).emit('newGameState', gameState[room]);
+    });
     // io.sockets.in(room).emit('start');
   });
 
   socket.on('log', room => {
-    io.sockets.in(room).emit('message', 'Hi ' + room);
+    io.sockets.in(room).emit('message1', "hello");
   });
 
 });
