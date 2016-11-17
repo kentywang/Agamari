@@ -4,6 +4,20 @@
 	<title></title>
 </head>
 <body>
+ <script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
+<script>
+	var socket = io('/');
+	socket.on('connect', function(){
+		console.log("connected")
+		socket.on('receivedClick', function(){
+			alert("thank you");
+		})
+	})
+	var onClick = function(){
+		socket.emit("button")
+	}
+</script>
 <div>Hey</div>
+<button onClick="onClick()"></button>
 </body>
 </html>
