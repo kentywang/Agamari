@@ -8,13 +8,14 @@ const express = require('express'),
       http = require('http'),
       server = http.createServer();
 
+
 const app = express();
 
-server.on('request', app);
+ server.on('request', app);
 
 const PORT = process.env.PORT || 8000;
 
-// sockets
+//sockets
 const io = require('socket.io')(server);
 
 io.on('connection', function(socket){
@@ -54,11 +55,13 @@ app.use(bodyParser.json())
       express.static(path.join(__dirname, '..', 'node_modules', 'materialize-css', 'dist')))
    .use('/jquery', express.static(path.join(__dirname, '..', 'node_modules', 'jquery', 'dist')))
    .use('/three', express.static(path.join(__dirname, '..', 'node_modules', 'three', 'build')))
-   //.use('/api', require('./api'));
+   .use('/api', require('./api/'));
+   
+
 
 const indexHtmlPath = path.join(__dirname, '..', 'public', 'index.html');
 
-app.get('*', (req, res, next) => res.sendFile(indexHtmlPath));
+app.get('/', (req, res, next) => res.sendFile(indexHtmlPath));
 
 require(path.join(__dirname, 'db'))._db.sync()
     .then(() => {

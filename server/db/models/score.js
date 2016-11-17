@@ -1,5 +1,5 @@
 const Sequelize = require('sequelize');
-const db = require('./_db');
+const db = require('../_db');
 
 const Score = db.define('score', {
   value: {
