@@ -15,7 +15,7 @@ server.on('request', app);
 const PORT = process.env.PORT || 8000;
 
 // sockets
-var io = require('socket.io')(server);
+const io = require('socket.io')(server);
 
 io.on('connection', function(socket){
   console.log('A new client has connected')
@@ -23,13 +23,23 @@ io.on('connection', function(socket){
 
   //event that runs anytime a socket disconnects
   socket.on('disconnect', function(){
-    console.log('socket id ' + socket.id + ' has disconnected. : ('); 
+    console.log('socket id ' + socket.id + ' has disconnected. : (');
   })
 
   socket.on('button', function(start, end, color){
     console.log('clicked')
 
-    io.emit('receivedClick'); 
+    io.emit('receivedClick');
+  });
+
+  socket.on('room', room => {
+    for (let room in socket.rooms) socket.leave(room);
+    socket.join(room);
+    io.sockets.in(room).emit('start');
+  });
+
+  socket.on('log', room => {
+    io.sockets.in(room).emit('message', 'Hi ' + room);
   });
 
 });
@@ -42,6 +52,7 @@ app.use(bodyParser.json())
    .use(express.static(path.join(__dirname, '..', 'public')))
    .use('/materialize-css',
       express.static(path.join(__dirname, '..', 'node_modules', 'materialize-css', 'dist')))
+   .use('/jquery', express.static(path.join(__dirname, '..', 'node_modules', 'jquery', 'dist')))
    .use('/three', express.static(path.join(__dirname, '..', 'node_modules', 'three', 'build')))
    //.use('/api', require('./api'));
 
@@ -50,12 +61,10 @@ const indexHtmlPath = path.join(__dirname, '..', 'public', 'index.html');
 app.get('*', (req, res, next) => res.sendFile(indexHtmlPath));
 
 require(path.join(__dirname, 'db'))._db.sync()
-    .then(function () {
+    .then(() => {
       server.listen(PORT, () =>
         console.log(chalk.italic.magenta(`Server listening on ${PORT}...`)));
     })
-    .catch(function(err){
-        console.log("Error!")
-    });
+    .catch(console.error);
 
 
