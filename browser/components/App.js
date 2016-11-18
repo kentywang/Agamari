@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import store from '../store';
 
 import ControlPanel from './ControlPanel';
 import Canvas from './Canvas';
@@ -16,6 +17,7 @@ class App extends Component {
     socket.on('connect', () => {
       socket.on('message', console.log);
       socket.on('newGameState', state => this.props.receiveGameState(state));
+      socket.on('change_state', action=> store.dispatch(action));
     });
     this.props.receiveSocket(socket);
   }
