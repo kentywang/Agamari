@@ -6,6 +6,8 @@ import Canvas from './Canvas';
 import { receiveSocket } from '../reducers/socket';
 import { receiveGameState } from '../reducers/gameState';
 
+import {loadEnvironment} from '../game/game';
+
 class App extends Component {
   constructor (props) {
     super(props);
@@ -15,18 +17,21 @@ class App extends Component {
     const socket = io('/');
     socket.on('connect', () => {
       socket.on('message', console.log);
-      socket.on('newGameState', state => this.props.receiveGameState(state));
+      socket.on('newGameState', state => {
+        this.props.receiveGameState(state);
+        loadEnvironment();
+      });
     });
     this.props.receiveSocket(socket);
   }
 
   render() {
     return (
-      <div className="row">
-        <div className="col s3">
+      <div>
+        <div className="nav-wrapper">
           <ControlPanel />
         </div>
-        <div className="col s9">
+        <div>
           <Canvas />
         </div>
       </div>

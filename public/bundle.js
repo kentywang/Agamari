@@ -56,11 +56,11 @@
 	
 	var _reactRedux = __webpack_require__(178);
 	
-	var _store = __webpack_require__(208);
+	var _store = __webpack_require__(202);
 	
 	var _store2 = _interopRequireDefault(_store);
 	
-	var _App = __webpack_require__(221);
+	var _App = __webpack_require__(218);
 	
 	var _App2 = _interopRequireDefault(_App);
 	
@@ -21647,11 +21647,11 @@
 	
 	var _isPlainObject2 = _interopRequireDefault(_isPlainObject);
 	
-	var _hoistNonReactStatics = __webpack_require__(206);
+	var _hoistNonReactStatics = __webpack_require__(200);
 	
 	var _hoistNonReactStatics2 = _interopRequireDefault(_hoistNonReactStatics);
 	
-	var _invariant = __webpack_require__(207);
+	var _invariant = __webpack_require__(201);
 	
 	var _invariant2 = _interopRequireDefault(_invariant);
 	
@@ -22075,23 +22075,23 @@
 	
 	var _createStore2 = _interopRequireDefault(_createStore);
 	
-	var _combineReducers = __webpack_require__(201);
+	var _combineReducers = __webpack_require__(195);
 	
 	var _combineReducers2 = _interopRequireDefault(_combineReducers);
 	
-	var _bindActionCreators = __webpack_require__(203);
+	var _bindActionCreators = __webpack_require__(197);
 	
 	var _bindActionCreators2 = _interopRequireDefault(_bindActionCreators);
 	
-	var _applyMiddleware = __webpack_require__(204);
+	var _applyMiddleware = __webpack_require__(198);
 	
 	var _applyMiddleware2 = _interopRequireDefault(_applyMiddleware);
 	
-	var _compose = __webpack_require__(205);
+	var _compose = __webpack_require__(199);
 	
 	var _compose2 = _interopRequireDefault(_compose);
 	
-	var _warning = __webpack_require__(202);
+	var _warning = __webpack_require__(196);
 	
 	var _warning2 = _interopRequireDefault(_warning);
 	
@@ -22128,7 +22128,7 @@
 	
 	var _isPlainObject2 = _interopRequireDefault(_isPlainObject);
 	
-	var _symbolObservable = __webpack_require__(197);
+	var _symbolObservable = __webpack_require__(191);
 	
 	var _symbolObservable2 = _interopRequireDefault(_symbolObservable);
 	
@@ -22384,25 +22384,31 @@
 /* 187 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var baseGetTag = __webpack_require__(188),
-	    getPrototype = __webpack_require__(194),
-	    isObjectLike = __webpack_require__(196);
+	var getPrototype = __webpack_require__(188),
+	    isHostObject = __webpack_require__(189),
+	    isObjectLike = __webpack_require__(190);
 	
 	/** `Object#toString` result references. */
 	var objectTag = '[object Object]';
 	
 	/** Used for built-in method references. */
-	var funcProto = Function.prototype,
-	    objectProto = Object.prototype;
+	var objectProto = Object.prototype;
 	
 	/** Used to resolve the decompiled source of functions. */
-	var funcToString = funcProto.toString;
+	var funcToString = Function.prototype.toString;
 	
 	/** Used to check objects for own properties. */
 	var hasOwnProperty = objectProto.hasOwnProperty;
 	
 	/** Used to infer the `Object` constructor. */
 	var objectCtorString = funcToString.call(Object);
+	
+	/**
+	 * Used to resolve the
+	 * [`toStringTag`](http://ecma-international.org/ecma-262/6.0/#sec-object.prototype.tostring)
+	 * of values.
+	 */
+	var objectToString = objectProto.toString;
 	
 	/**
 	 * Checks if `value` is a plain object, that is, an object created by the
@@ -22413,7 +22419,8 @@
 	 * @since 0.8.0
 	 * @category Lang
 	 * @param {*} value The value to check.
-	 * @returns {boolean} Returns `true` if `value` is a plain object, else `false`.
+	 * @returns {boolean} Returns `true` if `value` is a plain object,
+	 *  else `false`.
 	 * @example
 	 *
 	 * function Foo() {
@@ -22433,7 +22440,8 @@
 	 * // => true
 	 */
 	function isPlainObject(value) {
-	  if (!isObjectLike(value) || baseGetTag(value) != objectTag) {
+	  if (!isObjectLike(value) ||
+	      objectToString.call(value) != objectTag || isHostObject(value)) {
 	    return false;
 	  }
 	  var proto = getPrototype(value);
@@ -22441,8 +22449,8 @@
 	    return true;
 	  }
 	  var Ctor = hasOwnProperty.call(proto, 'constructor') && proto.constructor;
-	  return typeof Ctor == 'function' && Ctor instanceof Ctor &&
-	    funcToString.call(Ctor) == objectCtorString;
+	  return (typeof Ctor == 'function' &&
+	    Ctor instanceof Ctor && funcToString.call(Ctor) == objectCtorString);
 	}
 	
 	module.exports = isPlainObject;
@@ -22450,192 +22458,53 @@
 
 /***/ },
 /* 188 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ function(module, exports) {
 
-	var Symbol = __webpack_require__(189),
-	    getRawTag = __webpack_require__(192),
-	    objectToString = __webpack_require__(193);
-	
-	/** `Object#toString` result references. */
-	var nullTag = '[object Null]',
-	    undefinedTag = '[object Undefined]';
-	
-	/** Built-in value references. */
-	var symToStringTag = Symbol ? Symbol.toStringTag : undefined;
+	/* Built-in method references for those with the same name as other `lodash` methods. */
+	var nativeGetPrototype = Object.getPrototypeOf;
 	
 	/**
-	 * The base implementation of `getTag` without fallbacks for buggy environments.
+	 * Gets the `[[Prototype]]` of `value`.
 	 *
 	 * @private
 	 * @param {*} value The value to query.
-	 * @returns {string} Returns the `toStringTag`.
+	 * @returns {null|Object} Returns the `[[Prototype]]`.
 	 */
-	function baseGetTag(value) {
-	  if (value == null) {
-	    return value === undefined ? undefinedTag : nullTag;
-	  }
-	  value = Object(value);
-	  return (symToStringTag && symToStringTag in value)
-	    ? getRawTag(value)
-	    : objectToString(value);
+	function getPrototype(value) {
+	  return nativeGetPrototype(Object(value));
 	}
-	
-	module.exports = baseGetTag;
-
-
-/***/ },
-/* 189 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var root = __webpack_require__(190);
-	
-	/** Built-in value references. */
-	var Symbol = root.Symbol;
-	
-	module.exports = Symbol;
-
-
-/***/ },
-/* 190 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var freeGlobal = __webpack_require__(191);
-	
-	/** Detect free variable `self`. */
-	var freeSelf = typeof self == 'object' && self && self.Object === Object && self;
-	
-	/** Used as a reference to the global object. */
-	var root = freeGlobal || freeSelf || Function('return this')();
-	
-	module.exports = root;
-
-
-/***/ },
-/* 191 */
-/***/ function(module, exports) {
-
-	/* WEBPACK VAR INJECTION */(function(global) {/** Detect free variable `global` from Node.js. */
-	var freeGlobal = typeof global == 'object' && global && global.Object === Object && global;
-	
-	module.exports = freeGlobal;
-	
-	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
-
-/***/ },
-/* 192 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var Symbol = __webpack_require__(189);
-	
-	/** Used for built-in method references. */
-	var objectProto = Object.prototype;
-	
-	/** Used to check objects for own properties. */
-	var hasOwnProperty = objectProto.hasOwnProperty;
-	
-	/**
-	 * Used to resolve the
-	 * [`toStringTag`](http://ecma-international.org/ecma-262/7.0/#sec-object.prototype.tostring)
-	 * of values.
-	 */
-	var nativeObjectToString = objectProto.toString;
-	
-	/** Built-in value references. */
-	var symToStringTag = Symbol ? Symbol.toStringTag : undefined;
-	
-	/**
-	 * A specialized version of `baseGetTag` which ignores `Symbol.toStringTag` values.
-	 *
-	 * @private
-	 * @param {*} value The value to query.
-	 * @returns {string} Returns the raw `toStringTag`.
-	 */
-	function getRawTag(value) {
-	  var isOwn = hasOwnProperty.call(value, symToStringTag),
-	      tag = value[symToStringTag];
-	
-	  try {
-	    value[symToStringTag] = undefined;
-	    var unmasked = true;
-	  } catch (e) {}
-	
-	  var result = nativeObjectToString.call(value);
-	  if (unmasked) {
-	    if (isOwn) {
-	      value[symToStringTag] = tag;
-	    } else {
-	      delete value[symToStringTag];
-	    }
-	  }
-	  return result;
-	}
-	
-	module.exports = getRawTag;
-
-
-/***/ },
-/* 193 */
-/***/ function(module, exports) {
-
-	/** Used for built-in method references. */
-	var objectProto = Object.prototype;
-	
-	/**
-	 * Used to resolve the
-	 * [`toStringTag`](http://ecma-international.org/ecma-262/7.0/#sec-object.prototype.tostring)
-	 * of values.
-	 */
-	var nativeObjectToString = objectProto.toString;
-	
-	/**
-	 * Converts `value` to a string using `Object.prototype.toString`.
-	 *
-	 * @private
-	 * @param {*} value The value to convert.
-	 * @returns {string} Returns the converted string.
-	 */
-	function objectToString(value) {
-	  return nativeObjectToString.call(value);
-	}
-	
-	module.exports = objectToString;
-
-
-/***/ },
-/* 194 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var overArg = __webpack_require__(195);
-	
-	/** Built-in value references. */
-	var getPrototype = overArg(Object.getPrototypeOf, Object);
 	
 	module.exports = getPrototype;
 
 
 /***/ },
-/* 195 */
+/* 189 */
 /***/ function(module, exports) {
 
 	/**
-	 * Creates a unary function that invokes `func` with its argument transformed.
+	 * Checks if `value` is a host object in IE < 9.
 	 *
 	 * @private
-	 * @param {Function} func The function to wrap.
-	 * @param {Function} transform The argument transform.
-	 * @returns {Function} Returns the new function.
+	 * @param {*} value The value to check.
+	 * @returns {boolean} Returns `true` if `value` is a host object, else `false`.
 	 */
-	function overArg(func, transform) {
-	  return function(arg) {
-	    return func(transform(arg));
-	  };
+	function isHostObject(value) {
+	  // Many host objects are `Object` objects that can coerce to strings
+	  // despite having improperly defined `toString` methods.
+	  var result = false;
+	  if (value != null && typeof value.toString != 'function') {
+	    try {
+	      result = !!(value + '');
+	    } catch (e) {}
+	  }
+	  return result;
 	}
 	
-	module.exports = overArg;
+	module.exports = isHostObject;
 
 
 /***/ },
-/* 196 */
+/* 190 */
 /***/ function(module, exports) {
 
 	/**
@@ -22663,21 +22532,21 @@
 	 * // => false
 	 */
 	function isObjectLike(value) {
-	  return value != null && typeof value == 'object';
+	  return !!value && typeof value == 'object';
 	}
 	
 	module.exports = isObjectLike;
 
 
 /***/ },
-/* 197 */
+/* 191 */
 /***/ function(module, exports, __webpack_require__) {
 
-	module.exports = __webpack_require__(198);
+	module.exports = __webpack_require__(192);
 
 
 /***/ },
-/* 198 */
+/* 192 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(global, module) {'use strict';
@@ -22686,7 +22555,7 @@
 	  value: true
 	});
 	
-	var _ponyfill = __webpack_require__(200);
+	var _ponyfill = __webpack_require__(194);
 	
 	var _ponyfill2 = _interopRequireDefault(_ponyfill);
 	
@@ -22709,10 +22578,10 @@
 	
 	var result = (0, _ponyfill2['default'])(root);
 	exports['default'] = result;
-	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }()), __webpack_require__(199)(module)))
+	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }()), __webpack_require__(193)(module)))
 
 /***/ },
-/* 199 */
+/* 193 */
 /***/ function(module, exports) {
 
 	module.exports = function(module) {
@@ -22728,7 +22597,7 @@
 
 
 /***/ },
-/* 200 */
+/* 194 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -22756,7 +22625,7 @@
 	};
 
 /***/ },
-/* 201 */
+/* 195 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
@@ -22770,7 +22639,7 @@
 	
 	var _isPlainObject2 = _interopRequireDefault(_isPlainObject);
 	
-	var _warning = __webpack_require__(202);
+	var _warning = __webpack_require__(196);
 	
 	var _warning2 = _interopRequireDefault(_warning);
 	
@@ -22904,7 +22773,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ },
-/* 202 */
+/* 196 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -22934,7 +22803,7 @@
 	}
 
 /***/ },
-/* 203 */
+/* 197 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -22990,7 +22859,7 @@
 	}
 
 /***/ },
-/* 204 */
+/* 198 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -23001,7 +22870,7 @@
 	
 	exports['default'] = applyMiddleware;
 	
-	var _compose = __webpack_require__(205);
+	var _compose = __webpack_require__(199);
 	
 	var _compose2 = _interopRequireDefault(_compose);
 	
@@ -23053,7 +22922,7 @@
 	}
 
 /***/ },
-/* 205 */
+/* 199 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -23096,7 +22965,7 @@
 	}
 
 /***/ },
-/* 206 */
+/* 200 */
 /***/ function(module, exports) {
 
 	/**
@@ -23152,7 +23021,7 @@
 
 
 /***/ },
-/* 207 */
+/* 201 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {/**
@@ -23210,7 +23079,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ },
-/* 208 */
+/* 202 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -23221,15 +23090,15 @@
 	
 	var _redux = __webpack_require__(185);
 	
-	var _reduxLogger = __webpack_require__(209);
+	var _reduxLogger = __webpack_require__(203);
 	
 	var _reduxLogger2 = _interopRequireDefault(_reduxLogger);
 	
-	var _reduxThunk = __webpack_require__(215);
+	var _reduxThunk = __webpack_require__(209);
 	
 	var _reduxThunk2 = _interopRequireDefault(_reduxThunk);
 	
-	var _reducers = __webpack_require__(216);
+	var _reducers = __webpack_require__(210);
 	
 	var _reducers2 = _interopRequireDefault(_reducers);
 	
@@ -23238,7 +23107,7 @@
 	exports.default = (0, _redux.createStore)(_reducers2.default, (0, _redux.applyMiddleware)(_reduxThunk2.default, (0, _reduxLogger2.default)()));
 
 /***/ },
-/* 209 */
+/* 203 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -23249,11 +23118,11 @@
 	  value: true
 	});
 	
-	var _core = __webpack_require__(210);
+	var _core = __webpack_require__(204);
 	
-	var _helpers = __webpack_require__(211);
+	var _helpers = __webpack_require__(205);
 	
-	var _defaults = __webpack_require__(214);
+	var _defaults = __webpack_require__(208);
 	
 	var _defaults2 = _interopRequireDefault(_defaults);
 	
@@ -23356,7 +23225,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 210 */
+/* 204 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -23366,9 +23235,9 @@
 	});
 	exports.printBuffer = printBuffer;
 	
-	var _helpers = __webpack_require__(211);
+	var _helpers = __webpack_require__(205);
 	
-	var _diff = __webpack_require__(212);
+	var _diff = __webpack_require__(206);
 	
 	var _diff2 = _interopRequireDefault(_diff);
 	
@@ -23497,7 +23366,7 @@
 	}
 
 /***/ },
-/* 211 */
+/* 205 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -23521,7 +23390,7 @@
 	var timer = exports.timer = typeof performance !== "undefined" && performance !== null && typeof performance.now === "function" ? performance : Date;
 
 /***/ },
-/* 212 */
+/* 206 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -23531,7 +23400,7 @@
 	});
 	exports.default = diffLogger;
 	
-	var _deepDiff = __webpack_require__(213);
+	var _deepDiff = __webpack_require__(207);
 	
 	var _deepDiff2 = _interopRequireDefault(_deepDiff);
 	
@@ -23617,7 +23486,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 213 */
+/* 207 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/* WEBPACK VAR INJECTION */(function(global) {/*!
@@ -24046,7 +23915,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
 
 /***/ },
-/* 214 */
+/* 208 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -24097,7 +23966,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 215 */
+/* 209 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -24125,7 +23994,7 @@
 	exports['default'] = thunk;
 
 /***/ },
-/* 216 */
+/* 210 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -24136,31 +24005,31 @@
 	
 	var _redux = __webpack_require__(185);
 	
-	var _auth = __webpack_require__(217);
+	var _auth = __webpack_require__(211);
 	
 	var _auth2 = _interopRequireDefault(_auth);
 	
-	var _currentRoom = __webpack_require__(218);
+	var _currentRoom = __webpack_require__(212);
 	
 	var _currentRoom2 = _interopRequireDefault(_currentRoom);
 	
-	var _gameState = __webpack_require__(219);
+	var _gameState = __webpack_require__(213);
 	
 	var _gameState2 = _interopRequireDefault(_gameState);
 	
-	var _socket = __webpack_require__(220);
+	var _socket = __webpack_require__(214);
 	
 	var _socket2 = _interopRequireDefault(_socket);
 	
-	var _scene = __webpack_require__(228);
+	var _scene = __webpack_require__(215);
 	
 	var _scene2 = _interopRequireDefault(_scene);
 	
-	var _camera = __webpack_require__(229);
+	var _camera = __webpack_require__(216);
 	
 	var _camera2 = _interopRequireDefault(_camera);
 	
-	var _renderer = __webpack_require__(230);
+	var _renderer = __webpack_require__(217);
 	
 	var _renderer2 = _interopRequireDefault(_renderer);
 	
@@ -24177,7 +24046,7 @@
 	});
 
 /***/ },
-/* 217 */
+/* 211 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -24207,7 +24076,7 @@
 	};
 
 /***/ },
-/* 218 */
+/* 212 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -24237,7 +24106,7 @@
 	};
 
 /***/ },
-/* 219 */
+/* 213 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -24276,7 +24145,7 @@
 	};
 
 /***/ },
-/* 220 */
+/* 214 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -24315,7 +24184,124 @@
 	};
 
 /***/ },
-/* 221 */
+/* 215 */
+/***/ function(module, exports) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	/*----------  INITIAL STATE  ----------*/
+	var initialState = null;
+	
+	/*----------  ACTION TYPES  ----------*/
+	var RECEIVE_SCENE = 'RECEIVE_SCENE';
+	
+	/*----------  ACTION CREATORS  ----------*/
+	var receiveScene = exports.receiveScene = function receiveScene(scene) {
+	  return {
+	    type: RECEIVE_SCENE,
+	    scene: scene
+	  };
+	};
+	
+	/*----------  THUNK CREATORS  ----------*/
+	
+	/*----------  REDUCER  ----------*/
+	
+	exports.default = function () {
+	  var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : initialState;
+	  var action = arguments[1];
+	
+	  switch (action.type) {
+	    case RECEIVE_SCENE:
+	      return action.scene;
+	    default:
+	      return state;
+	  }
+	};
+
+/***/ },
+/* 216 */
+/***/ function(module, exports) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	/*----------  INITIAL STATE  ----------*/
+	var initialState = null;
+	
+	/*----------  ACTION TYPES  ----------*/
+	var RECEIVE_CAMERA = 'RECEIVE_CAMERA';
+	
+	/*----------  ACTION CREATORS  ----------*/
+	var receiveCamera = exports.receiveCamera = function receiveCamera(camera) {
+	  return {
+	    type: RECEIVE_CAMERA,
+	    camera: camera
+	  };
+	};
+	
+	/*----------  THUNK CREATORS  ----------*/
+	
+	/*----------  REDUCER  ----------*/
+	
+	exports.default = function () {
+	  var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : initialState;
+	  var action = arguments[1];
+	
+	  switch (action.type) {
+	    case RECEIVE_CAMERA:
+	      return action.camera;
+	    default:
+	      return state;
+	  }
+	};
+
+/***/ },
+/* 217 */
+/***/ function(module, exports) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	/*----------  INITIAL STATE  ----------*/
+	var initialState = null;
+	
+	/*----------  ACTION TYPES  ----------*/
+	var RECEIVE_RENDERER = 'RECEIVE_RENDERER';
+	
+	/*----------  ACTION CREATORS  ----------*/
+	var receiveRenderer = exports.receiveRenderer = function receiveRenderer(renderer) {
+	  return {
+	    type: RECEIVE_RENDERER,
+	    renderer: renderer
+	  };
+	};
+	
+	/*----------  THUNK CREATORS  ----------*/
+	
+	/*----------  REDUCER  ----------*/
+	
+	exports.default = function () {
+	  var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : initialState;
+	  var action = arguments[1];
+	
+	  switch (action.type) {
+	    case RECEIVE_RENDERER:
+	      return action.renderer;
+	    default:
+	      return state;
+	  }
+	};
+
+/***/ },
+/* 218 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -24332,17 +24318,19 @@
 	
 	var _reactRedux = __webpack_require__(178);
 	
-	var _ControlPanel = __webpack_require__(222);
+	var _ControlPanel = __webpack_require__(219);
 	
 	var _ControlPanel2 = _interopRequireDefault(_ControlPanel);
 	
-	var _Canvas = __webpack_require__(225);
+	var _Canvas = __webpack_require__(223);
 	
 	var _Canvas2 = _interopRequireDefault(_Canvas);
 	
-	var _socket = __webpack_require__(220);
+	var _socket = __webpack_require__(214);
 	
-	var _gameState = __webpack_require__(219);
+	var _gameState = __webpack_require__(213);
+	
+	var _game = __webpack_require__(221);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
@@ -24372,7 +24360,8 @@
 	      socket.on('connect', function () {
 	        socket.on('message', console.log);
 	        socket.on('newGameState', function (state) {
-	          return _this2.props.receiveGameState(state);
+	          _this2.props.receiveGameState(state);
+	          (0, _game.loadEnvironment)();
 	        });
 	      });
 	      this.props.receiveSocket(socket);
@@ -24382,15 +24371,15 @@
 	    value: function render() {
 	      return _react2.default.createElement(
 	        'div',
-	        { className: 'row' },
+	        null,
 	        _react2.default.createElement(
 	          'div',
-	          { className: 'col s3' },
+	          { className: 'nav-wrapper' },
 	          _react2.default.createElement(_ControlPanel2.default, null)
 	        ),
 	        _react2.default.createElement(
 	          'div',
-	          { className: 'col s9' },
+	          null,
 	          _react2.default.createElement(_Canvas2.default, null)
 	        )
 	      );
@@ -24419,7 +24408,7 @@
 	exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(App);
 
 /***/ },
-/* 222 */
+/* 219 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -24430,7 +24419,7 @@
 	
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 	
-	var _main = __webpack_require__(226);
+	var _main = __webpack_require__(220);
 	
 	var _react = __webpack_require__(1);
 	
@@ -24483,7 +24472,8 @@
 	        _react2.default.createElement(
 	          'button',
 	          { className: 'btn', onClick: function onClick() {
-	              return (0, _main.init)();
+	              (0, _main.init)();
+	              (0, _main.animate)();
 	            } },
 	          'Start'
 	        ),
@@ -24531,8 +24521,147 @@
 	exports.default = (0, _reactRedux.connect)(mapStateToProps)(ControlPanel);
 
 /***/ },
-/* 223 */,
-/* 224 */
+/* 220 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports.renderer = exports.canvas = exports.camera = exports.scene = exports.init = undefined;
+	exports.animate = animate;
+	
+	var _game = __webpack_require__(221);
+	
+	var _player = __webpack_require__(224);
+	
+	var THREE = __webpack_require__(222);
+	var scene = void 0,
+	    camera = void 0,
+	    canvas = void 0,
+	    renderer = void 0;
+	
+	var init = exports.init = function init() {
+	  exports.scene = scene = new THREE.Scene();
+	
+	  exports.camera = camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+	  camera.position.z = 5;
+	
+	  exports.canvas = canvas = document.getElementById('canvas');
+	
+	  exports.renderer = renderer = new THREE.WebGLRenderer({ alpha: true, canvas: canvas });
+	  renderer.setSize(window.innerWidth, window.innerHeight);
+	
+	  (0, _game.loadGame)();
+	
+	  // Events
+	  window.addEventListener("resize", onWindowResize, false);
+	};
+	
+	function animate() {
+	  requestAnimationFrame(animate);
+	
+	  if (_player.controls) {
+	    _player.controls.update();
+	  }
+	
+	  render();
+	}
+	
+	function render() {
+	
+	  renderer.clear();
+	  renderer.render(scene, camera);
+	}
+	
+	function onWindowResize() {
+	  camera.aspect = window.innerWidth / window.innerHeight;
+	  camera.updateProjectionMatrix();
+	
+	  renderer.setSize(window.innerWidth, window.innerHeight);
+	}
+	
+	exports.scene = scene;
+	exports.camera = camera;
+	exports.canvas = canvas;
+	exports.renderer = renderer;
+
+/***/ },
+/* 221 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+		value: true
+	});
+	exports.playerID = exports.loadGame = undefined;
+	exports.loadEnvironment = loadEnvironment;
+	
+	var _store = __webpack_require__(202);
+	
+	var _store2 = _interopRequireDefault(_store);
+	
+	var _main = __webpack_require__(220);
+	
+	var _player = __webpack_require__(224);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	var THREE = __webpack_require__(222);
+	
+	
+	var playerID = "007";
+	var player = void 0;
+	
+	var loadGame = function loadGame() {
+		// load the environment
+		loadEnvironment();
+		// load the player
+		initMainPlayer();
+	
+		//listenToOtherPlayers();
+	
+		window.onunload = function () {
+			//fbRef.child( "Players/" + playerID ).remove();
+		};
+	
+		window.onbeforeunload = function () {
+			//fbRef.child( "Players/" + playerID ).remove();
+		};
+	};
+	
+	function loadEnvironment() {
+		var color = _store2.default.getState().gameState.color;
+	
+		var sphere_geometry = new THREE.SphereGeometry(1);
+		var sphere_material = new THREE.MeshBasicMaterial({ color: color });
+		var sphere = new THREE.Mesh(sphere_geometry, sphere_material);
+	
+		_main.scene.add(sphere);
+	}
+	
+	function initMainPlayer() {
+	
+		// fbRef.child( "Players/" + playerID ).set({
+		// 	isOnline: true,
+		// 	orientation: {
+		// 		position: {x: 0, y:0, z:0},
+		// 		rotation: {x: 0, y:0, z:0}
+		// 	}
+		// });
+	
+		player = new _player.Player(playerID);
+		player.isMainPlayer = true;
+		player.init();
+	}
+	
+	exports.loadGame = loadGame;
+	exports.playerID = playerID;
+
+/***/ },
+/* 222 */
 /***/ function(module, exports, __webpack_require__) {
 
 	(function (global, factory) {
@@ -66835,7 +66964,7 @@
 
 
 /***/ },
-/* 225 */
+/* 223 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -66855,233 +66984,456 @@
 	};
 
 /***/ },
-/* 226 */
+/* 224 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
 	Object.defineProperty(exports, "__esModule", {
-	  value: true
+		value: true
 	});
-	exports.renderer = exports.canvas = exports.camera = exports.scene = exports.init = undefined;
+	exports.controls = exports.Player = undefined;
 	
-	var _game = __webpack_require__(227);
+	var _main = __webpack_require__(220);
 	
-	var THREE = __webpack_require__(224);
-	var scene = void 0,
-	    camera = void 0,
-	    canvas = void 0,
-	    renderer = void 0;
-	var init = exports.init = function init() {
-	  exports.scene = scene = new THREE.Scene();
+	var _game = __webpack_require__(221);
 	
-	  exports.camera = camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-	  camera.position.z = 5;
+	var THREE = __webpack_require__(222);
+	var PlayerControls = __webpack_require__(225);
 	
-	  exports.canvas = canvas = document.getElementById('canvas');
 	
-	  exports.renderer = renderer = new THREE.WebGLRenderer({ alpha: true, canvas: canvas });
-	  renderer.setSize(window.innerWidth, window.innerHeight);
+	var controls = void 0;
 	
-	  function render() {
-	    (0, _game.loadGame)();
-	    renderer.render(scene, camera);
-	    requestAnimationFrame(render);
-	  }
+	var Player = exports.Player = function Player(playerID) {
+		this.playerID = playerID;
+		this.isMainPlayer = false;
+		this.mesh;
 	
-	  render();
+		var cube_geometry = new THREE.BoxGeometry(1, 1, 1);
+		var cube_material = new THREE.MeshBasicMaterial({ color: 0x7777ff, wireframe: false });
+	
+		var scope = this;
+	
+		this.init = function () {
+			scope.mesh = new THREE.Mesh(cube_geometry, cube_material);
+			_main.scene.add(scope.mesh);
+	
+			if (scope.isMainPlayer) {
+				// Give player control of this mesh
+				exports.controls = controls = new THREE.PlayerControls(_main.camera, scope.mesh);
+				controls.init();
+				//console.log("did init")
+			}
+		};
+	
+		this.setOrientation = function (position, rotation) {
+			if (scope.mesh) {
+				scope.mesh.position.copy(position);
+				scope.mesh.rotation.x = rotation.x;
+				scope.mesh.rotation.y = rotation.y;
+				scope.mesh.rotation.z = rotation.z;
+			}
+		};
 	};
-	// init({color:'blue'});
 	
-	exports.scene = scene;
-	exports.camera = camera;
-	exports.canvas = canvas;
-	exports.renderer = renderer;
-	
-	// export const init = ({color}) => {
-	//   const scene = new THREE.Scene();
-	//   const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
-	
-	//   const canvas = document.getElementById('canvas');
-	//   const renderer = new THREE.WebGLRenderer({alpha: true, canvas});
-	//   renderer.setSize( window.innerWidth, window.innerHeight );
-	
-	//   const geometry = new THREE.BoxGeometry( 1, 1, 1 );
-	//   const material = new THREE.MeshBasicMaterial( { color } );
-	//   const cube = new THREE.Mesh( geometry, material );
-	//   scene.add( cube );
-	
-	//   camera.position.z = 5;
-	
-	//   const render = () => {
-	//     requestAnimationFrame( render );
-	
-	//     cube.rotation.x += 0.1;
-	//     cube.rotation.y += 0.1;
-	
-	//     renderer.render(scene, camera);
-	//   };
-	//   render();
-	// };
+	exports.controls = controls;
 
 /***/ },
-/* 227 */
+/* 225 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	exports.loadGame = undefined;
+	var THREE = __webpack_require__(222);
 	
-	var _store = __webpack_require__(208);
+	THREE.PlayerControls = function (camera, player, domElement) {
 	
-	var _store2 = _interopRequireDefault(_store);
+		this.camera = camera;
+		this.player = player;
+		this.domElement = domElement !== undefined ? domElement : document;
 	
-	var _main = __webpack_require__(226);
+		// API
 	
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+		this.enabled = true;
 	
-	var THREE = __webpack_require__(224);
-	var loadGame = exports.loadGame = function loadGame() {
-	  var color = _store2.default.getState().gameState.color;
+		this.center = new THREE.Vector3(player.position.x, player.position.y, player.position.z);
 	
-	  var geometry = new THREE.BoxGeometry(1, 1, 1);
-	  var material = new THREE.MeshBasicMaterial({ color: color });
-	  var cube = new THREE.Mesh(geometry, material);
-	  _main.scene.add(cube);
+		this.moveSpeed = 0.2;
+		this.turnSpeed = 0.1;
+	
+		this.userZoom = true;
+		this.userZoomSpeed = 1.0;
+	
+		this.userRotate = true;
+		this.userRotateSpeed = 1.5;
+	
+		this.autoRotate = false;
+		this.autoRotateSpeed = 0.1;
+		this.YAutoRotation = false;
+	
+		this.minPolarAngle = 0;
+		this.maxPolarAngle = Math.PI;
+	
+		this.minDistance = 0;
+		this.maxDistance = Infinity;
+	
+		// internals
+	
+		var scope = this;
+	
+		var EPS = 0.000001;
+		var PIXELS_PER_ROUND = 1800;
+	
+		var rotateStart = new THREE.Vector2();
+		var rotateEnd = new THREE.Vector2();
+		var rotateDelta = new THREE.Vector2();
+	
+		var zoomStart = new THREE.Vector2();
+		var zoomEnd = new THREE.Vector2();
+		var zoomDelta = new THREE.Vector2();
+	
+		var phiDelta = 0;
+		var thetaDelta = 0;
+		var scale = 1;
+	
+		var lastPosition = new THREE.Vector3(player.position.x, player.position.y, player.position.z);
+		var playerIsMoving = false;
+	
+		var keyState = {};
+		var STATE = { NONE: -1, ROTATE: 0, ZOOM: 1, PAN: 2 };
+		var state = STATE.NONE;
+	
+		// events
+	
+		var changeEvent = { type: 'change' };
+	
+		this.rotateLeft = function (angle) {
+	
+			if (angle === undefined) {
+	
+				angle = getAutoRotationAngle();
+			}
+	
+			thetaDelta -= angle;
+		};
+	
+		this.rotateRight = function (angle) {
+	
+			if (angle === undefined) {
+	
+				angle = getAutoRotationAngle();
+			}
+	
+			thetaDelta += angle;
+		};
+	
+		this.rotateUp = function (angle) {
+	
+			if (angle === undefined) {
+	
+				angle = getAutoRotationAngle();
+			}
+	
+			phiDelta -= angle;
+		};
+	
+		this.rotateDown = function (angle) {
+	
+			if (angle === undefined) {
+	
+				angle = getAutoRotationAngle();
+			}
+	
+			phiDelta += angle;
+		};
+	
+		this.zoomIn = function (zoomScale) {
+	
+			if (zoomScale === undefined) {
+	
+				zoomScale = getZoomScale();
+			}
+	
+			scale /= zoomScale;
+		};
+	
+		this.zoomOut = function (zoomScale) {
+	
+			if (zoomScale === undefined) {
+	
+				zoomScale = getZoomScale();
+			}
+	
+			scale *= zoomScale;
+		};
+	
+		this.init = function () {
+	
+			this.camera.position.x = this.player.position.x + 2;
+			this.camera.position.y = this.player.position.y + 2;
+			this.camera.position.z = this.player.position.x + 2;
+	
+			this.camera.lookAt(this.player.position);
+		};
+	
+		this.update = function () {
+	
+			this.checkKeyStates();
+	
+			this.center = this.player.position;
+	
+			var position = this.camera.position;
+			var offset = position.clone().sub(this.center);
+	
+			// angle from z-axis around y-axis
+	
+			var theta = Math.atan2(offset.x, offset.z);
+	
+			// angle from y-axis
+	
+			var phi = Math.atan2(Math.sqrt(offset.x * offset.x + offset.z * offset.z), offset.y);
+	
+			theta += thetaDelta;
+			phi += phiDelta;
+	
+			// restrict phi to be between desired limits
+			phi = Math.max(this.minPolarAngle, Math.min(this.maxPolarAngle, phi));
+	
+			// restrict phi to be between EPS and PI-EPS
+			phi = Math.max(EPS, Math.min(Math.PI - EPS, phi));
+	
+			var radius = offset.length() * scale;
+	
+			radius = Math.max(this.minDistance, Math.min(this.maxDistance, radius));
+	
+			offset.x = radius * Math.sin(phi) * Math.sin(theta);
+			offset.y = radius * Math.cos(phi);
+			offset.z = radius * Math.sin(phi) * Math.cos(theta);
+	
+			if (this.autoRotate) {
+	
+				this.camera.position.x += this.autoRotateSpeed * (this.player.position.x + 8 * Math.sin(this.player.rotation.y) - this.camera.position.x);
+				this.camera.position.z += this.autoRotateSpeed * (this.player.position.z + 8 * Math.cos(this.player.rotation.y) - this.camera.position.z);
+			} else {
+	
+				position.copy(this.center).add(offset);
+			}
+	
+			this.camera.lookAt(this.center);
+	
+			thetaDelta = 0;
+			phiDelta = 0;
+			scale = 1;
+	
+			if (state === STATE.NONE && playerIsMoving) {
+	
+				this.autoRotate = true;
+			} else {
+	
+				this.autoRotate = false;
+			}
+	
+			if (lastPosition.distanceTo(this.player.position) > 0) {
+	
+				lastPosition.copy(this.player.position);
+			} else if (lastPosition.distanceTo(this.player.position) == 0) {
+	
+				playerIsMoving = false;
+			}
+		};
+	
+		this.checkKeyStates = function () {
+	
+			if (keyState[38] || keyState[87]) {
+	
+				// up arrow or 'w' - move forward
+	
+				this.player.position.x -= this.moveSpeed * Math.sin(this.player.rotation.y);
+				this.player.position.z -= this.moveSpeed * Math.cos(this.player.rotation.y);
+	
+				this.camera.position.x -= this.moveSpeed * Math.sin(this.player.rotation.y);
+				this.camera.position.z -= this.moveSpeed * Math.cos(this.player.rotation.y);
+			}
+	
+			if (keyState[40] || keyState[83]) {
+	
+				// down arrow or 's' - move backward
+				playerIsMoving = true;
+	
+				this.player.position.x += this.moveSpeed * Math.sin(this.player.rotation.y);
+				this.player.position.z += this.moveSpeed * Math.cos(this.player.rotation.y);
+	
+				this.camera.position.x += this.moveSpeed * Math.sin(this.player.rotation.y);
+				this.camera.position.z += this.moveSpeed * Math.cos(this.player.rotation.y);
+			}
+	
+			if (keyState[37] || keyState[65]) {
+	
+				// left arrow or 'a' - rotate left
+				playerIsMoving = true;
+	
+				this.player.rotation.y += this.turnSpeed;
+			}
+	
+			if (keyState[39] || keyState[68]) {
+	
+				// right arrow or 'd' - rotate right
+				playerIsMoving = true;
+	
+				this.player.rotation.y -= this.turnSpeed;
+			}
+			if (keyState[81]) {
+	
+				// 'q' - strafe left
+				playerIsMoving = true;
+	
+				this.player.position.x -= this.moveSpeed * Math.cos(this.player.rotation.y);
+				this.player.position.z += this.moveSpeed * Math.sin(this.player.rotation.y);
+	
+				this.camera.position.x -= this.moveSpeed * Math.cos(this.player.rotation.y);
+				this.camera.position.z += this.moveSpeed * Math.sin(this.player.rotation.y);
+			}
+	
+			if (keyState[69]) {
+	
+				// 'e' - strage right
+				playerIsMoving = true;
+	
+				this.player.position.x += this.moveSpeed * Math.cos(this.player.rotation.y);
+				this.player.position.z -= this.moveSpeed * Math.sin(this.player.rotation.y);
+	
+				this.camera.position.x += this.moveSpeed * Math.cos(this.player.rotation.y);
+				this.camera.position.z -= this.moveSpeed * Math.sin(this.player.rotation.y);
+			}
+		};
+	
+		function getAutoRotationAngle() {
+	
+			return 2 * Math.PI / 60 / 60 * scope.autoRotateSpeed;
+		}
+	
+		function getZoomScale() {
+	
+			return Math.pow(0.95, scope.userZoomSpeed);
+		}
+	
+		function onMouseDown(event) {
+	
+			if (scope.enabled === false) return;
+			if (scope.userRotate === false) return;
+	
+			event.preventDefault();
+	
+			if (event.button === 0) {
+	
+				state = STATE.ROTATE;
+	
+				rotateStart.set(event.clientX, event.clientY);
+			} else if (event.button === 1) {
+	
+				state = STATE.ZOOM;
+	
+				zoomStart.set(event.clientX, event.clientY);
+			}
+	
+			document.addEventListener('mousemove', onMouseMove, false);
+			document.addEventListener('mouseup', onMouseUp, false);
+		}
+	
+		function onMouseMove(event) {
+	
+			if (scope.enabled === false) return;
+	
+			event.preventDefault();
+	
+			if (state === STATE.ROTATE) {
+	
+				rotateEnd.set(event.clientX, event.clientY);
+				rotateDelta.subVectors(rotateEnd, rotateStart);
+	
+				scope.rotateLeft(2 * Math.PI * rotateDelta.x / PIXELS_PER_ROUND * scope.userRotateSpeed);
+				scope.rotateUp(2 * Math.PI * rotateDelta.y / PIXELS_PER_ROUND * scope.userRotateSpeed);
+	
+				rotateStart.copy(rotateEnd);
+			} else if (state === STATE.ZOOM) {
+	
+				zoomEnd.set(event.clientX, event.clientY);
+				zoomDelta.subVectors(zoomEnd, zoomStart);
+	
+				if (zoomDelta.y > 0) {
+	
+					scope.zoomIn();
+				} else {
+	
+					scope.zoomOut();
+				}
+	
+				zoomStart.copy(zoomEnd);
+			}
+		}
+	
+		function onMouseUp(event) {
+	
+			if (scope.enabled === false) return;
+			if (scope.userRotate === false) return;
+	
+			document.removeEventListener('mousemove', onMouseMove, false);
+			document.removeEventListener('mouseup', onMouseUp, false);
+	
+			state = STATE.NONE;
+		}
+	
+		function onMouseWheel(event) {
+	
+			if (scope.enabled === false) return;
+			if (scope.userRotate === false) return;
+	
+			var delta = 0;
+	
+			if (event.wheelDelta) {
+				//WebKit / Opera / Explorer 9
+	
+				delta = event.wheelDelta;
+			} else if (event.detail) {
+				// Firefox
+	
+				delta = -event.detail;
+			}
+	
+			if (delta > 0) {
+	
+				scope.zoomOut();
+			} else {
+	
+				scope.zoomIn();
+			}
+		}
+	
+		function onKeyDown(event) {
+	
+			event = event || window.event;
+	
+			keyState[event.keyCode || event.which] = true;
+		}
+	
+		function onKeyUp(event) {
+	
+			event = event || window.event;
+	
+			keyState[event.keyCode || event.which] = false;
+		}
+	
+		this.domElement.addEventListener('contextmenu', function (event) {
+			event.preventDefault();
+		}, false);
+		this.domElement.addEventListener('mousedown', onMouseDown, false);
+		this.domElement.addEventListener('mousewheel', onMouseWheel, false);
+		this.domElement.addEventListener('DOMMouseScroll', onMouseWheel, false); // firefox
+		this.domElement.addEventListener('keydown', onKeyDown, false);
+		this.domElement.addEventListener('keyup', onKeyUp, false);
 	};
 	
-	// const THREE = require('three');
-	// import store from '../store';
-	
-	// export const loadGame = ({color}) => {
-	//   let state = store.getState();
-	//   let scene = state.scene;
-	//   console.log(state);
-	//   const geometry = new THREE.BoxGeometry( 1, 1, 1 );
-	//   const material = new THREE.MeshBasicMaterial( { color } );
-	//   const cube = new THREE.Mesh( geometry, material );
-	//   scene.add( cube );
-	// }
-
-/***/ },
-/* 228 */
-/***/ function(module, exports) {
-
-	'use strict';
-	
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	/*----------  INITIAL STATE  ----------*/
-	var initialState = null;
-	
-	/*----------  ACTION TYPES  ----------*/
-	var RECEIVE_SCENE = 'RECEIVE_SCENE';
-	
-	/*----------  ACTION CREATORS  ----------*/
-	var receiveScene = exports.receiveScene = function receiveScene(scene) {
-	  return {
-	    type: RECEIVE_SCENE,
-	    scene: scene
-	  };
-	};
-	
-	/*----------  THUNK CREATORS  ----------*/
-	
-	/*----------  REDUCER  ----------*/
-	
-	exports.default = function () {
-	  var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : initialState;
-	  var action = arguments[1];
-	
-	  switch (action.type) {
-	    case RECEIVE_SCENE:
-	      return action.scene;
-	    default:
-	      return state;
-	  }
-	};
-
-/***/ },
-/* 229 */
-/***/ function(module, exports) {
-
-	'use strict';
-	
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	/*----------  INITIAL STATE  ----------*/
-	var initialState = null;
-	
-	/*----------  ACTION TYPES  ----------*/
-	var RECEIVE_CAMERA = 'RECEIVE_CAMERA';
-	
-	/*----------  ACTION CREATORS  ----------*/
-	var receiveCamera = exports.receiveCamera = function receiveCamera(camera) {
-	  return {
-	    type: RECEIVE_CAMERA,
-	    camera: camera
-	  };
-	};
-	
-	/*----------  THUNK CREATORS  ----------*/
-	
-	/*----------  REDUCER  ----------*/
-	
-	exports.default = function () {
-	  var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : initialState;
-	  var action = arguments[1];
-	
-	  switch (action.type) {
-	    case RECEIVE_CAMERA:
-	      return action.camera;
-	    default:
-	      return state;
-	  }
-	};
-
-/***/ },
-/* 230 */
-/***/ function(module, exports) {
-
-	'use strict';
-	
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	/*----------  INITIAL STATE  ----------*/
-	var initialState = null;
-	
-	/*----------  ACTION TYPES  ----------*/
-	var RECEIVE_RENDERER = 'RECEIVE_RENDERER';
-	
-	/*----------  ACTION CREATORS  ----------*/
-	var receiveRenderer = exports.receiveRenderer = function receiveRenderer(renderer) {
-	  return {
-	    type: RECEIVE_RENDERER,
-	    renderer: renderer
-	  };
-	};
-	
-	/*----------  THUNK CREATORS  ----------*/
-	
-	/*----------  REDUCER  ----------*/
-	
-	exports.default = function () {
-	  var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : initialState;
-	  var action = arguments[1];
-	
-	  switch (action.type) {
-	    case RECEIVE_RENDERER:
-	      return action.renderer;
-	    default:
-	      return state;
-	  }
-	};
+	THREE.PlayerControls.prototype = Object.create(THREE.EventDispatcher.prototype);
 
 /***/ }
 /******/ ]);
