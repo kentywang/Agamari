@@ -53,8 +53,17 @@ io.on('connection', function(socket){
   });
 
   socket.on('state_changed', action=>{
-      socket.broadcast.to("room1").emit('change_state', action);
-      store.dispatch(addRoom(action, "room1"));    
+    let rooms = io.sockets.adapter.sids[socket.id];
+    let currentRoom;
+    for (let room in rooms) {
+      if(rooms[room]) {
+        currentRoom = room;
+        break;
+      }
+    }
+    socket.broadcast.to(currentRoom).emit('change_state', action);
+
+    store.dispatch(addRoom(action, currentRoom));    
   });
 
 });
