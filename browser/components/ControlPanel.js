@@ -6,33 +6,18 @@ const room2 = 'room2';
 
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import store from '../store';
 
 class ControlPanel extends Component {
   constructor(props) {
     super(props);
-    this.onClick = this.onClick.bind(this);
-    this.logToRoom = this.logToRoom.bind(this);
   }
 
-  onClick(room) {
+  onClick = (room) => {
     this.props.socket.emit('room', room);
   }
 
-  logToRoom(room) {
-    this.props.socket.emit('log', room)
-  }
-
-  componentDidMount() {
-    const socket = io('/');
-    socket.on('connect', function(){
-      socket.on('message1', function(from, data){
-        console.log(data);
-      });
-      //socket.on('event', console.log);
-        //store.dispatch(receiveGameState(state));
-    });
-    this.setState({socket});
+  logToRoom = (room) => {
+    this.props.socket.emit('log', room);
   }
 
   render() {

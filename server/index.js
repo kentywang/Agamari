@@ -32,22 +32,19 @@ io.on('connection', function(socket){
   })
 
   socket.on('button', function(start, end, color){
-    console.log('clicked')
+    console.log('clicked');
 
     io.emit('receivedClick');
   });
 
   socket.on('room', room => {
     for (let room in socket.rooms) socket.leave(room);
-    socket.join(room, ()=> {
-      console.log("room joined", room)
-      //io.sockets.in(room).emit('newGameState', gameState[room]);
-    });
-    // io.sockets.in(room).emit('start');
+    socket.join(room);
+    socket.emit('newGameState', gameState[room]);
   });
 
   socket.on('log', room => {
-    io.sockets.in(room).emit('message1', "hello");
+    io.sockets.in(room).emit('message', "hello from " + room);
   });
 
 });
@@ -61,7 +58,6 @@ app.use(bodyParser.json())
    .use('/materialize-css',
       express.static(path.join(__dirname, '..', 'node_modules', 'materialize-css', 'dist')))
    .use('/jquery', express.static(path.join(__dirname, '..', 'node_modules', 'jquery', 'dist')))
-   .use('/three', express.static(path.join(__dirname, '..', 'node_modules', 'three', 'build')))
    //.use('/api', require('./api'));
 
 const indexHtmlPath = path.join(__dirname, '..', 'public', 'index.html');

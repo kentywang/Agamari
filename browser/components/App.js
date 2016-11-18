@@ -4,22 +4,23 @@ import { connect } from 'react-redux';
 import ControlPanel from './ControlPanel';
 import Canvas from './Canvas';
 import { receiveSocket } from '../reducers/socket';
+import { receiveGameState } from '../reducers/gameState';
 
 class App extends Component {
-  constructor(props) {
+  constructor (props) {
     super(props);
   }
 
-  componentDidMount() {
+  componentDidMount = () => {
     const socket = io('/');
-    socket.on('connect', function(){
-
+    socket.on('connect', () => {
       socket.on('message', console.log);
+      socket.on('newGameState', state => this.props.receiveGameState(state));
     });
-    this.props.setSocket(socket);
+    this.props.receiveSocket(socket);
   }
 
-  render() {
+  render = () => {
     return (
       <div className="row">
         <div className="col s3">
@@ -37,7 +38,8 @@ class App extends Component {
 
 const mapStateToProps = ({}) => ({});
 const mapDispatchToProps = dispatch => ({
-  setSocket: socket => dispatch(receiveSocket(socket))
+  receiveSocket: socket => dispatch(receiveSocket(socket)),
+  receiveGameState: state => dispatch(receiveGameState(state)),
 });
 
 export default connect(
