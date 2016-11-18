@@ -1,9 +1,6 @@
 'use strict';
 
-const gameState = {
-  room1: {color : "blue"},
-  room2: {color: "green"}
-}
+
 
 const express = require('express'),
       bodyParser = require('body-parser'),
@@ -11,7 +8,12 @@ const express = require('express'),
       path = require('path'),
       chalk = require('chalk'),
       http = require('http'),
-      server = http.createServer();
+      server = http.createServer(),
+      store = require('./redux'); 
+
+
+const addRoom = (action, room)=> Object.assign(action,{room});      
+
 
 
 const app = express();
@@ -41,11 +43,18 @@ io.on('connection', function(socket){
   socket.on('room', room => {
     for (let room in socket.rooms) socket.leave(room);
     socket.join(room);
-    socket.emit('newGameState', gameState[room]);
+    let state = store.getState();   
+    console.log(state);
+    socket.emit('newGameState', state[room]);
   });
 
   socket.on('log', room => {
     io.sockets.in(room).emit('message', "hello from " + room);
+  });
+
+  socket.on('state_changed', action=>{
+      socket.broadcast.to("room1").emit('change_state', action);
+      store.dispatch(addRoom(action, "room1"));    
   });
 
 });
