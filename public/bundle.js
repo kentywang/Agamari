@@ -60,7 +60,11 @@
 	
 	var _store2 = _interopRequireDefault(_store);
 	
+<<<<<<< HEAD
 	var _App = __webpack_require__(218);
+=======
+	var _App = __webpack_require__(224);
+>>>>>>> master
 	
 	var _App2 = _interopRequireDefault(_App);
 	
@@ -24021,6 +24025,7 @@
 	
 	var _socket2 = _interopRequireDefault(_socket);
 	
+<<<<<<< HEAD
 	var _scene = __webpack_require__(215);
 	
 	var _scene2 = _interopRequireDefault(_scene);
@@ -24030,6 +24035,17 @@
 	var _camera2 = _interopRequireDefault(_camera);
 	
 	var _renderer = __webpack_require__(217);
+=======
+	var _scene = __webpack_require__(221);
+	
+	var _scene2 = _interopRequireDefault(_scene);
+	
+	var _camera = __webpack_require__(222);
+	
+	var _camera2 = _interopRequireDefault(_camera);
+	
+	var _renderer = __webpack_require__(223);
+>>>>>>> master
 	
 	var _renderer2 = _interopRequireDefault(_renderer);
 	
@@ -24109,7 +24125,7 @@
 /* 213 */
 /***/ function(module, exports) {
 
-	"use strict";
+	'use strict';
 	
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
@@ -24119,12 +24135,20 @@
 	
 	/*----------  ACTION TYPES  ----------*/
 	var RECEIVE_GAMESTATE = 'RECEIVE_GAMESTATE';
+	var UPDATE_COLOR = 'UPDATE_COLOR';
 	
 	/*----------  ACTION CREATORS  ----------*/
 	var receiveGameState = exports.receiveGameState = function receiveGameState(state) {
 	  return {
 	    type: RECEIVE_GAMESTATE,
 	    state: state
+	  };
+	};
+	
+	var updateColor = exports.updateColor = function updateColor(color) {
+	  return {
+	    type: UPDATE_COLOR,
+	    color: color
 	  };
 	};
 	
@@ -24139,8 +24163,11 @@
 	  switch (action.type) {
 	    case RECEIVE_GAMESTATE:
 	      return action.state;
+	    case UPDATE_COLOR:
+	      return Object.assign({}, state, { color: action.color });
 	    default:
 	      return state;
+	
 	  }
 	};
 
@@ -24184,7 +24211,11 @@
 	};
 
 /***/ },
+<<<<<<< HEAD
 /* 215 */
+=======
+/* 221 */
+>>>>>>> master
 /***/ function(module, exports) {
 
 	'use strict';
@@ -24223,7 +24254,11 @@
 	};
 
 /***/ },
+<<<<<<< HEAD
 /* 216 */
+=======
+/* 222 */
+>>>>>>> master
 /***/ function(module, exports) {
 
 	'use strict';
@@ -24262,7 +24297,11 @@
 	};
 
 /***/ },
+<<<<<<< HEAD
 /* 217 */
+=======
+/* 223 */
+>>>>>>> master
 /***/ function(module, exports) {
 
 	'use strict';
@@ -24301,7 +24340,11 @@
 	};
 
 /***/ },
+<<<<<<< HEAD
 /* 218 */
+=======
+/* 224 */
+>>>>>>> master
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -24318,11 +24361,23 @@
 	
 	var _reactRedux = __webpack_require__(178);
 	
+<<<<<<< HEAD
 	var _ControlPanel = __webpack_require__(219);
 	
 	var _ControlPanel2 = _interopRequireDefault(_ControlPanel);
 	
 	var _Canvas = __webpack_require__(223);
+=======
+	var _store = __webpack_require__(208);
+	
+	var _store2 = _interopRequireDefault(_store);
+	
+	var _ControlPanel = __webpack_require__(225);
+	
+	var _ControlPanel2 = _interopRequireDefault(_ControlPanel);
+	
+	var _Canvas = __webpack_require__(229);
+>>>>>>> master
 	
 	var _Canvas2 = _interopRequireDefault(_Canvas);
 	
@@ -24362,6 +24417,9 @@
 	        socket.on('newGameState', function (state) {
 	          _this2.props.receiveGameState(state);
 	          (0, _game.loadEnvironment)();
+	        });
+	        socket.on('change_state', function (action) {
+	          return _store2.default.dispatch(action);
 	        });
 	      });
 	      this.props.receiveSocket(socket);
@@ -24408,7 +24466,11 @@
 	exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(App);
 
 /***/ },
+<<<<<<< HEAD
 /* 219 */
+=======
+/* 225 */
+>>>>>>> master
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -24426,6 +24488,12 @@
 	var _react2 = _interopRequireDefault(_react);
 	
 	var _reactRedux = __webpack_require__(178);
+	
+	var _store = __webpack_require__(208);
+	
+	var _store2 = _interopRequireDefault(_store);
+	
+	var _gameState = __webpack_require__(219);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
@@ -24448,6 +24516,7 @@
 	
 	    _this.onClick = _this.onClick.bind(_this);
 	    _this.logToRoom = _this.logToRoom.bind(_this);
+	    _this.changeState = _this.changeState.bind(_this);
 	    return _this;
 	  }
 	
@@ -24460,6 +24529,13 @@
 	    key: 'logToRoom',
 	    value: function logToRoom(room) {
 	      this.props.socket.emit('log', room);
+	    }
+	  }, {
+	    key: 'changeState',
+	    value: function changeState(color) {
+	      var action = (0, _gameState.updateColor)(color);
+	      _store2.default.dispatch(action);
+	      this.props.socket.emit('state_changed', action);
 	    }
 	  }, {
 	    key: 'render',
@@ -24504,6 +24580,20 @@
 	              return _this2.logToRoom(room2);
 	            } },
 	          'Log Room 2'
+	        ),
+	        _react2.default.createElement(
+	          'button',
+	          { className: 'btn', onClick: function onClick() {
+	              return _this2.changeState("yellow");
+	            } },
+	          'Yellow'
+	        ),
+	        _react2.default.createElement(
+	          'button',
+	          { className: 'btn', onClick: function onClick() {
+	              return _this2.changeState("purple");
+	            } },
+	          'Purple'
 	        )
 	      );
 	    }
@@ -24521,7 +24611,11 @@
 	exports.default = (0, _reactRedux.connect)(mapStateToProps)(ControlPanel);
 
 /***/ },
+<<<<<<< HEAD
 /* 220 */
+=======
+/* 226 */
+>>>>>>> master
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -24530,6 +24624,7 @@
 	  value: true
 	});
 	exports.renderer = exports.canvas = exports.camera = exports.scene = exports.init = undefined;
+<<<<<<< HEAD
 	exports.animate = animate;
 	
 	var _game = __webpack_require__(221);
@@ -24537,11 +24632,20 @@
 	var _player = __webpack_require__(224);
 	
 	var THREE = __webpack_require__(222);
+=======
+	
+	var _game = __webpack_require__(227);
+	
+	var THREE = __webpack_require__(228);
+>>>>>>> master
 	var scene = void 0,
 	    camera = void 0,
 	    canvas = void 0,
 	    renderer = void 0;
+<<<<<<< HEAD
 	
+=======
+>>>>>>> master
 	var init = exports.init = function init() {
 	  exports.scene = scene = new THREE.Scene();
 	
@@ -24553,6 +24657,7 @@
 	  exports.renderer = renderer = new THREE.WebGLRenderer({ alpha: true, canvas: canvas });
 	  renderer.setSize(window.innerWidth, window.innerHeight);
 	
+<<<<<<< HEAD
 	  (0, _game.loadGame)();
 	
 	  // Events
@@ -24589,11 +24694,57 @@
 
 /***/ },
 /* 221 */
+=======
+	  function render() {
+	    (0, _game.loadGame)();
+	    renderer.render(scene, camera);
+	    requestAnimationFrame(render);
+	  }
+	
+	  render();
+	};
+	// init({color:'blue'});
+	
+	exports.scene = scene;
+	exports.camera = camera;
+	exports.canvas = canvas;
+	exports.renderer = renderer;
+	
+	// export const init = ({color}) => {
+	//   const scene = new THREE.Scene();
+	//   const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
+	
+	//   const canvas = document.getElementById('canvas');
+	//   const renderer = new THREE.WebGLRenderer({alpha: true, canvas});
+	//   renderer.setSize( window.innerWidth, window.innerHeight );
+	
+	//   const geometry = new THREE.BoxGeometry( 1, 1, 1 );
+	//   const material = new THREE.MeshBasicMaterial( { color } );
+	//   const cube = new THREE.Mesh( geometry, material );
+	//   scene.add( cube );
+	
+	//   camera.position.z = 5;
+	
+	//   const render = () => {
+	//     requestAnimationFrame( render );
+	
+	//     cube.rotation.x += 0.1;
+	//     cube.rotation.y += 0.1;
+	
+	//     renderer.render(scene, camera);
+	//   };
+	//   render();
+	// };
+
+/***/ },
+/* 227 */
+>>>>>>> master
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
 	Object.defineProperty(exports, "__esModule", {
+<<<<<<< HEAD
 		value: true
 	});
 	exports.playerID = exports.loadGame = undefined;
@@ -24662,6 +24813,45 @@
 
 /***/ },
 /* 222 */
+=======
+	  value: true
+	});
+	exports.loadGame = undefined;
+	
+	var _store = __webpack_require__(208);
+	
+	var _store2 = _interopRequireDefault(_store);
+	
+	var _main = __webpack_require__(226);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	var THREE = __webpack_require__(228);
+	var loadGame = exports.loadGame = function loadGame() {
+	  var color = _store2.default.getState().gameState.color;
+	
+	  var geometry = new THREE.BoxGeometry(1, 1, 1);
+	  var material = new THREE.MeshBasicMaterial({ color: color });
+	  var cube = new THREE.Mesh(geometry, material);
+	  _main.scene.add(cube);
+	};
+	
+	// const THREE = require('three');
+	// import store from '../store';
+	
+	// export const loadGame = ({color}) => {
+	//   let state = store.getState();
+	//   let scene = state.scene;
+	//   console.log(state);
+	//   const geometry = new THREE.BoxGeometry( 1, 1, 1 );
+	//   const material = new THREE.MeshBasicMaterial( { color } );
+	//   const cube = new THREE.Mesh( geometry, material );
+	//   scene.add( cube );
+	// }
+
+/***/ },
+/* 228 */
+>>>>>>> master
 /***/ function(module, exports, __webpack_require__) {
 
 	(function (global, factory) {
@@ -66964,7 +67154,11 @@
 
 
 /***/ },
+<<<<<<< HEAD
 /* 223 */
+=======
+/* 229 */
+>>>>>>> master
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -66983,6 +67177,7 @@
 	  return _react2.default.createElement("canvas", { id: "canvas" });
 	};
 
+<<<<<<< HEAD
 /***/ },
 /* 224 */
 /***/ function(module, exports, __webpack_require__) {
@@ -67435,6 +67630,8 @@
 	
 	THREE.PlayerControls.prototype = Object.create(THREE.EventDispatcher.prototype);
 
+=======
+>>>>>>> master
 /***/ }
 /******/ ]);
 //# sourceMappingURL=bundle.js.map

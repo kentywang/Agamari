@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import store from '../store';
 
 import ControlPanel from './ControlPanel';
 import Canvas from './Canvas';
@@ -21,6 +22,7 @@ class App extends Component {
         this.props.receiveGameState(state);
         loadEnvironment();
       });
+      socket.on('change_state', action=> store.dispatch(action));
     });
     this.props.receiveSocket(socket);
   }
