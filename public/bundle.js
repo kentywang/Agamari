@@ -24152,13 +24152,28 @@
 	
 	var _socket2 = _interopRequireDefault(_socket);
 	
+	var _scene = __webpack_require__(228);
+	
+	var _scene2 = _interopRequireDefault(_scene);
+	
+	var _camera = __webpack_require__(229);
+	
+	var _camera2 = _interopRequireDefault(_camera);
+	
+	var _renderer = __webpack_require__(230);
+	
+	var _renderer2 = _interopRequireDefault(_renderer);
+	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
 	exports.default = (0, _redux.combineReducers)({
 	  auth: _auth2.default,
 	  currentRoom: _currentRoom2.default,
 	  gameState: _gameState2.default,
-	  socket: _socket2.default
+	  socket: _socket2.default,
+	  scene: _scene2.default,
+	  camera: _camera2.default,
+	  renderer: _renderer2.default
 	});
 
 /***/ },
@@ -24309,6 +24324,8 @@
 	  value: true
 	});
 	
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	
 	var _react = __webpack_require__(1);
 	
 	var _react2 = _interopRequireDefault(_react);
@@ -24343,20 +24360,26 @@
 	  function App(props) {
 	    _classCallCheck(this, App);
 	
-	    var _this = _possibleConstructorReturn(this, (App.__proto__ || Object.getPrototypeOf(App)).call(this, props));
+	    return _possibleConstructorReturn(this, (App.__proto__ || Object.getPrototypeOf(App)).call(this, props));
+	  }
 	
-	    _this.componentDidMount = function () {
+	  _createClass(App, [{
+	    key: 'componentDidMount',
+	    value: function componentDidMount() {
+	      var _this2 = this;
+	
 	      var socket = io('/');
 	      socket.on('connect', function () {
 	        socket.on('message', console.log);
 	        socket.on('newGameState', function (state) {
-	          return _this.props.receiveGameState(state);
+	          return _this2.props.receiveGameState(state);
 	        });
 	      });
-	      _this.props.receiveSocket(socket);
-	    };
-	
-	    _this.render = function () {
+	      this.props.receiveSocket(socket);
+	    }
+	  }, {
+	    key: 'render',
+	    value: function render() {
 	      return _react2.default.createElement(
 	        'div',
 	        { className: 'row' },
@@ -24371,10 +24394,8 @@
 	          _react2.default.createElement(_Canvas2.default, null)
 	        )
 	      );
-	    };
-	
-	    return _this;
-	  }
+	    }
+	  }]);
 	
 	  return App;
 	}(_react.Component);
@@ -24409,7 +24430,7 @@
 	
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 	
-	var _engine = __webpack_require__(223);
+	var _main = __webpack_require__(226);
 	
 	var _react = __webpack_require__(1);
 	
@@ -24436,18 +24457,22 @@
 	
 	    var _this = _possibleConstructorReturn(this, (ControlPanel.__proto__ || Object.getPrototypeOf(ControlPanel)).call(this, props));
 	
-	    _this.onClick = function (room) {
-	      _this.props.socket.emit('room', room);
-	    };
-	
-	    _this.logToRoom = function (room) {
-	      _this.props.socket.emit('log', room);
-	    };
-	
+	    _this.onClick = _this.onClick.bind(_this);
+	    _this.logToRoom = _this.logToRoom.bind(_this);
 	    return _this;
 	  }
 	
 	  _createClass(ControlPanel, [{
+	    key: 'onClick',
+	    value: function onClick(room) {
+	      this.props.socket.emit('room', room);
+	    }
+	  }, {
+	    key: 'logToRoom',
+	    value: function logToRoom(room) {
+	      this.props.socket.emit('log', room);
+	    }
+	  }, {
 	    key: 'render',
 	    value: function render() {
 	      var _this2 = this;
@@ -24458,7 +24483,7 @@
 	        _react2.default.createElement(
 	          'button',
 	          { className: 'btn', onClick: function onClick() {
-	              return (0, _engine.init)(_this2.props.gameState);
+	              return (0, _main.init)();
 	            } },
 	          'Start'
 	        ),
@@ -24506,45 +24531,7 @@
 	exports.default = (0, _reactRedux.connect)(mapStateToProps)(ControlPanel);
 
 /***/ },
-/* 223 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-	
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	var THREE = __webpack_require__(224);
-	
-	var init = exports.init = function init(_ref) {
-	  var color = _ref.color;
-	
-	  var scene = new THREE.Scene();
-	  var camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-	
-	  var renderer = new THREE.WebGLRenderer();
-	  renderer.setSize(window.innerWidth, window.innerHeight);
-	  document.body.appendChild(renderer.domElement);
-	
-	  var geometry = new THREE.BoxGeometry(1, 1, 1);
-	  var material = new THREE.MeshBasicMaterial({ color: color });
-	  var cube = new THREE.Mesh(geometry, material);
-	  scene.add(cube);
-	
-	  camera.position.z = 5;
-	
-	  var render = function render() {
-	    requestAnimationFrame(render);
-	
-	    cube.rotation.x += 0.1;
-	    cube.rotation.y += 0.1;
-	
-	    renderer.render(scene, camera);
-	  };
-	  render();
-	};
-
-/***/ },
+/* 223 */,
 /* 224 */
 /***/ function(module, exports, __webpack_require__) {
 
@@ -66865,6 +66852,235 @@
 	
 	exports.default = function () {
 	  return _react2.default.createElement("canvas", { id: "canvas" });
+	};
+
+/***/ },
+/* 226 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports.renderer = exports.canvas = exports.camera = exports.scene = exports.init = undefined;
+	
+	var _game = __webpack_require__(227);
+	
+	var THREE = __webpack_require__(224);
+	var scene = void 0,
+	    camera = void 0,
+	    canvas = void 0,
+	    renderer = void 0;
+	var init = exports.init = function init() {
+	  exports.scene = scene = new THREE.Scene();
+	
+	  exports.camera = camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+	  camera.position.z = 5;
+	
+	  exports.canvas = canvas = document.getElementById('canvas');
+	
+	  exports.renderer = renderer = new THREE.WebGLRenderer({ alpha: true, canvas: canvas });
+	  renderer.setSize(window.innerWidth, window.innerHeight);
+	
+	  function render() {
+	    (0, _game.loadGame)();
+	    renderer.render(scene, camera);
+	    requestAnimationFrame(render);
+	  }
+	
+	  render();
+	};
+	// init({color:'blue'});
+	
+	exports.scene = scene;
+	exports.camera = camera;
+	exports.canvas = canvas;
+	exports.renderer = renderer;
+	
+	// export const init = ({color}) => {
+	//   const scene = new THREE.Scene();
+	//   const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
+	
+	//   const canvas = document.getElementById('canvas');
+	//   const renderer = new THREE.WebGLRenderer({alpha: true, canvas});
+	//   renderer.setSize( window.innerWidth, window.innerHeight );
+	
+	//   const geometry = new THREE.BoxGeometry( 1, 1, 1 );
+	//   const material = new THREE.MeshBasicMaterial( { color } );
+	//   const cube = new THREE.Mesh( geometry, material );
+	//   scene.add( cube );
+	
+	//   camera.position.z = 5;
+	
+	//   const render = () => {
+	//     requestAnimationFrame( render );
+	
+	//     cube.rotation.x += 0.1;
+	//     cube.rotation.y += 0.1;
+	
+	//     renderer.render(scene, camera);
+	//   };
+	//   render();
+	// };
+
+/***/ },
+/* 227 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports.loadGame = undefined;
+	
+	var _store = __webpack_require__(208);
+	
+	var _store2 = _interopRequireDefault(_store);
+	
+	var _main = __webpack_require__(226);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	var THREE = __webpack_require__(224);
+	var loadGame = exports.loadGame = function loadGame() {
+	  var color = _store2.default.getState().gameState.color;
+	
+	  var geometry = new THREE.BoxGeometry(1, 1, 1);
+	  var material = new THREE.MeshBasicMaterial({ color: color });
+	  var cube = new THREE.Mesh(geometry, material);
+	  _main.scene.add(cube);
+	};
+	
+	// const THREE = require('three');
+	// import store from '../store';
+	
+	// export const loadGame = ({color}) => {
+	//   let state = store.getState();
+	//   let scene = state.scene;
+	//   console.log(state);
+	//   const geometry = new THREE.BoxGeometry( 1, 1, 1 );
+	//   const material = new THREE.MeshBasicMaterial( { color } );
+	//   const cube = new THREE.Mesh( geometry, material );
+	//   scene.add( cube );
+	// }
+
+/***/ },
+/* 228 */
+/***/ function(module, exports) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	/*----------  INITIAL STATE  ----------*/
+	var initialState = null;
+	
+	/*----------  ACTION TYPES  ----------*/
+	var RECEIVE_SCENE = 'RECEIVE_SCENE';
+	
+	/*----------  ACTION CREATORS  ----------*/
+	var receiveScene = exports.receiveScene = function receiveScene(scene) {
+	  return {
+	    type: RECEIVE_SCENE,
+	    scene: scene
+	  };
+	};
+	
+	/*----------  THUNK CREATORS  ----------*/
+	
+	/*----------  REDUCER  ----------*/
+	
+	exports.default = function () {
+	  var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : initialState;
+	  var action = arguments[1];
+	
+	  switch (action.type) {
+	    case RECEIVE_SCENE:
+	      return action.scene;
+	    default:
+	      return state;
+	  }
+	};
+
+/***/ },
+/* 229 */
+/***/ function(module, exports) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	/*----------  INITIAL STATE  ----------*/
+	var initialState = null;
+	
+	/*----------  ACTION TYPES  ----------*/
+	var RECEIVE_CAMERA = 'RECEIVE_CAMERA';
+	
+	/*----------  ACTION CREATORS  ----------*/
+	var receiveCamera = exports.receiveCamera = function receiveCamera(camera) {
+	  return {
+	    type: RECEIVE_CAMERA,
+	    camera: camera
+	  };
+	};
+	
+	/*----------  THUNK CREATORS  ----------*/
+	
+	/*----------  REDUCER  ----------*/
+	
+	exports.default = function () {
+	  var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : initialState;
+	  var action = arguments[1];
+	
+	  switch (action.type) {
+	    case RECEIVE_CAMERA:
+	      return action.camera;
+	    default:
+	      return state;
+	  }
+	};
+
+/***/ },
+/* 230 */
+/***/ function(module, exports) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	/*----------  INITIAL STATE  ----------*/
+	var initialState = null;
+	
+	/*----------  ACTION TYPES  ----------*/
+	var RECEIVE_RENDERER = 'RECEIVE_RENDERER';
+	
+	/*----------  ACTION CREATORS  ----------*/
+	var receiveRenderer = exports.receiveRenderer = function receiveRenderer(renderer) {
+	  return {
+	    type: RECEIVE_RENDERER,
+	    renderer: renderer
+	  };
+	};
+	
+	/*----------  THUNK CREATORS  ----------*/
+	
+	/*----------  REDUCER  ----------*/
+	
+	exports.default = function () {
+	  var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : initialState;
+	  var action = arguments[1];
+	
+	  switch (action.type) {
+	    case RECEIVE_RENDERER:
+	      return action.renderer;
+	    default:
+	      return state;
+	  }
 	};
 
 /***/ }
