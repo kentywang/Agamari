@@ -1,5 +1,10 @@
 'use strict';
 
+const gameState = {
+  room1: {color : "blue"},
+  room2: {color: "green"}
+}
+
 const express = require('express'),
       bodyParser = require('body-parser'),
       morgan = require('morgan'),
@@ -28,7 +33,7 @@ io.on('connection', function(socket){
   })
 
   socket.on('button', function(start, end, color){
-    console.log('clicked')
+    console.log('clicked');
 
     io.emit('receivedClick');
   });
@@ -36,11 +41,11 @@ io.on('connection', function(socket){
   socket.on('room', room => {
     for (let room in socket.rooms) socket.leave(room);
     socket.join(room);
-    io.sockets.in(room).emit('start');
+    socket.emit('newGameState', gameState[room]);
   });
 
   socket.on('log', room => {
-    io.sockets.in(room).emit('message', 'Hi ' + room);
+    io.sockets.in(room).emit('message', "hello from " + room);
   });
 
 });
@@ -54,10 +59,8 @@ app.use(bodyParser.json())
    .use('/materialize-css',
       express.static(path.join(__dirname, '..', 'node_modules', 'materialize-css', 'dist')))
    .use('/jquery', express.static(path.join(__dirname, '..', 'node_modules', 'jquery', 'dist')))
-   .use('/three', express.static(path.join(__dirname, '..', 'node_modules', 'three', 'build')))
    .use('/api', require('./api/'));
    
-
 
 const indexHtmlPath = path.join(__dirname, '..', 'public', 'index.html');
 
