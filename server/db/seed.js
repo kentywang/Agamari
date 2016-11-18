@@ -1,10 +1,8 @@
 'use strict'
 
 const Promise = require('bluebird');
-const db = require('./_db');
-const User = require('./models/user');
-const Room = require('./models/room');
-const Score = require('./models/score');
+
+const {User, Room, Score,db} = require('./index')
 
 
 let rooms = [

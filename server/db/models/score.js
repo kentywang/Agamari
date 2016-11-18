@@ -6,7 +6,7 @@ const Score = db.define('score', {
     type: Sequelize.INTEGER,
     allowNull: false,
     validate: {
-            len: [0, 100]
+            min: 0
           }
   },
   time: {
@@ -18,6 +18,7 @@ const Score = db.define('score', {
 {
   timestamps: false,
 
-});
+}
+);
 
 module.exports = Score;

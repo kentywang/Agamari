@@ -3,10 +3,6 @@
 
 const api = module.exports = require('express').Router()
 
-// const Room = require('../db/models/room');
-// const Score = require('../db/models/score');
-// const User = require('../db/models/user');
-
-
-
-api.use('/users', require('./users'))
+api.use('/users', require('./userRoutes'))
+api.use('/rooms', require('./roomRoutes'))
+api.use('/scores', require('./scoreRoutes'))

@@ -3,6 +3,7 @@ const Room = require('./models/room');
 const Score = require('./models/score');
 const _db = require('./_db');
 
+
 //ASSOCIATIONS
 User.hasMany(Score);
 Score.belongsTo(User);
@@ -12,4 +13,4 @@ Score.belongsTo(Room);
 
 
 
-module.exports = {_db, User, Room, Score};
+module.exports = {db:_db,User, Room, Score};
