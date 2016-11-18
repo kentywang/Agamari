@@ -11,7 +11,7 @@ class App extends Component {
     super(props);
   }
 
-  componentDidMount = () => {
+  componentDidMount() {
     const socket = io('/');
     socket.on('connect', () => {
       socket.on('message', console.log);
@@ -20,7 +20,7 @@ class App extends Component {
     this.props.receiveSocket(socket);
   }
 
-  render = () => {
+  render() {
     return (
       <div className="row">
         <div className="col s3">
