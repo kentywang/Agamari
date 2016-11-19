@@ -1,7 +1,7 @@
 const { addRoom } = require('./utils');
 const { addUser, removeUser, assignRoom, unassignRoom } = require('./reducers/users');
 
-const { removePlayer } = require('./reducers/gameState');
+const { addPlayer, removePlayer } = require('./reducers/gameState');
 
 const store = require('./store');
 
@@ -32,7 +32,6 @@ const setUpSockets = io => {
     // Log out of other rooms before entering room
     socket.on('room', room => {
       store.dispatch(assignRoom(socket.id, room));
-
       for (let currentRoom of Object.keys(socket.rooms)) socket.leave(currentRoom);
       socket.join(room);
       socket.emit('in_room');

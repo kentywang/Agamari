@@ -33,9 +33,9 @@ export function animate() {
   if ( controls ) {
     controls.update();
   }
-  
+
   // this dispatch happens 60 times a second, updating the local state with player's new info and emitting to server
-  let action = updateLocation(player.getData())
+  let action = updateLocation(player.getPlayer())
   store.dispatch(action);
   store.getState().socket.emit('state_changed', action);
 
@@ -51,7 +51,7 @@ function render() {
 function onWindowResize() {
   camera.aspect = window.innerWidth / window.innerHeight;
   camera.updateProjectionMatrix();
-  
+
   renderer.setSize( window.innerWidth, window.innerHeight );
 }
 

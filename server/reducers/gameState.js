@@ -1,13 +1,13 @@
 
 /*----------  INITIAL STATE  ----------*/
 const initialState = {
-  room1: {color : "blue", players: {}},
-  room2: {color: "green", players: {}}
+  room1: { color : 'blue', players: {}},
+  room2: { color: 'green', players: {}}
 };
 
 /*----------  ACTION TYPES  ----------*/
 const RECEIVE_GAMESTATE = 'RECEIVE_GAMESTATE';
-const UPDATE_COLOR ='UPDATE_COLOR';
+const UPDATE_COLOR = 'UPDATE_COLOR';
 const ADD_PLAYER = 'ADD_PLAYER';
 const UPDATE_LOCATION = 'UPDATE_LOCATION';
 const REMOVE_PLAYER = 'REMOVE_PLAYER';
@@ -23,26 +23,16 @@ const REMOVE_PLAYER = 'REMOVE_PLAYER';
   color
 });
 
- module.exports.addPlayer = ({id, x, y, z, rx, ry, rz}, room) => ({
-  type: ADD_PLAYER, room,
-  id,
-  x,
-  y,
-  z,
-  rx,
-  ry,
-  rz
+ module.exports.addPlayer = (player, room) => ({
+  type: ADD_PLAYER,
+  room,
+  player
 });
 
-module.exports.updateLocation = ({id, x, y, z, rx, ry, rz}, room) => ({
-  type: UPDATE_LOCATION, room,
-  id,
-  x,
-  y,
-  z,
-  rx,
-  ry,
-  rz
+module.exports.updateLocation = (player, room) => ({
+  type: UPDATE_LOCATION,
+  room,
+  player
 });
 
  module.exports.removePlayer = (id, room) => ({
@@ -54,43 +44,28 @@ module.exports.updateLocation = ({id, x, y, z, rx, ry, rz}, room) => ({
 
 /*----------  REDUCER  ----------*/
 module.exports.reducer = (state = initialState, action) => {
-  let room = {}, player = {};
+  let room = {};
   let newState, players;
-      //console.log(action.type)
   switch (action.type) {
-    case RECEIVE_GAMESTATE:  action.state;
-    case UPDATE_COLOR: 
+    case UPDATE_COLOR:
       room = Object.assign({}, state[action.room], {color: action.color});
       newState = Object.assign({}, state);
-      newState[action.room] = room; 
+      newState[action.room] = room;
       return newState;
     case ADD_PLAYER:
-      player = {};
-      player[action.id] = {x: action.x, y: action.y, z: action.z, rx: action.rx, ry: action.ry, rz: action.rz};
-      players = Object.assign({}, state[action.room].players, player);
+      players = Object.assign({}, state[action.room].players, action.player);
       room = Object.assign({}, state[action.room], {players});
       newState = Object.assign({}, state);
       newState[action.room] = room;
-      //console.log(newState)
       return newState;
     case UPDATE_LOCATION:
-      player = {};
-      player[action.id] = {x: action.x, y: action.y, z: action.z, rx: action.rx, ry: action.ry, rz: action.rz};
-      players = Object.assign({}, state[action.room].players, player);
+      players = Object.assign({}, state[action.room].players, action.player);
       room = Object.assign({}, state[action.room], {players});
       newState = Object.assign({}, state);
       newState[action.room] = room;
-      console.log(newState)
       return newState;
+    case RECEIVE_GAMESTATE:
     default: return state;
 
   }
 };
-
-
-
-
-
-
-
-
