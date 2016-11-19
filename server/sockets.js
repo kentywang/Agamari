@@ -1,3 +1,5 @@
+const validRoomNames = ['room1', 'room2'];
+
 const { addRoom } = require('./utils');
 const { addUser, removeUser, assignRoom, unassignRoom } = require('./reducers/users');
 
@@ -30,8 +32,8 @@ const setUpSockets = io => {
         if(currentRoom !== room){
           socket.leave(currentRoom);
         }
-      };
-
+      }
+      io.sockets.in(room).emit('add_player', socket.id);
     var initPos = {
     x: 10,
     y: 0,
@@ -40,10 +42,10 @@ const setUpSockets = io => {
     ry: 0,
     rz: 0
   };
-      
+
       store.dispatch(addPlayer(socket.id, initPos, room));
-      
-      socket.emit('newGameState', store.getState().gameState[room]);
+
+      socket.emit('game_state', store.getState().gameState[room]);
 
       io.sockets.in(room).emit('change_state', addPlayer(socket.id, initPos));
 
@@ -65,8 +67,21 @@ const setUpSockets = io => {
       console.log(store.getState().gameState[room]);
     });
   });
-
-
 };
 
-module.exports = { setUpSockets };
+const broadcastState = (io) => {
+  setInterval(() => {
+    let rooms = Object.keys(io.sockets.adapter.rooms);
+    for (let room of rooms) {
+      // Only enter if room name is in valid room names array
+      if (validRoomNames.indexOf(room) + 1) {
+        let { gameState } = store.getState();
+        if (gameState[room]) {
+          io.sockets.in(room).emit('game_state', gameState[room]);
+        }
+      }
+    }
+  }, (1000 / 60));
+}
+
+module.exports = { setUpSockets, broadcastState };

@@ -36,7 +36,8 @@ export const updateLocation = (id, data) => ({
 export default (state = initialState, action) => {
 let newState, players;
   switch (action.type) {
-    case RECEIVE_GAMESTATE: return action.state;
+    case RECEIVE_GAMESTATE:
+      return action.state;
     case UPDATE_COLOR:
       state.color = action.color;
       return state;

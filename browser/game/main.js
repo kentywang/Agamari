@@ -1,5 +1,5 @@
 const THREE = require('three');
-let scene, camera, canvas, renderer;
+let scene, camera, canvas, renderer, sphere;
 
 import store from '../store';
 import { loadGame, player } from './game';
@@ -21,10 +21,18 @@ export const init = () => {
 
   playerID = store.getState().auth.id;
 
-  loadGame();
 
   // Events
   window.addEventListener( "resize", onWindowResize, false );
+
+  let { color } = store.getState().gameState;
+  var sphere_geometry = new THREE.SphereGeometry( 1 );
+  var sphere_material = new THREE.MeshBasicMaterial( { color });
+  sphere = new THREE.Mesh( sphere_geometry, sphere_material );
+  loadGame();
+
+  scene.add( sphere );
+  console.log(scene);
 }
 
 export function animate() {
@@ -59,4 +67,4 @@ function onWindowResize() {
 }
 
 
-export { scene, camera, canvas, renderer, playerID };
+export { scene, camera, canvas, renderer, playerID, sphere };
