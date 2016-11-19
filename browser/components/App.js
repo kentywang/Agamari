@@ -10,6 +10,8 @@ import { receiveGameState } from '../reducers/gameState';
 import {loadEnvironment} from '../game/game';
 import {receivePlayer} from '../reducers/auth';
 
+import { init, animate } from '../game/main';
+
 class App extends Component {
   constructor (props) {
     super(props);
@@ -29,6 +31,10 @@ class App extends Component {
         store.dispatch(action);
         // setTimeout(()=>loadEnvironment(),4000);
         //alert("hello");
+      });
+      socket.on('in_room', action=> {
+        init();
+        animate();
       });
     });
     this.props.receiveSocket(socket);

@@ -60,9 +60,9 @@ let newState, players;
     case UPDATE_LOCATION:
     	player = {};
     	player[action.id] = {x: action.x, y: action.y, z: action.z, rx: action.rx, ry: action.ry, rz: action.rz};
-    	players = Object.assign({}, state.players, player);
-    	newState = Object.assign({}, state);
-    	newState.players = players;
+    	players = Object.assign({}, state.players);
+      players[action.id] = player;
+    	newState = Object.assign({}, state, players);
     	return newState;
     default: return state;
 
