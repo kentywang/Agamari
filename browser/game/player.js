@@ -3,6 +3,8 @@ const PlayerControls = require('../../public/PlayerControls');
 import { scene, camera, canvas, renderer } from './main';
 import {playerID} from './main';
 
+import store from '../store';
+
 let controls;
 
 export const Player = function( playerID ) {
@@ -12,11 +14,13 @@ export const Player = function( playerID ) {
 
 	var cube_geometry = new THREE.BoxGeometry( 1, 1, 1 );
 	var cube_material = new THREE.MeshBasicMaterial( {color: 0x7777ff, wireframe: false} );
-
 	var scope = this;
 
 	this.init = function() {
 		scope.mesh = new THREE.Mesh( cube_geometry, cube_material );
+		scope.mesh.position.x = store.getState().gameState.players[scope.playerID].x
+		scope.mesh.position.y = store.getState().gameState.players[scope.playerID].y
+		scope.mesh.position.z = store.getState().gameState.players[scope.playerID].z
 		scene.add( scope.mesh );
 		//console.log(scope.playerID)
 		if ( scope.isMainPlayer ) {

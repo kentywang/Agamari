@@ -17,7 +17,7 @@ const setUpSockets = io => {
     socket.on('disconnect', () => {
       console.log(store.getState().users)
       let { room } = store.getState().users[socket.id];
-      store.dispatch(addRoom(removePlayer(socket.id), room));
+      store.dispatch(removePlayer(socket.id, room));
       store.dispatch(removeUser(socket.id));
       console.log(`socket id ${socket.id} has disconnected.`);
     });
@@ -25,10 +25,29 @@ const setUpSockets = io => {
     // Log out of other rooms before entering room
     socket.on('room', room => {
       store.dispatch(assignRoom(socket.id, room));
-      for (let currentRoom of Object.keys(socket.rooms)) socket.leave(currentRoom);
       socket.join(room);
-      socket.emit('in_room');
+      for (let currentRoom of Object.keys(socket.rooms)) {
+        if(currentRoom !== room){
+          socket.leave(currentRoom);
+        }
+      };
+
+    var initPos = {
+    x: 10,
+    y: 0,
+    z: 0,
+    rx: 0,
+    ry: 0,
+    rz: 0
+  };
+      
+      store.dispatch(addPlayer(socket.id, initPos, room));
+      
       socket.emit('newGameState', store.getState().gameState[room]);
+
+      io.sockets.in(room).emit('change_state', addPlayer(socket.id, initPos));
+
+      socket.emit('in_room');
 
       // store.dispatch(addRoom(addPlayer(socket.id), room));
 
