@@ -7,6 +7,8 @@ import Canvas from './Canvas';
 import { receiveSocket } from '../reducers/socket';
 import { receiveGameState } from '../reducers/gameState';
 
+import {loadEnvironment} from '../game/game';
+
 class App extends Component {
   constructor (props) {
     super(props);
@@ -16,19 +18,32 @@ class App extends Component {
     const socket = io('/');
     socket.on('connect', () => {
       socket.on('message', console.log);
-      socket.on('newGameState', state => this.props.receiveGameState(state));
-      socket.on('change_state', action=> store.dispatch(action));
+      socket.on('newGameState', state => {
+        this.props.receiveGameState(state);
+        // loadEnvironment();
+      });
+      socket.on('change_state', action=> {
+        store.dispatch(action);
+        // setTimeout(()=>loadEnvironment(),4000);
+        // console.log("hello");
+      });
     });
     this.props.receiveSocket(socket);
   }
 
+  componentDidUpdate(prevProps) {
+    if(prevProps.gameState !== this.props.gameState){
+      loadEnvironment();
+    }
+  }
+
   render() {
     return (
-      <div className="row">
-        <div className="col s3">
+      <div>
+        <div className="nav-wrapper">
           <ControlPanel />
         </div>
-        <div className="col s9">
+        <div>
           <Canvas />
         </div>
       </div>
@@ -38,7 +53,7 @@ class App extends Component {
 }
 
 
-const mapStateToProps = ({}) => ({});
+const mapStateToProps = ({gameState}) => ({gameState});
 const mapDispatchToProps = dispatch => ({
   receiveSocket: socket => dispatch(receiveSocket(socket)),
   receiveGameState: state => dispatch(receiveGameState(state)),
