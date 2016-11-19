@@ -44,7 +44,7 @@ io.on('connection', function(socket){
     for (let room in socket.rooms) socket.leave(room);
     socket.join(room);
     let state = store.getState();   
-    console.log(state);
+    //console.log(state);
     socket.emit('newGameState', state[room]);
   });
 
@@ -63,7 +63,10 @@ io.on('connection', function(socket){
     }
     socket.broadcast.to(currentRoom).emit('change_state', action);
 
+
+    // server store yet to be updated
     store.dispatch(addRoom(action, currentRoom));    
+    console.log(store.getState())
   });
 
 });

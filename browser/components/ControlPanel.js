@@ -35,8 +35,10 @@ class ControlPanel extends Component {
     return (
       <div>
         <button className="btn" onClick={() => {
+          this.onClick(room1);
           init();
-          animate();}}>Start</button>
+          animate();
+          }}>Start</button>
         <button className="btn" onClick={() => this.onClick(room1)}>Room 1</button>
         <button className="btn" onClick={() => this.onClick(room2)}>Room 2</button>
         <button className="btn" onClick={() => this.logToRoom(room1)}>Log Room 1</button>

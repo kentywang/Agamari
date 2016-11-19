@@ -8,6 +8,7 @@ import { receiveSocket } from '../reducers/socket';
 import { receiveGameState } from '../reducers/gameState';
 
 import {loadEnvironment} from '../game/game';
+import {receivePlayer} from '../reducers/auth';
 
 class App extends Component {
   constructor (props) {
@@ -17,6 +18,8 @@ class App extends Component {
   componentDidMount() {
     const socket = io('/');
     socket.on('connect', () => {
+      store.dispatch(receivePlayer(socket.id));
+
       socket.on('message', console.log);
       socket.on('newGameState', state => {
         this.props.receiveGameState(state);
@@ -25,7 +28,7 @@ class App extends Component {
       socket.on('change_state', action=> {
         store.dispatch(action);
         // setTimeout(()=>loadEnvironment(),4000);
-        // console.log("hello");
+        //alert("hello");
       });
     });
     this.props.receiveSocket(socket);
