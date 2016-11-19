@@ -1,4 +1,5 @@
 const THREE = require('three');
+import store from '../browser/store';
 
 THREE.PlayerControls = function ( camera, player, domElement ) {
 

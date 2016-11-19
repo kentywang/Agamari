@@ -1,8 +1,12 @@
 const THREE = require('three');
 let scene, camera, canvas, renderer;
 
-import { loadGame } from './game';
+import store from '../store';
+import { loadGame, player } from './game';
 import {controls} from './player';
+import {updateLocation} from '../reducers/gameState';
+
+let playerID;
 
 export const init = () => {
   scene = new THREE.Scene();
@@ -14,6 +18,8 @@ export const init = () => {
 
   renderer = new THREE.WebGLRenderer({alpha: true, canvas});
   renderer.setSize( window.innerWidth, window.innerHeight );
+
+  playerID = store.getState().auth.id;
 
   loadGame();
 
@@ -28,6 +34,11 @@ export function animate() {
     controls.update();
   }
   
+  // this dispatch happens 60 times a second, updating the local state with player's new info and emitting to server
+  let action = updateLocation(player.getData())
+  store.dispatch(action);
+  store.getState().socket.emit('state_changed', action);
+
   render();
 }
 
@@ -45,4 +56,4 @@ function onWindowResize() {
 }
 
 
-export { scene, camera, canvas, renderer };
+export { scene, camera, canvas, renderer, playerID };
