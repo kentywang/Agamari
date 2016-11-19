@@ -20,11 +20,21 @@ class App extends Component {
       socket.on('message', console.log);
       socket.on('newGameState', state => {
         this.props.receiveGameState(state);
-        loadEnvironment();
+        // loadEnvironment();
       });
-      socket.on('change_state', action=> store.dispatch(action));
+      socket.on('change_state', action=> {
+        store.dispatch(action);
+        // setTimeout(()=>loadEnvironment(),4000);
+        // console.log("hello");
+      });
     });
     this.props.receiveSocket(socket);
+  }
+
+  componentDidUpdate(prevProps) {
+    if(prevProps.gameState !== this.props.gameState){
+      loadEnvironment();
+    }
   }
 
   render() {
@@ -43,7 +53,7 @@ class App extends Component {
 }
 
 
-const mapStateToProps = ({}) => ({});
+const mapStateToProps = ({gameState}) => ({gameState});
 const mapDispatchToProps = dispatch => ({
   receiveSocket: socket => dispatch(receiveSocket(socket)),
   receiveGameState: state => dispatch(receiveGameState(state)),
