@@ -25,8 +25,12 @@ const setUpSockets = io => {
     // Log out of other rooms before entering room
     socket.on('room', room => {
       store.dispatch(assignRoom(socket.id, room));
-      for (let currentRoom of Object.keys(socket.rooms)) socket.leave(currentRoom);
       socket.join(room);
+      for (let currentRoom of Object.keys(socket.rooms)) {
+        if(currentRoom !== room){
+          socket.leave(currentRoom);
+        }
+      };
 
     var initPos = {
     x: 10,
