@@ -33,12 +33,15 @@ export function animate() {
   if ( controls ) {
     controls.update();
   }
-  
-  // this dispatch happens 60 times a second, updating the local state with player's new info and emitting to server
-  let action = updateLocation(player.getData())
-  store.dispatch(action);
-  store.getState().socket.emit('state_changed', action);
 
+  // this dispatch happens 60 times a second, updating the local state with player's new info and emitting to server
+  let prevData = store.getState().gameState.players[player.playerID];
+  let currData = player.getPlayerData();
+  if (JSON.stringify(prevData) !== JSON.stringify(currData)) {
+    let action = updateLocation(player.playerID, player.getPlayerData());
+    store.dispatch(action);
+    store.getState().socket.emit('state_changed', action);
+  }
   render();
 }
 
@@ -51,7 +54,7 @@ function render() {
 function onWindowResize() {
   camera.aspect = window.innerWidth / window.innerHeight;
   camera.updateProjectionMatrix();
-  
+
   renderer.setSize( window.innerWidth, window.innerHeight );
 }
 

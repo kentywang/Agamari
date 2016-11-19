@@ -47,7 +47,7 @@ export function loadEnvironment() {
 		mesh.rotation.y = other.ry;
 		mesh.rotation.z = other.rz;
 
-		scene.add( mesh );	
+		scene.add( mesh );
 	}
 }
 
@@ -60,7 +60,15 @@ function initMainPlayer() {
 	// 		rotation: {x: 0, y:0, z:0}
 	// 	}
 	// });
-	let action = addPlayer({id: playerID, x: 0, y: 0, z: 0, rx:0, ry: 0, rz: 0})
+  let playerData = {
+    x: 0,
+    y: 0,
+    z: 0,
+    rx: 0,
+    ry: 0,
+    rz: 0
+  };
+	let action = addPlayer(playerID, playerData);
 	store.dispatch(action);
 	store.getState().socket.emit('state_changed', action);
 

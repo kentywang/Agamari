@@ -3,7 +3,7 @@ const initialState = {color: "red", players: {}};
 
 /*----------  ACTION TYPES  ----------*/
 const RECEIVE_GAMESTATE = 'RECEIVE_GAMESTATE';
-const UPDATE_COLOR ='UPDATE_COLOR';
+const UPDATE_COLOR = 'UPDATE_COLOR';
 const ADD_PLAYER = 'ADD_PLAYER';
 const UPDATE_LOCATION = 'UPDATE_LOCATION';
 
@@ -18,53 +18,34 @@ export const updateColor = color => ({
   color
 });
 
-export const addPlayer = ({id, x, y, z, rx, ry, rz}) => ({
+export const addPlayer = (id, data) => ({
   type: ADD_PLAYER,
   id,
-  x,
-  y,
-  z,
-  rx,
-  ry,
-  rz
+  data
 });
 
-export const updateLocation = ({id, x, y, z, rx, ry, rz}) => ({
+export const updateLocation = (id, data) => ({
   type: UPDATE_LOCATION,
   id,
-  x,
-  y,
-  z,
-  rx,
-  ry,
-  rz
+  data
 });
 
 /*----------  THUNK CREATORS  ----------*/
 
 /*----------  REDUCER  ----------*/
 export default (state = initialState, action) => {
-let player = {};
 let newState, players;
-
   switch (action.type) {
     case RECEIVE_GAMESTATE: return action.state;
-    case UPDATE_COLOR: return Object.assign({},state,{color: action.color});
+    case UPDATE_COLOR:
+      state.color = action.color;
+      return state;
     case ADD_PLAYER:
-    	player = {};
-    	player[action.id] = {x: action.x, y: action.y, z: action.z, rx: action.rx, ry: action.ry, rz: action.rz};
-    	players = Object.assign({}, state.players, player);
-    	newState = Object.assign({}, state);
-    	newState.players = players;
-    	return newState;
+      state.players[action.id] = action.data;
+      return state;
     case UPDATE_LOCATION:
-    	player = {};
-    	player[action.id] = {x: action.x, y: action.y, z: action.z, rx: action.rx, ry: action.ry, rz: action.rz};
-    	players = Object.assign({}, state.players);
-      players[action.id] = player;
-    	newState = Object.assign({}, state, players);
-    	return newState;
+      state.players[action.id] = action.data;
+      return state;
     default: return state;
-
   }
 };
