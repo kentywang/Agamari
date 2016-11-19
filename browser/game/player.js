@@ -1,7 +1,7 @@
 const THREE = require('three');
 const PlayerControls = require('../../public/PlayerControls');
 import { scene, camera, canvas, renderer } from './main';
-import {playerID} from './game';
+import {playerID} from './main';
 
 let controls;
 
@@ -18,12 +18,11 @@ export const Player = function( playerID ) {
 	this.init = function() {
 		scope.mesh = new THREE.Mesh( cube_geometry, cube_material );
 		scene.add( scope.mesh );
-
+		//console.log(scope.playerID)
 		if ( scope.isMainPlayer ) {
 			// Give player control of this mesh
 			controls = new THREE.PlayerControls( camera , scope.mesh );
 			controls.init();
-			//console.log("did init")
 		}
 	};
 
@@ -35,6 +34,19 @@ export const Player = function( playerID ) {
 			scope.mesh.rotation.z = rotation.z;
 
 		}
+	};
+
+	// Kenty: I added this method to get a player's positional data
+	this.getData = function() {
+		return(
+			{id: scope.playerID,
+			x: scope.mesh.position.x,
+			y: scope.mesh.position.y,
+			z: scope.mesh.position.z,
+			rx: scope.mesh.rotation.x,
+			ry: scope.mesh.rotation.y,
+			rz: scope.mesh.rotation.z}
+		);
 	};
 };
 
