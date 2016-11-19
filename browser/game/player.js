@@ -20,7 +20,6 @@ export const Player = function( playerID ) {
 		scene.add( scope.mesh );
 		//console.log(scope.playerID)
 		if ( scope.isMainPlayer ) {
-			// Give player control of this mesh
 			controls = new THREE.PlayerControls( camera , scope.mesh );
 			controls.init();
 		}
@@ -37,17 +36,15 @@ export const Player = function( playerID ) {
 	};
 
 	// Kenty: I added this method to get a player's positional data
-	this.getPlayer = function() {
-		let playerObj = {};
-		playerObj[scope.playerID] = {
-			x: scope.mesh.position.x,
-			y: scope.mesh.position.y,
-			z: scope.mesh.position.z,
-			rx: scope.mesh.rotation.x,
-			ry: scope.mesh.rotation.y,
-			rz: scope.mesh.rotation.z
-		}
-		return playerObj;
+	this.getPlayerData = function() {
+		return {
+				x: scope.mesh.position.x,
+				y: scope.mesh.position.y,
+				z: scope.mesh.position.z,
+				rx: scope.mesh.rotation.x,
+				ry: scope.mesh.rotation.y,
+				rz: scope.mesh.rotation.z
+		};
 	};
 };
 

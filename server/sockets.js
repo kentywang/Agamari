@@ -5,13 +5,6 @@ const { addPlayer, removePlayer } = require('./reducers/gameState');
 
 const store = require('./store');
 
-// Given a state change from a player, broadcast to other players and update server game state
-const changeOtherStates = (socket, action) => {
-  let room = Object.keys(socket.rooms)[0];
-  socket.broadcast.to(room).emit('change_state', action);
-  store.dispatch(addRoom(action, room));
-};
-
 const setUpSockets = io => {
   io.on('connection', function(socket){
     // Verify client connect
@@ -36,6 +29,9 @@ const setUpSockets = io => {
       socket.join(room);
       socket.emit('in_room');
       socket.emit('newGameState', store.getState().gameState[room]);
+
+      // store.dispatch(addRoom(addPlayer(socket.id), room));
+
       console.log(store.getState().gameState[room]);
     });
 
@@ -43,8 +39,15 @@ const setUpSockets = io => {
     socket.on('log', room => io.sockets.in(room).emit('message', `hello from ${room}`));
 
     // Relay game state changes and update server state
-    socket.on('state_changed', action => { changeOtherStates(socket, action); });
+    socket.on('state_changed', action => {
+      let room = Object.keys(socket.rooms)[0];
+      store.dispatch(addRoom(action, room));
+      io.sockets.in(room).emit('change_state', action);
+      console.log(store.getState().gameState[room]);
+    });
   });
+
+
 };
 
 module.exports = { setUpSockets };

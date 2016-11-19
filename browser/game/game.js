@@ -60,8 +60,7 @@ function initMainPlayer() {
 	// 		rotation: {x: 0, y:0, z:0}
 	// 	}
 	// });
-  let playerObj = {};
-  playerObj[playerID] = {
+  let playerData = {
     x: 0,
     y: 0,
     z: 0,
@@ -69,7 +68,7 @@ function initMainPlayer() {
     ry: 0,
     rz: 0
   };
-	let action = addPlayer(playerObj)
+	let action = addPlayer(playerID, playerData);
 	store.dispatch(action);
 	store.getState().socket.emit('state_changed', action);
 

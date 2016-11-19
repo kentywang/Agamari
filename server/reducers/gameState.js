@@ -23,16 +23,18 @@ const REMOVE_PLAYER = 'REMOVE_PLAYER';
   color
 });
 
- module.exports.addPlayer = (player, room) => ({
+ module.exports.addPlayer = (id, data, room) => ({
   type: ADD_PLAYER,
-  room,
-  player
+  id,
+  data,
+  room
 });
 
 module.exports.updateLocation = (player, room) => ({
   type: UPDATE_LOCATION,
-  room,
-  player
+  id,
+  data,
+  room
 });
 
  module.exports.removePlayer = (id, room) => ({
@@ -53,17 +55,11 @@ module.exports.reducer = (state = initialState, action) => {
       newState[action.room] = room;
       return newState;
     case ADD_PLAYER:
-      players = Object.assign({}, state[action.room].players, action.player);
-      room = Object.assign({}, state[action.room], {players});
-      newState = Object.assign({}, state);
-      newState[action.room] = room;
-      return newState;
+      state[action.room].players[action.id] = action.data;
+      return state;
     case UPDATE_LOCATION:
-      players = Object.assign({}, state[action.room].players, action.player);
-      room = Object.assign({}, state[action.room], {players});
-      newState = Object.assign({}, state);
-      newState[action.room] = room;
-      return newState;
+      state[action.room].players[action.id] = action.data;
+      return state;
     case RECEIVE_GAMESTATE:
     default: return state;
 

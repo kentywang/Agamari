@@ -4,4 +4,6 @@ import thunk from 'redux-thunk';
 
 import reducer from './reducers';
 
-export default createStore(reducer, applyMiddleware(thunk));
+const store = createStore(reducer, applyMiddleware(thunk));
+window.store = store;
+export default store;

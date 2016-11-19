@@ -35,10 +35,13 @@ export function animate() {
   }
 
   // this dispatch happens 60 times a second, updating the local state with player's new info and emitting to server
-  let action = updateLocation(player.getPlayer())
-  store.dispatch(action);
-  store.getState().socket.emit('state_changed', action);
-
+  let prevData = store.getState().gameState.players[player.playerID];
+  let currData = player.getPlayerData();
+  if (JSON.stringify(prevData) !== JSON.stringify(currData)) {
+    let action = updateLocation(player.playerID, player.getPlayerData());
+    store.dispatch(action);
+    store.getState().socket.emit('state_changed', action);
+  }
   render();
 }
 
