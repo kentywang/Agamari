@@ -11,6 +11,4 @@ Score.belongsTo(User);
 Room.hasMany(Score);
 Score.belongsTo(Room);
 
-
-
-module.exports = {db:_db,User, Room, Score};
+module.exports = {db: _db, User, Room, Score };
