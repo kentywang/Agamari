@@ -33,6 +33,12 @@ export function loadEnvironment() {
 
 	scene.add( sphere );
 
+
+	
+		
+
+
+
 	let players = store.getState().gameState.players;
 
 	for(var other in players){
@@ -43,6 +49,7 @@ export function loadEnvironment() {
 		mesh.position.x = other.x;
 		mesh.position.y = other.y;
 		mesh.position.z = other.z;
+
 		mesh.rotation.x = other.rx;
 		mesh.rotation.y = other.ry;
 		mesh.rotation.z = other.rz;

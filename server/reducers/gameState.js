@@ -80,7 +80,7 @@ module.exports.reducer = (state = initialState, action) => {
       room = Object.assign({}, state[action.room], {players});
       newState = Object.assign({}, state);
       newState[action.room] = room;
-      console.log(newState)
+      //console.log(newState)
       return newState;
     default: return state;
 
