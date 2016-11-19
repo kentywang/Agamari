@@ -15,13 +15,15 @@ import { init, animate } from '../game/main';
 class App extends Component {
   constructor (props) {
     super(props);
+    this.state = {
+      hasJoinedRoom: false
+    };
   }
 
   componentDidMount() {
     const socket = io('/');
     socket.on('connect', () => {
       store.dispatch(receivePlayer(socket.id));
-
       socket.on('message', console.log);
       socket.on('newGameState', state => {
         this.props.receiveGameState(state);
@@ -33,15 +35,20 @@ class App extends Component {
         //alert("hello");
       });
       socket.on('in_room', action=> {
-        init();
-        animate();
+        console.log("has joined room, ", this.state.hasJoinedRoom)
+        if(!this.state.hasJoinedRoom){
+          init();
+          animate();
+          this.setState({hasJoinedRoom: true})
+        }
       });
     });
     this.props.receiveSocket(socket);
   }
 
   componentDidUpdate(prevProps) {
-    if(prevProps.gameState !== this.props.gameState){
+    console.log(prevProps, this.props)
+    if(Object.keys(prevProps.gameState).length && prevProps.gameState !== this.props.gameState){
       loadEnvironment();
     }
   }
