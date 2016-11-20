@@ -6,6 +6,7 @@ const RECEIVE_GAMESTATE = 'RECEIVE_GAMESTATE';
 const UPDATE_COLOR = 'UPDATE_COLOR';
 const ADD_PLAYER = 'ADD_PLAYER';
 const UPDATE_LOCATION = 'UPDATE_LOCATION';
+const REMOVE_PLAYER = 'REMOVE_PLAYER';
 
 /*----------  ACTION CREATORS  ----------*/
 export const receiveGameState = state => ({
@@ -22,6 +23,11 @@ export const addPlayer = (id, data) => ({
   type: ADD_PLAYER,
   id,
   data
+});
+
+export const removePlayer = id => ({
+  type: REMOVE_PLAYER,
+  id
 });
 
 export const updateLocation = (id, data) => ({
@@ -43,6 +49,9 @@ let newState, players;
       return state;
     case ADD_PLAYER:
       state.players[action.id] = action.data;
+      return state;
+    case REMOVE_PLAYER:
+      delete state.players[action.id];
       return state;
     case UPDATE_LOCATION:
       state.players[action.id] = action.data;

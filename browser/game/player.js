@@ -17,11 +17,20 @@ export const Player = function( playerID ) {
 	var scope = this;
 
 	this.init = function() {
+		// console.log()
+		let playerData = store.getState().gameState.players[scope.playerID];
+		console.log("player data:    ", playerData);
 		scope.mesh = new THREE.Mesh( cube_geometry, cube_material );
-		scope.mesh.position.x = store.getState().gameState.players[scope.playerID].x
-		scope.mesh.position.y = store.getState().gameState.players[scope.playerID].y
-		scope.mesh.position.z = store.getState().gameState.players[scope.playerID].z
+
+		scope.mesh.name = playerID;
+
+		scope.mesh.position.x = playerData.x;
+		scope.mesh.position.y = playerData.y;
+		scope.mesh.position.z = playerData.z;
+
+		console.log("scope mesh", scope.mesh)
 		scene.add( scope.mesh );
+
 		//console.log(scope.playerID)
 		if ( scope.isMainPlayer ) {
 			controls = new THREE.PlayerControls( camera , scope.mesh );
