@@ -38,14 +38,17 @@ export function loadEnvironment() {
 
 	let { auth } = store.getState();
   let { color, players } = store.getState().gameState;
-  sphere.material.color = new THREE.Color(color);
+  // Kenty: added if statement below to get around undefined sphere error
+  if (sphere) sphere.material.color = new THREE.Color(color);
 
   // scene.add( sphere );
   let currentPlayer;
   let data;
 
+  // set location and rotation for other players (could use player.setOrientation instead)
   for (let player in players){
-  	if(player != auth.id){
+  	// Kenty: added '&& scene.getobj' to if statement below to get around undefined error
+  	if(player != auth.id && scene.getObjectByName(player)){
   		//console.log("player is this:       ", player)
   		currentPlayer = scene.getObjectByName(player);
   		data = players[player];
@@ -112,9 +115,7 @@ function initMainPlayer() {
 	// });
 
 
-	player = new Player( playerID );
-	//console.log(player)
-	player.isMainPlayer = true;
+	player = new Player( playerID, true);
 	player.init();
 }
 

@@ -1,10 +1,11 @@
 const THREE = require('three');
 import store from '../browser/store';
 
-THREE.PlayerControls = function ( camera, player, domElement ) {
+THREE.PlayerControls = function ( camera, player, cannonMesh, domElement ) {
 
 	this.camera = camera;
 	this.player = player;
+	this.cannonMesh = cannonMesh;
 	this.domElement = ( domElement !== undefined ) ? domElement : document;
 
 	// API
@@ -226,8 +227,9 @@ THREE.PlayerControls = function ( camera, player, domElement ) {
 
 	        // up arrow or 'w' - move forward
 
-	        this.player.position.x -= this.moveSpeed * Math.sin( this.player.rotation.y );
-	        this.player.position.z -= this.moveSpeed * Math.cos( this.player.rotation.y );
+	        this.cannonMesh.position.x -= 0.2;
+	        // this.player.position.x -= this.moveSpeed * Math.sin( this.player.rotation.y );
+	        // this.player.position.z -= this.moveSpeed * Math.cos( this.player.rotation.y );
 
 	        this.camera.position.x -= this.moveSpeed * Math.sin( this.player.rotation.y );
 	        this.camera.position.z -= this.moveSpeed * Math.cos( this.player.rotation.y );
