@@ -27,6 +27,7 @@ export const Player = function( playerID ) {
 			controls = new THREE.PlayerControls( camera , scope.mesh );
 			controls.init();
 		}
+
 	};
 
 	this.setOrientation = function( position, rotation ) {

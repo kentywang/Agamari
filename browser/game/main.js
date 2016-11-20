@@ -23,8 +23,53 @@ export const init = () => {
 
   loadGame();
 
+
+
+
+  const bot_geometry = new THREE.BoxGeometry(1,1,1);
+  const bot_material = new THREE.MeshBasicMaterial( {color: 0x7777ff, wireframe: false} );
+  const bot = new THREE.Mesh( bot_geometry, bot_material );
+
+  
+
+  bot.position.x = 1;
+  bot.position.y = 0;
+  bot.position.z = 1;
+  scene.add(bot);
+
+  //create random directions for bot 
+    let reverseDirectionX;
+    let reverseDirectionY;
+    let direction;
+    let counter = 0;  
+    function animate() {
+      //counter 300 lopps then change direction
+          if(counter%300===0){
+            reverseDirectionX = Math.floor(Math.random()*2) == 1 ? 1 : -1; 
+            reverseDirectionY = Math.floor(Math.random()*2) == 1 ? 1 : -1; 
+
+            direction =  new THREE.Vector3(0.1*reverseDirectionX, 0, 0.2*reverseDirectionY); // amount to move per frame
+            //counter=0;
+          }
+           console.log(direction);
+          bot.position.add(direction); // add to position
+          requestAnimationFrame(animate); // keep looping
+          counter++
+        }
+  requestAnimationFrame(animate);
+
+
+
+
   // Events
   window.addEventListener( "resize", onWindowResize, false );
+
+
+
+
+
+
+
 }
 
 export function animate() {
