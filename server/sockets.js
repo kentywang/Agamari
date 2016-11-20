@@ -80,7 +80,7 @@ const setUpSockets = io => {
 
 const broadcastState = (io) => {
   setInterval(() => {
-    console.log(store.getState())
+    //console.log(store.getState())
 
 
     let rooms = Object.keys(io.sockets.adapter.rooms);

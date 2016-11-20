@@ -52,9 +52,9 @@ export function loadEnvironment() {
   		currentPlayer.position.x = data.x;
   		currentPlayer.position.y = data.y;
   		currentPlayer.position.z = data.z;
-  		currentPlayer.rotation.rx = data.rx;
-  		currentPlayer.rotation.ry = data.ry;
-  		currentPlayer.rotation.rz = data.rz;
+  		currentPlayer.rotation.x = data.rx;
+  		currentPlayer.rotation.y = data.ry;
+  		currentPlayer.rotation.z = data.rz;
   	}
   }
 

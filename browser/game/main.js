@@ -71,9 +71,11 @@ export const init = () => {
 
 
   let { color } = store.getState().gameState;
-  var sphere_geometry = new THREE.SphereGeometry( 1 );
+  var sphere_geometry = new THREE.PlaneGeometry( 100,100 );
   var sphere_material = new THREE.MeshBasicMaterial( { color });
   sphere = new THREE.Mesh( sphere_geometry, sphere_material );
+  sphere.rotation.set(-Math.PI/2, Math.PI/2000, Math.PI); 
+  //sphere.position.set(0,0,0);
   loadGame();
 
   scene.add( sphere );

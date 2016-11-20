@@ -17,9 +17,9 @@ export const Player = function( playerID ) {
 	var scope = this;
 
 	this.init = function() {
-		// console.log()
 		let playerData = store.getState().gameState.players[scope.playerID];
-		console.log("player data:    ", playerData);
+		console.log(playerData)
+		//console.log("player data:    ", playerData);
 		scope.mesh = new THREE.Mesh( cube_geometry, cube_material );
 
 		scope.mesh.name = playerID;
@@ -28,7 +28,11 @@ export const Player = function( playerID ) {
 		scope.mesh.position.y = playerData.y;
 		scope.mesh.position.z = playerData.z;
 
-		console.log("scope mesh", scope.mesh)
+		scope.mesh.rotation.x = playerData.rx;
+		scope.mesh.rotation.y = playerData.ry;
+		scope.mesh.rotation.z = playerData.rz;
+
+		//console.log("scope mesh", scope.mesh)
 		scene.add( scope.mesh );
 
 		//console.log(scope.playerID)

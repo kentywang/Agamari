@@ -39,7 +39,7 @@ class App extends Component {
         //alert("hello");
       });
       socket.on('in_room', action=> {
-        console.log("has joined room, ", this.state.hasJoinedRoom)
+       // console.log("has joined room, ", this.state.hasJoinedRoom)
         if(!this.state.hasJoinedRoom){
           init();
           animate();
@@ -48,7 +48,7 @@ class App extends Component {
       });
 
       socket.on('add_player', id => {
-        console.log("id of player", id)
+       // console.log("id of player", id)
         if(id != this.props.auth.id){
           let player = new Player(id);
           player.init();
