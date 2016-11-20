@@ -14,11 +14,11 @@ const loadGame = () => {
 	loadEnvironment();
 	// load the player
 	initMainPlayer();
-  console.log('sphere', sphere);
-  console.log('scene', scene);
-  console.log('camera', camera);
-  console.log('canvas', canvas);
-  console.log('renderer', renderer);
+  // console.log('sphere', sphere);
+  // console.log('scene', scene);
+  // console.log('camera', camera);
+  // console.log('canvas', canvas);
+  // console.log('renderer', renderer);
 	//listenToOtherPlayers();
 
 	window.onunload = function() {
@@ -36,12 +36,27 @@ export function loadEnvironment() {
 	// var sphere_material = new THREE.MeshBasicMaterial( { color });
 	// var sphere = new THREE.Mesh( sphere_geometry, sphere_material );
 
-
-  let { color } = store.getState().gameState;
+	let { auth } = store.getState();
+  let { color, players } = store.getState().gameState;
   sphere.material.color = new THREE.Color(color);
 
   // scene.add( sphere );
+  let currentPlayer;
+  let data;
 
+  for (let player in players){
+  	if(player != auth.id){
+  		//console.log("player is this:       ", player)
+  		currentPlayer = scene.getObjectByName(player);
+  		data = players[player];
+  		currentPlayer.position.x = data.x;
+  		currentPlayer.position.y = data.y;
+  		currentPlayer.position.z = data.z;
+  		currentPlayer.rotation.rx = data.rx;
+  		currentPlayer.rotation.ry = data.ry;
+  		currentPlayer.rotation.rz = data.rz;
+  	}
+  }
 
 	// for(var other in players){
 	// 	var cube_geometry = new THREE.BoxGeometry( 1, 1, 1 );

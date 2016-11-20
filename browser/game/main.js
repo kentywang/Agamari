@@ -57,11 +57,18 @@ export const init = () => {
   //       }
   // requestAnimationFrame(animate);
 
+  let { auth } = store.getState();
+  let { players } = store.getState().gameState;
 
+  let newPlayer;
 
+  for (let player in players){
+    if(player != auth.id){
+          newPlayer = new Player(player);
+          newPlayer.init();
+    }
+  }
 
-  // Events
-  window.addEventListener( "resize", onWindowResize, false );
 
   let { color } = store.getState().gameState;
   var sphere_geometry = new THREE.SphereGeometry( 1 );
@@ -70,7 +77,11 @@ export const init = () => {
   loadGame();
 
   scene.add( sphere );
-  console.log(scene);
+  //console.log(scene);
+
+  // Events
+  window.addEventListener( "resize", onWindowResize, false );
+
 }
 
 export function animate() {
