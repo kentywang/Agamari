@@ -1,4 +1,5 @@
 const THREE = require('three');
+const CANNON = require('./cannon.min.js');
 import store from '../browser/store';
 
 THREE.PlayerControls = function ( camera, player, cannonMesh, domElement ) {
@@ -181,8 +182,8 @@ THREE.PlayerControls = function ( camera, player, cannonMesh, domElement ) {
 
 		if ( this.autoRotate ) {
 
-			this.camera.position.x += this.autoRotateSpeed * ( ( this.player.position.x + 8 * Math.sin( this.player.rotation.y ) ) - this.camera.position.x );
-			this.camera.position.z += this.autoRotateSpeed * ( ( this.player.position.z + 8 * Math.cos( this.player.rotation.y ) ) - this.camera.position.z );
+			// this.camera.position.x += this.autoRotateSpeed * ( ( this.player.position.x + 8 * Math.sin( this.player.rotation.y ) ) - this.camera.position.x );
+			// this.camera.position.z += this.autoRotateSpeed * ( ( this.player.position.z + 8 * Math.cos( this.player.rotation.y ) ) - this.camera.position.z );
 
 		} else {
 
@@ -227,12 +228,16 @@ THREE.PlayerControls = function ( camera, player, cannonMesh, domElement ) {
 
 	        // up arrow or 'w' - move forward
 
-	        this.cannonMesh.position.x -= 0.2;
+	        var localPoint = new CANNON.Vec3(0,0,100);
+            var impulse = new CANNON.Vec3(0,-50 * (1/60),0);
+            this.cannonMesh.applyImpulse(impulse,localPoint);
+
+		// this.cannonMesh.position.y -= .20;
 	        // this.player.position.x -= this.moveSpeed * Math.sin( this.player.rotation.y );
 	        // this.player.position.z -= this.moveSpeed * Math.cos( this.player.rotation.y );
 
-	        this.camera.position.x -= this.moveSpeed * Math.sin( this.player.rotation.y );
-	        this.camera.position.z -= this.moveSpeed * Math.cos( this.player.rotation.y );
+	        // this.camera.position.x -= this.moveSpeed * Math.sin( this.player.rotation.y );
+	        // this.camera.position.z -= this.moveSpeed * Math.cos( this.player.rotation.y );
 
 	    }
 
@@ -241,11 +246,15 @@ THREE.PlayerControls = function ( camera, player, cannonMesh, domElement ) {
 	        // down arrow or 's' - move backward
 	        playerIsMoving = true;
 
-	        this.player.position.x += this.moveSpeed * Math.sin( this.player.rotation.y );
-	        this.player.position.z += this.moveSpeed * Math.cos( this.player.rotation.y );
 
-	        this.camera.position.x += this.moveSpeed * Math.sin( this.player.rotation.y );
-	        this.camera.position.z += this.moveSpeed * Math.cos( this.player.rotation.y );
+               var localPoint = new CANNON.Vec3(0,0,100);
+            var impulse = new CANNON.Vec3(0,50 * (1/60),0);
+            this.cannonMesh.applyImpulse(impulse,localPoint);
+	        // this.player.position.x += this.moveSpeed * Math.sin( this.player.rotation.y );
+	        // this.player.position.z += this.moveSpeed * Math.cos( this.player.rotation.y );
+
+	        // this.camera.position.x += this.moveSpeed * Math.sin( this.player.rotation.y );
+	        // this.camera.position.z += this.moveSpeed * Math.cos( this.player.rotation.y );
 
 	    }
 
@@ -254,7 +263,11 @@ THREE.PlayerControls = function ( camera, player, cannonMesh, domElement ) {
 	        // left arrow or 'a' - rotate left
 	        playerIsMoving = true;
 
-	        this.player.rotation.y += this.turnSpeed;
+	        var localPoint = new CANNON.Vec3(0,0,100);
+            var impulse = new CANNON.Vec3(-50 * (1/60),0,0);
+            this.cannonMesh.applyImpulse(impulse,localPoint);
+
+	        //this.player.rotation.y += this.turnSpeed;
 
 	    }
 
@@ -263,7 +276,10 @@ THREE.PlayerControls = function ( camera, player, cannonMesh, domElement ) {
 	        // right arrow or 'd' - rotate right
 	        playerIsMoving = true;
 
-	        this.player.rotation.y -= this.turnSpeed;
+	        var localPoint = new CANNON.Vec3(0,0,100);
+            var impulse = new CANNON.Vec3(50 * (1/60),0,0);
+            this.cannonMesh.applyImpulse(impulse,localPoint);
+	        //this.player.rotation.y -= this.turnSpeed;
 
 	    }
 	    if ( keyState[81] ) {

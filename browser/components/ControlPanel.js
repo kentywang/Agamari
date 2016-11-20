@@ -6,6 +6,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import store from '../store';
 import {updateColor} from '../reducers/gameState';
+//import {myColors} from '../game/main';
 
 class ControlPanel extends Component {
   constructor(props) {
@@ -36,8 +37,8 @@ class ControlPanel extends Component {
         <button className="btn" onClick={() => this.onClick(room2)}>Room 2</button>
         <button className="btn" onClick={() => this.logToRoom(room1)}>Log Room 1</button>
         <button className="btn" onClick={() => this.logToRoom(room2)}>Log Room 2</button>
-        <button className="btn" onClick={() => this.changeState("yellow")}>Yellow</button>
-        <button className="btn" onClick={() => this.changeState("purple")}>Purple</button>
+        <button className="btn" onClick={() => this.changeState("red")}>Red</button>
+        <button className="btn" onClick={() => this.changeState("teal")}>Teal</button>
       </div>
       );
 

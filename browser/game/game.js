@@ -5,7 +5,7 @@ import {addPlayer} from '../reducers/gameState';
 import { scene, camera, canvas, renderer, sphere } from './main';
 import {Player} from './player';
 import {playerID} from './main';
-
+import {myColors} from '../game/main';
 
 let player;
 
@@ -39,7 +39,7 @@ export function loadEnvironment() {
 	let { auth } = store.getState();
   let { color, players } = store.getState().gameState;
   // Kenty: added if statement below to get around undefined sphere error
-  if (sphere) sphere.material.color = new THREE.Color(color);
+  if (sphere) sphere.material.color = new THREE.Color(myColors[color]);
 
   // scene.add( sphere );
   let currentPlayer;

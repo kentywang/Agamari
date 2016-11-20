@@ -40,9 +40,9 @@ const setUpSockets = io => {
         }
       }
       var initPos = {
-      x: 0,
+      x: 10,
       y: 10,
-      z: 0,
+      z: 10,
       rx: 0,
       ry: 0,
       rz: 0

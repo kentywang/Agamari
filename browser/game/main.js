@@ -1,7 +1,7 @@
 const THREE = require('three');
 const CANNON = require('../../public/cannon.min.js');
 let scene, camera, canvas, renderer, sphere;
-let world;
+let world, groundMaterial;
 
 import store from '../store';
 import { loadGame, player } from './game';
@@ -9,6 +9,15 @@ import {controls} from './player';
 import {updateLocation} from '../reducers/gameState';
 
 let playerID;
+
+// color pallet
+var myColors = {
+  brown:"#666547",
+  red:"#fb2e01",
+  teal:"#6fcb9f",
+  pale:"#ffe28a",
+  yellow:"#fffeb3"
+};
 
 // variables for physics
 var time;
@@ -20,18 +29,22 @@ var maxSubSteps = 3;
 export const init = () => {
   // initialize THREE scene, camera, renderer
   scene = new THREE.Scene();
-  camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
+  camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 1, 500 );
   camera.position.z = 5;
   canvas = document.getElementById('canvas');
   renderer = new THREE.WebGLRenderer({alpha: true, canvas});
   renderer.setSize( window.innerWidth, window.innerHeight );
+
+  // shading
+  renderer.shadowMapEnabled = true;
+  renderer.shadowMapSoft = true;
 
   // store set playerID to socket.id from store
   playerID = store.getState().auth.id;
 
   // initialize Cannon world
   world = new CANNON.World();
-  world.gravity.set(0,0,-10);
+  world.gravity.set(-3,-3,-10);
   world.broadphase = new CANNON.NaiveBroadphase();
 
 
@@ -83,19 +96,96 @@ export const init = () => {
     }
   }
 
-  // create THREE plane
+
+  // define contact friction between 
+  // Adjust constraint equation parameters for ground/ground contact
+  groundMaterial = new CANNON.Material("groundMaterial");
+  var ground_ground_cm = new CANNON.ContactMaterial(groundMaterial, groundMaterial, {
+      friction: .9,
+      restitution: 0.2,
+      contactEquationStiffness: 1e8,
+      contactEquationRelaxation: 3,
+      frictionEquationStiffness: 1e8,
+      frictionEquationRegularizationTime: 3,
+  });
+  // Add contact material to the world
+  world.addContactMaterial(ground_ground_cm);
+
+  // create THREE planet
+  // let { color } = store.getState().gameState;
+  // var sphere_geometry = new THREE.SphereGeometry( 30, 32, 32 );
+  // var sphere_material = new THREE.MeshPhongMaterial( { color: myColors['red'] , shading:THREE.FlatShading});
+  // sphere = new THREE.Mesh( sphere_geometry, sphere_material );
+  // sphere.receiveShadow = true;
   let { color } = store.getState().gameState;
-  var sphere_geometry = new THREE.PlaneGeometry( 100,100 );
-  var sphere_material = new THREE.MeshBasicMaterial( { color });
+  var sphere_geometry = new THREE.PlaneGeometry( 20, 20 );
+  var sphere_material = new THREE.MeshPhongMaterial( { color: myColors['red'] , shading:THREE.FlatShading});
   sphere = new THREE.Mesh( sphere_geometry, sphere_material );
+  sphere.receiveShadow = true;
   sphere.rotation.set(-Math.PI/2, Math.PI/2000, Math.PI); 
 
   scene.add( sphere );
   
-  // create Cannon plane
+  // create Cannon planet
+  // var groundShape = new CANNON.Sphere(30);
+  // var groundBody = new CANNON.Body({ mass: 0, material: groundMaterial, shape: groundShape });
+  // world.add(groundBody);
   var groundShape = new CANNON.Plane();
-  var groundBody = new CANNON.Body({ mass: 0, shape: groundShape });
+  var groundBody = new CANNON.Body({ mass: 0, material: groundMaterial, shape: groundShape });
   world.add(groundBody);
+
+  // add some fog
+  scene.fog = new THREE.Fog(myColors['pale'], 50, 950);
+
+  // create ground so I know which direction is up...
+  // var arst = new THREE.PlaneGeometry( 1000,1000 );
+  // var aarst = new THREE.MeshBasicMaterial( {color: myColors['pale']});
+  // var corgi = new THREE.Mesh( arst, aarst );
+  // corgi.position.set(0,-100,0)
+  // corgi.rotation.set(-Math.PI/2, Math.PI/2000, Math.PI); 
+  // scene.add( corgi );
+
+
+  // add lighting
+  var hemisphereLight, shadowLight;
+
+  // A hemisphere light is a gradient colored light; 
+  // the first parameter is the sky color, the second parameter is the ground color, 
+  // the third parameter is the intensity of the light
+  hemisphereLight = new THREE.HemisphereLight(0xaaaaaa,0x000000, .9)
+  
+  // A directional light shines from a specific direction. 
+  // It acts like the sun, that means that all the rays produced are parallel. 
+  shadowLight = new THREE.DirectionalLight(0xffffff, .9);
+
+  // Set the direction of the light  
+  shadowLight.position.set(0, 60, 20);
+  
+  // Allow shadow casting 
+  shadowLight.castShadow = true;
+
+  // define the visible area of the projected shadow
+  shadowLight.shadow.camera.left = -400;
+  shadowLight.shadow.camera.right = 400;
+  shadowLight.shadow.camera.top = 400;
+  shadowLight.shadow.camera.bottom = -400;
+  shadowLight.shadow.camera.near = 1;
+  shadowLight.shadow.camera.far = 1000;
+
+  // define the resolution of the shadow; the higher the better, 
+  // but also the more expensive and less performant
+  shadowLight.shadow.mapSize.width = 2048;
+  shadowLight.shadow.mapSize.height = 2048;
+  
+  // to activate the lights, just add them to the scene
+  scene.add(hemisphereLight);  
+  scene.add(shadowLight);
+
+  // an ambient light modifies the global color of a scene and makes the shadows softer
+var ambientLight = new THREE.AmbientLight(0xdc8874, .5);
+scene.add(ambientLight);
+
+
 
 
 
@@ -117,13 +207,13 @@ export function animate() {
   }
 
   // sync THREE mesh with Cannon mesh
-  // Cannon's z seems to by Three's y, and vice versa
+  // Cannon's yz are swapped, and w is flipped
   player.mesh.position.x = player.cannonMesh.position.x;
   player.mesh.position.z = player.cannonMesh.position.y;
   player.mesh.position.y = player.cannonMesh.position.z;
-  player.mesh.quaternion.x = player.cannonMesh.quaternion.x;
-  player.mesh.quaternion.y = player.cannonMesh.quaternion.y;
-  player.mesh.quaternion.z = player.cannonMesh.quaternion.z;
+  player.mesh.quaternion.x = -player.cannonMesh.quaternion.x;
+  player.mesh.quaternion.z = -player.cannonMesh.quaternion.y;
+  player.mesh.quaternion.y = -player.cannonMesh.quaternion.z;
   player.mesh.quaternion.w = player.cannonMesh.quaternion.w;
   //console.log(player.cannonMesh.position, player.cannonMesh.quaternion)
 
@@ -161,4 +251,4 @@ function onWindowResize() {
 }
 
 
-export { scene, camera, canvas, renderer, playerID, sphere, world };
+export { scene, camera, canvas, renderer, playerID, sphere, world, groundMaterial, myColors };
