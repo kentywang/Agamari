@@ -6,6 +6,7 @@ import { scene, camera, canvas, renderer, sphere } from './main';
 import {Player} from './player';
 import {playerID} from './main';
 
+
 let player;
 
 const loadGame = () => {
@@ -54,8 +55,35 @@ export function loadEnvironment() {
 	// 	mesh.rotation.y = other.ry;
 	// 	mesh.rotation.z = other.rz;
 
-	// 	scene.add( mesh );
-	// }
+// <<<<<<< HEAD
+// 	// 	scene.add( mesh );
+// 	// }
+// =======
+// 		scene.add( mesh );
+// 	}
+
+// 	const food_sphere_geometry = new THREE.SphereGeometry( 0.3 );
+// 	const food_sphere_material = new THREE.MeshBasicMaterial( {color: 0x66669, wireframe: false} );
+
+// 	let gameBorderPosition = 100;
+
+// 	for (var i = 0; i < 10; i++) {
+// 		const food = new THREE.Mesh( food_sphere_geometry, food_sphere_material );
+
+// 		let xPostion = Math.floor(Math.random()*gameBorderPosition);
+// 		xPostion *= Math.floor(Math.random()*2) == 1 ? 1 : -1;
+
+// 		let zPostion = Math.floor(Math.random()*gameBorderPosition);
+// 		zPostion *= Math.floor(Math.random()*2) == 1 ? 1 : -1;
+
+// 		food.position.x = xPostion;
+// 		food.position.y = 0;
+// 		food.position.z = zPostion;
+// 		scene.add( food );
+// 	}
+
+
+// >>>>>>> dddb3b4bc8bce0a3c1863a1cab943c57ea610854
 }
 
 function initMainPlayer() {
