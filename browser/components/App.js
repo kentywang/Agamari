@@ -25,7 +25,7 @@ class App extends Component {
     socket.on('connect', () => {
       store.dispatch(receivePlayer(socket.id));
       socket.on('message', console.log);
-      socket.on('newGameState', state => {
+      socket.on('game_state', state => {
         this.props.receiveGameState(state);
         // loadEnvironment();
       });
@@ -42,12 +42,16 @@ class App extends Component {
           this.setState({hasJoinedRoom: true})
         }
       });
+
+      socket.on('player_added', id => {
+        let player = new Player(id);
+        player.init();
+      })
     });
     this.props.receiveSocket(socket);
   }
 
   componentDidUpdate(prevProps) {
-    console.log(prevProps, this.props)
     if(Object.keys(prevProps.gameState).length && prevProps.gameState !== this.props.gameState){
       loadEnvironment();
     }

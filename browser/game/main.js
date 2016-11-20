@@ -1,5 +1,5 @@
 const THREE = require('three');
-let scene, camera, canvas, renderer;
+let scene, camera, canvas, renderer, sphere;
 
 import store from '../store';
 import { loadGame, player } from './game';
@@ -21,42 +21,41 @@ export const init = () => {
 
   playerID = store.getState().auth.id;
 
-  loadGame();
 
 
 
 
-  const bot_geometry = new THREE.BoxGeometry(1,1,1);
-  const bot_material = new THREE.MeshBasicMaterial( {color: 0x7777ff, wireframe: false} );
-  const bot = new THREE.Mesh( bot_geometry, bot_material );
+  // const bot_geometry = new THREE.BoxGeometry(1,1,1);
+  // const bot_material = new THREE.MeshBasicMaterial( {color: 0x7777ff, wireframe: false} );
+  // const bot = new THREE.Mesh( bot_geometry, bot_material );
 
-  
 
-  bot.position.x = 1;
-  bot.position.y = 0;
-  bot.position.z = 1;
-  scene.add(bot);
 
-  //create random directions for bot 
-    let reverseDirectionX;
-    let reverseDirectionY;
-    let direction;
-    let counter = 0;  
-    function animate() {
-      //counter 300 lopps then change direction
-          if(counter%300===0){
-            reverseDirectionX = Math.floor(Math.random()*2) == 1 ? 1 : -1; 
-            reverseDirectionY = Math.floor(Math.random()*2) == 1 ? 1 : -1; 
+  // bot.position.x = 1;
+  // bot.position.y = 0;
+  // bot.position.z = 1;
+  // scene.add(bot);
 
-            direction =  new THREE.Vector3(0.1*reverseDirectionX, 0, 0.2*reverseDirectionY); // amount to move per frame
-            //counter=0;
-          }
-           console.log(direction);
-          bot.position.add(direction); // add to position
-          requestAnimationFrame(animate); // keep looping
-          counter++
-        }
-  requestAnimationFrame(animate);
+  // //create random directions for bot
+  //   let reverseDirectionX;
+  //   let reverseDirectionY;
+  //   let direction;
+  //   let counter = 0;
+  //   function animate() {
+  //     //counter 300 lopps then change direction
+  //         if(counter%300===0){
+  //           reverseDirectionX = Math.floor(Math.random()*2) == 1 ? 1 : -1;
+  //           reverseDirectionY = Math.floor(Math.random()*2) == 1 ? 1 : -1;
+
+  //           direction =  new THREE.Vector3(0.1*reverseDirectionX, 0, 0.2*reverseDirectionY); // amount to move per frame
+  //           //counter=0;
+  //         }
+  //          console.log(direction);
+  //         bot.position.add(direction); // add to position
+  //         requestAnimationFrame(animate); // keep looping
+  //         counter++
+  //       }
+  // requestAnimationFrame(animate);
 
 
 
@@ -64,12 +63,14 @@ export const init = () => {
   // Events
   window.addEventListener( "resize", onWindowResize, false );
 
+  let { color } = store.getState().gameState;
+  var sphere_geometry = new THREE.SphereGeometry( 1 );
+  var sphere_material = new THREE.MeshBasicMaterial( { color });
+  sphere = new THREE.Mesh( sphere_geometry, sphere_material );
+  loadGame();
 
-
-
-
-
-
+  scene.add( sphere );
+  console.log(scene);
 }
 
 export function animate() {
@@ -104,4 +105,4 @@ function onWindowResize() {
 }
 
 
-export { scene, camera, canvas, renderer, playerID };
+export { scene, camera, canvas, renderer, playerID, sphere };
