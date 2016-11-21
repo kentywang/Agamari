@@ -7,6 +7,15 @@ const { User, Room, Score, db } = require('./index');
 
 let rooms = [
     {
+      name: 'room1'
+    },
+    {
+      name: 'room2'
+    },
+    {
+      name: 'room3'
+    },
+    {
       name: 'World1'
     },
     {
@@ -18,21 +27,57 @@ let rooms = [
   ];
 
  let scores = [
-    {
-      value: 10,
-      time: new Date()
-    },
-    {
-      value: 50,
-      time: new Date()
-    },
-    {
-      value: 90,
-      time: new Date()
-    }
+    // {
+    //   value: 10,
+    //   time: new Date()
+    // },
+    // {
+    //   value: 50,
+    //   time: new Date()
+    // },
+    // {
+    //   value: 90,
+    //   time: new Date()
+    // }
   ];
 
  let users = [
+    {
+      email: 'player1@fullstack.com',
+      password: '1234',
+      admin: false,
+      username: 'player1'
+    },
+    {
+      email: 'player2@fullstack.com',
+      password: '1234',
+      admin: false,
+      username: 'player2'
+    },
+    {
+      email: 'player3@fullstack.com',
+      password: '1234',
+      admin: false,
+      username: 'player3'
+    },
+    {
+      email: 'player4@fullstack.com',
+      password: '1234',
+      admin: false,
+      username: 'player4'
+    },
+    {
+      email: 'player5@fullstack.com',
+      password: '1234',
+      admin: false,
+      username: 'player5'
+    },
+    {
+      email: 'player6@fullstack.com',
+      password: '1234',
+      admin: false,
+      username: 'player6'
+    },
     {
       email: 'dan@fullstack.com',
       password: 'diggitydan',
@@ -51,7 +96,6 @@ let rooms = [
       admin: false,
       username: 'joe'
     }
-
     ];
 
 db.sync({force: true})

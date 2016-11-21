@@ -21,6 +21,9 @@ broadcastState(io);
 // Middleware and routers
 require('./middleware').applyMiddleware(app);
 
+// DB Routines
+require('./routines')();
+
 // Index path
 const indexHtmlPath = path.join(__dirname, '..', 'public', 'index.html');
 app.get('/', (req, res, next) => res.sendFile(indexHtmlPath));
