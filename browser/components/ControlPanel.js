@@ -37,8 +37,8 @@ class ControlPanel extends Component {
         <button className="btn" onClick={() => this.onClick(room2)}>Room 2</button>
         <button className="btn" onClick={() => this.logToRoom(room1)}>Log Room 1</button>
         <button className="btn" onClick={() => this.logToRoom(room2)}>Log Room 2</button>
-        <button className="btn" onClick={() => this.changeState("red")}>Red</button>
-        <button className="btn" onClick={() => this.changeState("teal")}>Teal</button>
+        <button className="btn" onClick={() => this.changeState("green")}>Green</button>
+        <button className="btn" onClick={() => this.changeState("pink")}>Pink</button>
       </div>
       );
 

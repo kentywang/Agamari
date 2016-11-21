@@ -19,14 +19,14 @@ export const Player = function( playerID, isMainPlayer ) {
 	var scope = this;
 
 	// create THREE box
-	var cube_geometry = new THREE.SphereGeometry( 1, 6, 6 );
-	var cube_material = new THREE.MeshPhongMaterial( {color: myColors["brown"], shading:THREE.FlatShading} );
+	var cube_geometry = new THREE.TetrahedronGeometry( 10, 2 );
+	var cube_material = new THREE.MeshPhongMaterial( {color: myColors["grey"], shading:THREE.FlatShading} );
 
 	// create Cannon box
 	if(this.isMainPlayer){
-		var sphereShape = new CANNON.Sphere(1);
-		scope.cannonMesh = new CANNON.Body({mass: 5, material: groundMaterial, shape: sphereShape});
-		scope.cannonMesh.linearDamping = scope.cannonMesh.angularDamping = 0.9; // this is the damping value
+		var sphereShape = new CANNON.Sphere(10);
+		scope.cannonMesh = new CANNON.Body({mass: 50, material: groundMaterial, shape: sphereShape});
+		scope.cannonMesh.linearDamping = scope.cannonMesh.angularDamping = 0.4; // this is the damping value
 	}
 
 

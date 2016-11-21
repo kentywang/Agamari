@@ -1,17 +1,13 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import store from '../store';
-
 import ControlPanel from './ControlPanel';
 import Canvas from './Canvas';
 import { receiveSocket } from '../reducers/socket';
 import { receiveGameState } from '../reducers/gameState';
-
 import {loadEnvironment} from '../game/game';
 import {receivePlayer} from '../reducers/auth';
-
 import { init, animate } from '../game/main';
-
 import { Player } from '../game/player';
 
 class App extends Component {
