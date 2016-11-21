@@ -1,13 +1,17 @@
 import store from '../store';
 import {updateLocation} from '../reducers/gameState';
 import { loadGame, player } from './game';
-import {controls} from './player';
+
+import {controls, Player} from './player';
+import {updateLocation} from '../reducers/gameState';
+
 
 const THREE = require('three');
 const CANNON = require('../../public/cannon.min.js');
 
 let scene, camera, canvas, renderer, plane;
 let world, groundMaterial, shadowLight;
+
 
 let playerID;
 
@@ -67,6 +71,7 @@ export const init = () => {
   }
 
 
+
   // Adjust friction between ball & ground
   groundMaterial = new CANNON.Material("groundMaterial");
   var ground_ground_cm = new CANNON.ContactMaterial(groundMaterial, groundMaterial, {
@@ -90,7 +95,7 @@ export const init = () => {
   plane.receiveShadow = true;
 
   scene.add( plane );
-  
+
 
   // create Cannon planet
   var groundShape = new CANNON.Box(new CANNON.Vec3(100,100,2.5));
@@ -106,16 +111,16 @@ export const init = () => {
   // add lighting
   var hemisphereLight;
 
-  // A hemiplane light is a gradient colored light; 
-  // the first parameter is the sky color, the second parameter is the ground color, 
+  // A hemiplane light is a gradient colored light;
+  // the first parameter is the sky color, the second parameter is the ground color,
   // the third parameter is the intensity of the light
   hemisphereLight = new THREE.HemisphereLight(0xaaaaaa,0x000000, .9)
-  
-  // A directional light shines from a specific direction. 
-  // It acts like the sun, that means that all the rays produced are parallel. 
+
+  // A directional light shines from a specific direction.
+  // It acts like the sun, that means that all the rays produced are parallel.
   shadowLight = new THREE.DirectionalLight(0xffffff, .9);
-  
-  // Allow shadow casting 
+
+  // Allow shadow casting
   shadowLight.castShadow = true;
 
   // define the visible area of the projected shadow
@@ -126,13 +131,14 @@ export const init = () => {
   shadowLight.shadow.camera.near = 1;
   shadowLight.shadow.camera.far = 1000;
 
-  // define the resolution of the shadow; the higher the better, 
+  // define the resolution of the shadow; the higher the better,
   // but also the more expensive and less performant
+
   shadowLight.shadow.mapSize.width = 1024;
   shadowLight.shadow.mapSize.height = 1024;
-  
+
   // to activate the lights, just add them to the scene
-  scene.add(hemisphereLight);  
+  scene.add(hemisphereLight);
   scene.add(shadowLight);
 
   // an ambient light modifies the global color of a scene and makes the shadows softer
@@ -153,7 +159,7 @@ export function animate() {
   requestAnimationFrame( animate );
 
 
-  // Set the direction of the light  
+  // Set the direction of the light
   shadowLight.position.set(player.mesh.position.x + 150, player.mesh.position.y + 300, player.mesh.position.z + 150);
 
 
