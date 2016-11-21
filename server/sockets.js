@@ -15,18 +15,19 @@ const setUpSockets = io => {
     // socket.on('made_connection', ()=>{
       // Verify client connect
       store.dispatch(addUser(socket.id));
-    // });  
+    // });
 
     console.log('A new client has connected');
     console.log('socket id: ', socket.id);
 
     // Verify client disconnect
     socket.on('disconnect', () => {
-      let user = store.getState().users[socket.id]; 
-      console.log(store.getState().users)
-      let { room } = store.getState().users[socket.id];
-      if(room){
-        store.dispatch(removePlayer(socket.id, room));
+      let { gameState } = store.getState();
+      let rooms = Object.keys(gameState);
+      for (let room of rooms) {
+        if (gameState[room].players[socket.id]) {
+          store.dispatch(removePlayer(socket.id, room));
+        }
       }
       store.dispatch(removeUser(socket.id));
       console.log(`socket id ${socket.id} has disconnected.`);
@@ -34,11 +35,15 @@ const setUpSockets = io => {
 
     // Log out of other rooms before entering room
     socket.on('room', room => {
+      let { gameState } = store.getState();
       store.dispatch(assignRoom(socket.id, room));
       socket.join(room);
       for (let currentRoom of Object.keys(socket.rooms)) {
-        if(currentRoom !== room){
+        if (currentRoom !== room) {
           socket.leave(currentRoom);
+          if (gameState[currentRoom]) {
+            store.dispatch(removePlayer(socket.id, currentRoom));
+          }
         }
       }
       var initPos = {
@@ -74,7 +79,7 @@ const setUpSockets = io => {
     socket.on('state_changed', action => {
       let room = Object.keys(socket.rooms)[0];
       store.dispatch(addRoom(action, room));
-      io.sockets.in(room).emit('change_state', action);
+      //io.sockets.in(room).emit('change_state', action);
       //console.log(store.getState().gameState[room]);
     });
   });
@@ -82,9 +87,13 @@ const setUpSockets = io => {
 
 const broadcastState = (io) => {
   setInterval(() => {
+    console.log("games state in room 1: ", store.getState().gameState.room1.players);
+  }, 5000);
+  setInterval(() => {
     //console.log(store.getState())
 
     spawnFood(io);
+    
     let rooms = Object.keys(io.sockets.adapter.rooms);
     for (let room of rooms) {
       // Only enter if room name is in valid room names array

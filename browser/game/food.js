@@ -29,9 +29,9 @@ export const Food = function( foodObj ) {
 		scope.mesh = new THREE.Mesh( ball_geometry, ball_material );
 		scope.mesh.castShadow = true;
 
-		scope.mesh.position.x = foodData.x;
+		scope.mesh.position.x = this.foodData.x;
 		scope.mesh.position.y = 12;
-		scope.mesh.position.z = foodData.z;
+		scope.mesh.position.z = this.foodData.z;
 
 		scene.add( scope.mesh );
 
@@ -49,26 +49,26 @@ export const Food = function( foodObj ) {
 
 	};
 
-	this.setOrientation = function( position, rotation ) {
-		if ( scope.mesh ) {
-			scope.mesh.position.copy( position );
-			scope.mesh.rotation.x = rotation.x;
-			scope.mesh.rotation.y = rotation.y;
-			scope.mesh.rotation.z = rotation.z;
-		}
-	};
+	// this.setOrientation = function( position, rotation ) {
+	// 	if ( scope.mesh ) {
+	// 		scope.mesh.position.copy( position );
+	// 		scope.mesh.rotation.x = rotation.x;
+	// 		scope.mesh.rotation.y = rotation.y;
+	// 		scope.mesh.rotation.z = rotation.z;
+	// 	}
+	// };
 
-	// Kenty: I added this method to get a player's positional data
-	this.getPlayerData = function() {
-		return {
-				x: scope.mesh.position.x,
-				y: scope.mesh.position.y,
-				z: scope.mesh.position.z,
-				rx: scope.mesh.rotation.x,
-				ry: scope.mesh.rotation.y,
-				rz: scope.mesh.rotation.z
-		};
-	};
+	// // Kenty: I added this method to get a player's positional data
+	// this.getPlayerData = function() {
+	// 	return {
+	// 			x: scope.mesh.position.x,
+	// 			y: scope.mesh.position.y,
+	// 			z: scope.mesh.position.z,
+	// 			rx: scope.mesh.rotation.x,
+	// 			ry: scope.mesh.rotation.y,
+	// 			rz: scope.mesh.rotation.z
+	// 	};
+	// };
 };
 
 export {controls};

@@ -62,13 +62,13 @@ module.exports.reducer = (state = initialState, action) => {
       newState[action.room] = room;
       return newState;
     case ADD_PLAYER:
-      state[action.room].players[action.id] = action.data;
+      if (state[action.room]) state[action.room].players[action.id] = action.data;
       return state;
     case REMOVE_PLAYER:
-      delete state[action.room].players[action.id];
+      if (state[action.room]) delete state[action.room].players[action.id];
       return state;
     case UPDATE_LOCATION:
-      state[action.room].players[action.id] = action.data;
+      if (state[action.room]) state[action.room].players[action.id] = action.data;
       return state;
     case RECEIVE_GAMESTATE:
       //WHY EMPTY?

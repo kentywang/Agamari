@@ -19,12 +19,12 @@ function spawnFood(io){
 	      if (validRoomNames.indexOf(room) + 1) {
 	        let { gameState } = store.getState();
 	        if (gameState[room]) {
-	          	if (gameState[room].food.length<5){
+	          	if (gameState[room].food.length<15){
 	          		let xPostion = (Math.random()*400)-200;
 					let zPostion = (Math.random()*400)-200;
-					console.log(xPostion);
 
-					 store.dispatch(createFood(xPostion,zPostion,"sphere", room));
+					store.dispatch(createFood(xPostion,zPostion,"sphere", room));
+					io.sockets.in(room).emit('add_food', {x: xPostion, z: zPostion, type: "sphere"});
 				}			 
           	}
         }

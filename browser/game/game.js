@@ -2,6 +2,7 @@ import store from '../store';
 import {addPlayer} from '../reducers/gameState';
 import { scene, camera, canvas, renderer, plane, playerID, myColors } from './main';
 import {Player} from './player';
+import {socket} from '../components/App';
 
 const THREE = require('three');
 
@@ -25,7 +26,6 @@ const loadGame = () => {
 }
 
 export function loadEnvironment() {
-	let { auth } = store.getState();
 	let { color, players } = store.getState().gameState;
 
 	// Kenty: added if statement below to get around undefined plane error
@@ -37,7 +37,7 @@ export function loadEnvironment() {
 	// set location and rotation for other players (I should probably use player.setOrientation instead)
 	for (let player in players){
   		// Kenty: added '&& scene.getobj' to if statement below to get around undefined error
-	  	if(player != auth.id && scene.getObjectByName(player)){
+	  	if(player != socket.id && scene.getObjectByName(player)){
 	  		currentPlayer = scene.getObjectByName(player);
 	  		data = players[player];
 

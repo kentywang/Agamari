@@ -43,7 +43,6 @@ export default (state = initialState, action) => {
 let newState, players;
   switch (action.type) {
     case RECEIVE_GAMESTATE:
-      console.log(action.state);
       return action.state;
     case UPDATE_COLOR:
       state.color = action.color;
