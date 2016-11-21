@@ -5,7 +5,7 @@ import {addPlayer} from '../reducers/gameState';
 import { scene, camera, canvas, renderer, sphere } from './main';
 import {Player} from './player';
 import {playerID} from './main';
-
+import {myColors} from '../game/main';
 
 let player;
 
@@ -14,11 +14,11 @@ const loadGame = () => {
 	loadEnvironment();
 	// load the player
 	initMainPlayer();
-  console.log('sphere', sphere);
-  console.log('scene', scene);
-  console.log('camera', camera);
-  console.log('canvas', canvas);
-  console.log('renderer', renderer);
+  // console.log('sphere', sphere);
+  // console.log('scene', scene);
+  // console.log('camera', camera);
+  // console.log('canvas', canvas);
+  // console.log('renderer', renderer);
 	//listenToOtherPlayers();
 
 	window.onunload = function() {
@@ -36,12 +36,30 @@ export function loadEnvironment() {
 	// var sphere_material = new THREE.MeshBasicMaterial( { color });
 	// var sphere = new THREE.Mesh( sphere_geometry, sphere_material );
 
-
-  let { color } = store.getState().gameState;
-  sphere.material.color = new THREE.Color(color);
+	let { auth } = store.getState();
+  let { color, players } = store.getState().gameState;
+  // Kenty: added if statement below to get around undefined sphere error
+  if (sphere) sphere.material.color = new THREE.Color(myColors[color]);
 
   // scene.add( sphere );
+  let currentPlayer;
+  let data;
 
+  // set location and rotation for other players (could use player.setOrientation instead)
+  for (let player in players){
+  	// Kenty: added '&& scene.getobj' to if statement below to get around undefined error
+  	if(player != auth.id && scene.getObjectByName(player)){
+  		//console.log("player is this:       ", player)
+  		currentPlayer = scene.getObjectByName(player);
+  		data = players[player];
+  		currentPlayer.position.x = data.x;
+  		currentPlayer.position.y = data.y;
+  		currentPlayer.position.z = data.z;
+  		currentPlayer.rotation.x = data.rx;
+  		currentPlayer.rotation.y = data.ry;
+  		currentPlayer.rotation.z = data.rz;
+  	}
+  }
 
 	// for(var other in players){
 	// 	var cube_geometry = new THREE.BoxGeometry( 1, 1, 1 );
@@ -97,9 +115,7 @@ function initMainPlayer() {
 	// });
 
 
-	player = new Player( playerID );
-	//console.log(player)
-	player.isMainPlayer = true;
+	player = new Player( playerID, true);
 	player.init();
 }
 

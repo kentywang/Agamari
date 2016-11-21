@@ -1,16 +1,14 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import store from '../store';
-
 import ControlPanel from './ControlPanel';
 import Canvas from './Canvas';
 import { receiveSocket } from '../reducers/socket';
 import { receiveGameState } from '../reducers/gameState';
-
 import {loadEnvironment} from '../game/game';
 import {receivePlayer} from '../reducers/auth';
-
 import { init, animate } from '../game/main';
+import { Player } from '../game/player';
 
 class App extends Component {
   constructor (props) {
@@ -23,6 +21,8 @@ class App extends Component {
   componentDidMount() {
     const socket = io('/');
     socket.on('connect', () => {
+
+      // socket.emit('made_connection')
       store.dispatch(receivePlayer(socket.id));
       socket.on('message', console.log);
       socket.on('game_state', state => {
@@ -35,7 +35,7 @@ class App extends Component {
         //alert("hello");
       });
       socket.on('in_room', action=> {
-        console.log("has joined room, ", this.state.hasJoinedRoom)
+       // console.log("has joined room, ", this.state.hasJoinedRoom)
         if(!this.state.hasJoinedRoom){
           init();
           animate();
@@ -43,9 +43,12 @@ class App extends Component {
         }
       });
 
-      socket.on('player_added', id => {
-        let player = new Player(id);
-        player.init();
+      socket.on('add_player', id => {
+       // console.log("id of player", id)
+        if(id != this.props.auth.id){
+          let player = new Player(id);
+          player.init();
+        }
       })
     });
     this.props.receiveSocket(socket);
@@ -73,7 +76,7 @@ class App extends Component {
 }
 
 
-const mapStateToProps = ({gameState}) => ({gameState});
+const mapStateToProps = ({gameState, auth}) => ({gameState, auth});
 const mapDispatchToProps = dispatch => ({
   receiveSocket: socket => dispatch(receiveSocket(socket)),
   receiveGameState: state => dispatch(receiveGameState(state)),

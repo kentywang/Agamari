@@ -9,17 +9,23 @@ const store = require('./store');
 
 const setUpSockets = io => {
   io.on('connection', function(socket){
-    // Verify client connect
-    store.dispatch(addUser(socket.id));
+
+    // socket.on('made_connection', ()=>{
+      // Verify client connect
+      store.dispatch(addUser(socket.id));
+    // });  
 
     console.log('A new client has connected');
     console.log('socket id: ', socket.id);
 
     // Verify client disconnect
     socket.on('disconnect', () => {
+      let user = store.getState().users[socket.id]; 
       console.log(store.getState().users)
       let { room } = store.getState().users[socket.id];
-      store.dispatch(removePlayer(socket.id, room));
+      if(room){
+        store.dispatch(removePlayer(socket.id, room));
+      }
       store.dispatch(removeUser(socket.id));
       console.log(`socket id ${socket.id} has disconnected.`);
     });
@@ -33,27 +39,30 @@ const setUpSockets = io => {
           socket.leave(currentRoom);
         }
       }
-      io.sockets.in(room).emit('add_player', socket.id);
-    var initPos = {
-    x: 10,
-    y: 0,
-    z: 0,
-    rx: 0,
-    ry: 0,
-    rz: 0
-  };
+      var initPos = {
+      x: 10,
+      y: 35,
+      z: 10,
+      rx: 0,
+      ry: 0,
+      rz: 0
+    };
 
+
+      // let's make sure to do these in order(maybe with promises)
       store.dispatch(addPlayer(socket.id, initPos, room));
 
       socket.emit('game_state', store.getState().gameState[room]);
 
       io.sockets.in(room).emit('change_state', addPlayer(socket.id, initPos));
 
+      io.sockets.in(room).emit('add_player', socket.id);
+
       socket.emit('in_room');
 
       // store.dispatch(addRoom(addPlayer(socket.id), room));
 
-      console.log(store.getState().gameState[room]);
+      //console.log(store.getState().gameState[room]);
     });
 
     // Log messages to all players in room (for testing/debugging)
@@ -64,13 +73,16 @@ const setUpSockets = io => {
       let room = Object.keys(socket.rooms)[0];
       store.dispatch(addRoom(action, room));
       io.sockets.in(room).emit('change_state', action);
-      console.log(store.getState().gameState[room]);
+      //console.log(store.getState().gameState[room]);
     });
   });
 };
 
 const broadcastState = (io) => {
   setInterval(() => {
+    //console.log(store.getState())
+
+
     let rooms = Object.keys(io.sockets.adapter.rooms);
     for (let room of rooms) {
       // Only enter if room name is in valid room names array

@@ -1,8 +1,8 @@
 
 /*----------  INITIAL STATE  ----------*/
 const initialState = {
-  room1: { color : 'blue', players: {}},
-  room2: { color: 'green', players: {}}
+  room1: { color : 'red', players: {}},
+  room2: { color: 'pink', players: {}}
 };
 
 /*----------  ACTION TYPES  ----------*/
@@ -38,7 +38,7 @@ module.exports.updateLocation = (player, room) => ({
 });
 
  module.exports.removePlayer = (id, room) => ({
-  type: REMOVE_PLAYER, room
+  type: REMOVE_PLAYER, room, id
 });
 
 
@@ -57,6 +57,9 @@ module.exports.reducer = (state = initialState, action) => {
       return newState;
     case ADD_PLAYER:
       state[action.room].players[action.id] = action.data;
+      return state;
+    case REMOVE_PLAYER:
+      delete state[action.room].players[action.id];
       return state;
     case UPDATE_LOCATION:
       state[action.room].players[action.id] = action.data;
