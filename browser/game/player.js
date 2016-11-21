@@ -1,5 +1,5 @@
 const THREE = require('three');
-const CANNON = require('../../public/cannon.min.js');
+const CANNON = require('../../node_modules/cannon/build/cannon.min.js');
 const PlayerControls = require('../../public/PlayerControls');
 
 import { scene, camera, canvas, renderer, world, groundMaterial } from './main';

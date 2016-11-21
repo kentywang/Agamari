@@ -1,12 +1,12 @@
 const THREE = require('three');
-const CANNON = require('../../public/cannon.min.js');
+const CANNON = require('../../node_modules/cannon/build/cannon.min.js');
 const TargetCamera = require('../../public/THREE.TargetCamera.min.js');
 let scene, camera, canvas, renderer, sphere;
 let world, groundMaterial, shadowLight;
 
 import store from '../store';
 import { loadGame, player } from './game';
-import {controls} from './player';
+import { controls, Player } from './player';
 import {updateLocation} from '../reducers/gameState';
 
 let playerID;
@@ -97,7 +97,7 @@ export const init = () => {
   }
 
 
-  // define contact friction between 
+  // define contact friction between
   // Adjust constraint equation parameters for ground/ground contact
   groundMaterial = new CANNON.Material("groundMaterial");
   var ground_ground_cm = new CANNON.ContactMaterial(groundMaterial, groundMaterial, {
@@ -123,10 +123,10 @@ export const init = () => {
   sphere = new THREE.Mesh( sphere_geometry, sphere_material );
   //sphere.position.set(0,0,0);
   sphere.receiveShadow = true;
-  //sphere.rotation.set(-Math.PI/2, Math.PI/2000, Math.PI); 
+  //sphere.rotation.set(-Math.PI/2, Math.PI/2000, Math.PI);
 
   scene.add( sphere );
-  
+
   // create Cannon planet
   // var groundShape = new CANNON.Sphere(30);
   // var groundBody = new CANNON.Body({ mass: 0, material: groundMaterial, shape: groundShape });
@@ -143,23 +143,23 @@ export const init = () => {
   // var aarst = new THREE.MeshBasicMaterial( {color: myColors['pale']});
   // var corgi = new THREE.Mesh( arst, aarst );
   // corgi.position.set(0,-100,0)
-  // corgi.rotation.set(-Math.PI/2, Math.PI/2000, Math.PI); 
+  // corgi.rotation.set(-Math.PI/2, Math.PI/2000, Math.PI);
   // scene.add( corgi );
 
 
   // add lighting
   var hemisphereLight;
 
-  // A hemisphere light is a gradient colored light; 
-  // the first parameter is the sky color, the second parameter is the ground color, 
+  // A hemisphere light is a gradient colored light;
+  // the first parameter is the sky color, the second parameter is the ground color,
   // the third parameter is the intensity of the light
   hemisphereLight = new THREE.HemisphereLight(0xaaaaaa,0x000000, .9)
-  
-  // A directional light shines from a specific direction. 
-  // It acts like the sun, that means that all the rays produced are parallel. 
+
+  // A directional light shines from a specific direction.
+  // It acts like the sun, that means that all the rays produced are parallel.
   shadowLight = new THREE.DirectionalLight(0xffffff, .9);
-  
-  // Allow shadow casting 
+
+  // Allow shadow casting
   shadowLight.castShadow = true;
 
   // define the visible area of the projected shadow
@@ -170,13 +170,13 @@ export const init = () => {
   shadowLight.shadow.camera.near = 1;
   shadowLight.shadow.camera.far = 1000;
 
-  // define the resolution of the shadow; the higher the better, 
+  // define the resolution of the shadow; the higher the better,
   // but also the more expensive and less performant
   shadowLight.shadow.mapSize.width = 2048;
   shadowLight.shadow.mapSize.height = 2048;
-  
+
   // to activate the lights, just add them to the scene
-  scene.add(hemisphereLight);  
+  scene.add(hemisphereLight);
   scene.add(shadowLight);
 
   // an ambient light modifies the global color of a scene and makes the shadows softer
@@ -203,7 +203,7 @@ export function animate() {
   // update camera position
   // camera.update();
 
-  // Set the direction of the light  
+  // Set the direction of the light
   shadowLight.position.set(player.mesh.position.x + 150, player.mesh.position.y + 300, player.mesh.position.z + 150);
 
 
