@@ -1,12 +1,12 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import store from '../store';
-import ControlPanel from './ControlPanel';
-import Canvas from './Canvas';
 import { receiveSocket } from '../reducers/socket';
 import { receiveGameState } from '../reducers/gameState';
-import {loadEnvironment} from '../game/game';
-import {receivePlayer} from '../reducers/auth';
+import { receivePlayer } from '../reducers/auth';
+import Canvas from './Canvas';
+import ControlPanel from './ControlPanel';
+import { loadEnvironment } from '../game/game';
 import { init, animate } from '../game/main';
 import { Player } from '../game/player';
 
@@ -20,37 +20,39 @@ class App extends Component {
 
   componentDidMount() {
     const socket = io('/');
+
     socket.on('connect', () => {
 
-      // socket.emit('made_connection')
       store.dispatch(receivePlayer(socket.id));
+
       socket.on('message', console.log);
+
       socket.on('game_state', state => {
         this.props.receiveGameState(state);
-        // loadEnvironment();
       });
+
       socket.on('change_state', action=> {
         store.dispatch(action);
-        // setTimeout(()=>loadEnvironment(),4000);
-        //alert("hello");
       });
+
       socket.on('in_room', action=> {
-       // console.log("has joined room, ", this.state.hasJoinedRoom)
+        console.log("has joined room, ", this.state.hasJoinedRoom)
         if(!this.state.hasJoinedRoom){
-          init();
-          animate();
-          this.setState({hasJoinedRoom: true})
+            init();
+            animate();
+            this.setState({hasJoinedRoom: true});
         }
       });
 
       socket.on('add_player', id => {
-       // console.log("id of player", id)
         if(id != this.props.auth.id){
           let player = new Player(id);
           player.init();
         }
-      })
+      });
+
     });
+    
     this.props.receiveSocket(socket);
   }
 
