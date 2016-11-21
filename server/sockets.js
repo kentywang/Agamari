@@ -1,4 +1,4 @@
-const validRoomNames = ['room1', 'room2'];
+const {validRoomNames} = require('./gameEngine');
 
 const { addRoom } = require('./utils');
 const { addUser, removeUser, assignRoom, unassignRoom } = require('./reducers/users');
@@ -6,6 +6,8 @@ const { addUser, removeUser, assignRoom, unassignRoom } = require('./reducers/us
 const { addPlayer, removePlayer } = require('./reducers/gameState');
 
 const store = require('./store');
+
+const {spawnFood} = require('./gameEngine');
 
 const setUpSockets = io => {
   io.on('connection', function(socket){
@@ -82,7 +84,7 @@ const broadcastState = (io) => {
   setInterval(() => {
     //console.log(store.getState())
 
-
+    spawnFood(io);
     let rooms = Object.keys(io.sockets.adapter.rooms);
     for (let room of rooms) {
       // Only enter if room name is in valid room names array

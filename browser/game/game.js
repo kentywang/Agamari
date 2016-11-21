@@ -60,24 +60,4 @@ function initMainPlayer() {
 
 export { loadGame, player };
 
-// function makeFood(){
-// 	const food_plane_geometry = new THREE.planeGeometry( 0.3 );
-// 	const food_plane_material = new THREE.MeshBasicMaterial( {color: 0x66669, wireframe: false} );
 
-// 	let gameBorderPosition = 100;
-
-// 	for (var i = 0; i < 10; i++) {
-// 		const food = new THREE.Mesh( food_plane_geometry, food_plane_material );
-
-// 		let xPostion = Math.floor(Math.random()*gameBorderPosition);
-// 		xPostion *= Math.floor(Math.random()*2) == 1 ? 1 : -1;
-
-// 		let zPostion = Math.floor(Math.random()*gameBorderPosition);
-// 		zPostion *= Math.floor(Math.random()*2) == 1 ? 1 : -1;
-
-// 		food.position.x = xPostion;
-// 		food.position.y = 0;
-// 		food.position.z = zPostion;
-// 		scene.add( food );
-// 	}
-// };
