@@ -76,7 +76,9 @@ const setUpSockets = io => {
     // Relay game state changes and update server state
     socket.on('state_changed', action => {
       let room = Object.keys(socket.rooms)[0];
-      store.dispatch(addRoom(action, room));
+      if (store.getState().gameState[room]) {
+        store.dispatch(addRoom(action, room));
+      }
       //io.sockets.in(room).emit('change_state', action);
       //console.log(store.getState().gameState[room]);
     });
