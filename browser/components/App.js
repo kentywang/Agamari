@@ -3,7 +3,6 @@ import { connect } from 'react-redux';
 import store from '../store';
 import { receiveSocket } from '../reducers/socket';
 import { receiveGameState } from '../reducers/gameState';
-import { receivePlayer } from '../reducers/auth';
 import Canvas from './Canvas';
 import ControlPanel from './ControlPanel';
 import { loadEnvironment } from '../game/game';
@@ -25,7 +24,6 @@ class App extends Component {
 
     socket.on('connect', () => {
 
-      store.dispatch(receivePlayer(socket.id));
 
       socket.on('message', console.log);
 
@@ -47,7 +45,7 @@ class App extends Component {
       });
 
       socket.on('add_player', id => {
-        if(id != this.props.auth.id){
+        if(id != socket.id){
           let player = new Player(id);
           player.init();
         }
@@ -80,7 +78,7 @@ class App extends Component {
 }
 
 
-const mapStateToProps = ({gameState, auth}) => ({gameState, auth});
+const mapStateToProps = ({gameState}) => ({gameState});
 const mapDispatchToProps = dispatch => ({
   receiveSocket: socket => dispatch(receiveSocket(socket)),
   receiveGameState: state => dispatch(receiveGameState(state)),
@@ -91,4 +89,4 @@ export default connect(
   mapDispatchToProps
 )(App);
 
-export socket;
+export { socket };

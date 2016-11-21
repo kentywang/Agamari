@@ -3,7 +3,6 @@ import {updateLocation} from '../reducers/gameState';
 import { loadGame, player } from './game';
 
 import {controls, Player} from './player';
-import {updateLocation} from '../reducers/gameState';
 import {socket} from '../components/App';
 
 
