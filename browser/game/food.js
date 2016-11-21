@@ -1,8 +1,10 @@
 import store from '../store';
 import { scene, camera, canvas, renderer, world, groundMaterial, playerID, myColors } from './main';
+import {player} from './game';
 
 const THREE = require('three');
 const CANNON = require('../../public/cannon.min.js');
+
 
 let controls;
 
@@ -47,6 +49,23 @@ export const Food = function( foodObj ) {
 
 		world.add(scope.cannonMesh);
 
+		scope.cannonMesh.addEventListener("collide", function(e){
+			world.remove(scope.cannonMesh);
+			let playerRadius = player.cannonMesh.shapes[0].radius;
+
+			console.log("radius", playerRadius);
+			player.cannonMesh.shapes[0].radius+=0
+			console.log("mass",player.cannonMesh.mass);
+			player.cannonMesh.mass += 0;
+			console.log(player.cannonMesh.mass);
+
+			//remove the food 
+			//also need to remove food from game state eventually
+			scene.remove(scope.mesh);
+
+
+			player.mesh.scale.x=player.mesh.scale.y=player.mesh.scale.z +=1;
+		});
 	};
 
 	// this.setOrientation = function( position, rotation ) {
