@@ -50,7 +50,7 @@ export const init = () => {
 
   // initialize Cannon world
   world = new CANNON.World();
-  world.gravity.set(0,0,0);
+  world.gravity.set(0,0,-200);
   world.broadphase = new CANNON.NaiveBroadphase();
 
 
@@ -65,6 +65,16 @@ export const init = () => {
           newPlayer.init();
     }
   }
+
+
+  // initialize all existing food in room
+  let { food } = store.getState().gameState;
+  let newFood;
+
+  food.forEach(item=>{
+    newFood = new Food(item);
+    newFood.init();
+  });
 
 
   // Adjust friction between ball & ground
