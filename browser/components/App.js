@@ -10,6 +10,8 @@ import { loadEnvironment } from '../game/game';
 import { init, animate } from '../game/main';
 import { Player } from '../game/player';
 
+let socket;
+
 class App extends Component {
   constructor (props) {
     super(props);
@@ -19,7 +21,7 @@ class App extends Component {
   }
 
   componentDidMount() {
-    const socket = io('/');
+    socket = io('/');
 
     socket.on('connect', () => {
 
@@ -36,7 +38,7 @@ class App extends Component {
       });
 
       socket.on('in_room', action=> {
-        console.log("has joined room, ", this.state.hasJoinedRoom)
+        console.log("has joined room, ", this.state.hasJoinedRoom);
         if(!this.state.hasJoinedRoom){
             init();
             animate();
@@ -52,7 +54,7 @@ class App extends Component {
       });
 
     });
-    
+
     this.props.receiveSocket(socket);
   }
 
@@ -88,3 +90,5 @@ export default connect(
   mapStateToProps,
   mapDispatchToProps
 )(App);
+
+export socket;
