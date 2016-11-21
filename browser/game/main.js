@@ -3,7 +3,7 @@ import {updateLocation} from '../reducers/gameState';
 import { loadGame, player } from './game';
 
 import {controls, Player} from './player';
-import {updateLocation} from '../reducers/gameState';
+import {socket} from '../components/App';
 
 
 const THREE = require('three');
@@ -49,7 +49,7 @@ export const init = () => {
 
 
   // store set playerID to socket.id from store
-  playerID = store.getState().auth.id;
+  playerID = socket.id;
 
 
   // initialize Cannon world
@@ -64,7 +64,7 @@ export const init = () => {
   let newPlayer;
 
   for (let player in players){
-    if(player != auth.id){
+    if(player != socket.id){
           newPlayer = new Player(player);
           newPlayer.init();
     }
