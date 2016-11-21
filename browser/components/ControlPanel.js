@@ -9,13 +9,19 @@ const room2 = 'room2';
 class ControlPanel extends Component {
   constructor(props) {
     super(props);
+    this.state = {
+      windowIsOpen: true
+    };
     this.onClick = this.onClick.bind(this);
     this.logToRoom = this.logToRoom.bind(this);
     this.changeState = this.changeState.bind(this);
+    this.closeWindow = this.closeWindow.bind(this);
+    this.openWindow = this.openWindow.bind(this);
   }
 
   onClick(room) {
     this.props.socket.emit('room', room);
+    this.setState({windowIsOpen: false});
   }
 
   logToRoom(room) {
@@ -28,16 +34,36 @@ class ControlPanel extends Component {
     this.props.socket.emit('state_changed', action);
   }
 
+  closeWindow() {
+    this.setState({windowIsOpen: false});
+  }
+
+  openWindow() {
+    this.setState({windowIsOpen: true});
+  }
+
+
   render() {
     return (
-      <div>
-        <button className="btn" onClick={() => this.onClick(room1)}>Room 1</button>
-        <button className="btn" onClick={() => this.onClick(room2)}>Room 2</button>
-        <button className="btn" onClick={() => this.logToRoom(room1)}>Log Room 1</button>
-        <button className="btn" onClick={() => this.logToRoom(room2)}>Log Room 2</button>
-        <button className="btn" onClick={() => this.changeState("green")}>Green</button>
-        <button className="btn" onClick={() => this.changeState("pink")}>Pink</button>
-      </div>
+      <div style={{position: 'absolute', zIndex: 1}}>
+      {this.state.windowIsOpen ?
+        <div className="card blue-grey darken-1">
+          <div className="card-content white-text">
+            <span className="card-title">Card Title</span>
+            <p>I am a very simple card. I am good at containing small bits of information.
+            I am convenient because I require little markup to use effectively.</p>
+            <button className="btn" onClick={this.closeWindow}>Close Window</button>
+          </div>
+          <div className="card-action">
+            <button className="btn" onClick={() => this.onClick(room1)}>Room 1</button>
+            <button className="btn" onClick={() => this.onClick(room2)}>Room 2</button>
+            <button className="btn" onClick={() => this.logToRoom(room1)}>Log Room 1</button>
+            <button className="btn" onClick={() => this.logToRoom(room2)}>Log Room 2</button>
+            <button className="btn" onClick={() => this.changeState("green")}>Green</button>
+            <button className="btn" onClick={() => this.changeState("pink")}>Pink</button>
+          </div>
+        </div> : <button className="btn" onClick={this.openWindow}>Open</button>}
+        </div>
       );
   }
 }
@@ -47,5 +73,3 @@ const mapStateToProps = ({socket, gameState}) => ({socket, gameState});
 export default connect(
   mapStateToProps
 )(ControlPanel);
-
-
