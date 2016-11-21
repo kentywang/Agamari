@@ -23,7 +23,7 @@ const setUpSockets = io => {
       let { gameState } = store.getState();
       let rooms = Object.keys(gameState);
       for (let room of rooms) {
-        if (gameState[room].players[socket.id]) {
+        if (gameState[room] && gameState[room].players[socket.id]) {
           store.dispatch(removePlayer(socket.id, room));
         }
       }
