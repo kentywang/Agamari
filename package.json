@@ -20,6 +20,7 @@
   },
   "homepage": "https://github.com/quirkycorgi/capstone#readme",
   "dependencies": {
+    "axios": "^0.15.2",
     "babel": "^6.5.2",
     "babel-core": "^6.18.2",
     "babel-loader": "^6.2.7",
@@ -38,6 +39,7 @@
     "morgan": "^1.7.0",
     "nodemon": "^1.11.0",
     "passport": "^0.3.2",
+    "passport-local": "^1.0.0",
     "path": "^0.12.7",
     "pg": "^6.1.0",
     "pg-hstore": "^2.3.2",

@@ -37,19 +37,19 @@ let rooms = [
       email: 'dan@fullstack.com',
       password: 'diggitydan',
       admin: false,
-      username: 'dan'
+      displayName: 'dan'
     },
     {
       email: 'ben@fullstack.com',
       password: 'diggityben',
       admin: true,
-      username: 'ben'
+      displayName: 'ben'
     },
     {
       email: 'joe@fullstack.com',
       password: 'diggityjoe',
       admin: false,
-      username: 'joe'
+      displayName: 'joe'
     }
 
     ];

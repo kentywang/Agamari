@@ -20,6 +20,13 @@ const User = db.define('user', {
   username: {
     type: Sequelize.STRING,
     unique: true,
+  },
+  displayName: {
+    type: Sequelize.STRING,
+    allowNull: false
+  },
+  anonymous: {
+    type: Sequelize.BOOLEAN,
   }
 },
 {
