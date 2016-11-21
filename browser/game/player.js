@@ -1,13 +1,9 @@
+import store from '../store';
+import { scene, camera, canvas, renderer, world, groundMaterial, playerID, myColors } from './main';
+
 const THREE = require('three');
 const CANNON = require('../../public/cannon.min.js');
 const PlayerControls = require('../../public/PlayerControls');
-
-import { scene, camera, canvas, renderer, world, groundMaterial } from './main';
-import {playerID} from './main';
-//import {player} from './game';
-
-import store from '../store';
-import {myColors} from '../game/main';
 
 let controls;
 
@@ -18,41 +14,40 @@ export const Player = function( playerID, isMainPlayer ) {
 	this.cannonMesh;
 	var scope = this;
 
-	// create THREE box
-	var cube_geometry = new THREE.TetrahedronGeometry( 10, 2 );
-	var cube_material = new THREE.MeshPhongMaterial( {color: myColors["grey"], shading:THREE.FlatShading} );
+
+	// create THREE ball
+	var ball_geometry = new THREE.TetrahedronGeometry( 10, 2 );
+	var ball_material = new THREE.MeshPhongMaterial( {color: myColors["grey"], shading:THREE.FlatShading} );
+
 
 	// create Cannon box
 	if(this.isMainPlayer){
 		var sphereShape = new CANNON.Sphere(10);
 		scope.cannonMesh = new CANNON.Body({mass: 50, material: groundMaterial, shape: sphereShape});
-		scope.cannonMesh.linearDamping = scope.cannonMesh.angularDamping = 0.4; // this is the damping value
+		scope.cannonMesh.linearDamping = scope.cannonMesh.angularDamping = 0.4;
 	}
 
 
 	this.init = function() {
 		let playerData = store.getState().gameState.players[scope.playerID];
-		//console.log(playerData)
-		//console.log("player data:    ", playerData);
-		scope.mesh = new THREE.Mesh( cube_geometry, cube_material );
-		scope.mesh.castShadow = true;
 
-		scope.mesh.name = playerID;
+		// mesh the ball geom and mat
+		scope.mesh = new THREE.Mesh( ball_geometry, ball_material );
+		scope.mesh.castShadow = true;
 
 		scope.mesh.position.x = playerData.x;
 		scope.mesh.position.y = playerData.y;
 		scope.mesh.position.z = playerData.z;
-
 		scope.mesh.rotation.x = playerData.rx;
 		scope.mesh.rotation.y = playerData.ry;
 		scope.mesh.rotation.z = playerData.rz;
 
-		//console.log("scope mesh", scope.mesh)
+		scope.mesh.name = playerID;
+
 		scene.add( scope.mesh );
 
+
 		// add Cannon box
-		// Cannon's position z seems to by Three's y, and vice versa (for quaternions, z and x seem switched)
-		// also, quaternion w seems to need to be reversed
 		if(scope.isMainPlayer){
 			scope.cannonMesh.position.x = scope.mesh.position.x;
   			scope.cannonMesh.position.z = scope.mesh.position.y;
@@ -60,46 +55,15 @@ export const Player = function( playerID, isMainPlayer ) {
   			scope.cannonMesh.quaternion.x = scope.mesh.quaternion.x;
   			scope.cannonMesh.quaternion.y = scope.mesh.quaternion.y;
   			scope.cannonMesh.quaternion.z = scope.mesh.quaternion.z;
-  			 scope.cannonMesh.quaternion.w = scope.mesh.quaternion.w;
-
-  	// 		// get point gravity to center of planet
-			// scope.cannonMesh.preStep = function(){
-   //          // Get the vector pointing from the moon to the planet center
-   //          var moon_to_planet = new CANNON.Vec3();
-   //          this.position.negate(moon_to_planet);
-   //          // Get distance from planet to moon
-   //          var distance = moon_to_planet.norm();
-   //          // Now apply force on moon
-   //          // Fore is pointing in the moon-planet direction
-   //          moon_to_planet.normalize();
-   //          moon_to_planet.mult(150000/Math.pow(distance,2),this.force);
-   //        }
+  			scope.cannonMesh.quaternion.w = scope.mesh.quaternion.w;
 
 			world.add(scope.cannonMesh);
-
 		}
 
-		//console.log(scope.playerID)
+		// add controls and camera
 		if ( scope.isMainPlayer ) {
-
-
-			// // add player to target camera
-			// camera.addTarget({
-			//     name: 'myTarget',
-			//     targetObject: scope.mesh,
-			//     cameraPosition: new THREE.Vector3(0, 10, 20),
-			//     fixed: true,
-			//     stiffness: 0.1,
-			//     matchRotation: false
-			// });
-			// camera.setTarget( 'myTarget' );
-
-			// add controls
 			controls = new THREE.PlayerControls( camera, scope.mesh, scope.cannonMesh );
-			controls.init();
 		}
-
-
 	};
 
 	this.setOrientation = function( position, rotation ) {
@@ -108,7 +72,6 @@ export const Player = function( playerID, isMainPlayer ) {
 			scope.mesh.rotation.x = rotation.x;
 			scope.mesh.rotation.y = rotation.y;
 			scope.mesh.rotation.z = rotation.z;
-
 		}
 	};
 
