@@ -28,6 +28,7 @@ THREE.PlayerControls = function ( camera, player, cannonMesh, domElement ) {
 	        var localPoint = new CANNON.Vec3(this.cannonMesh.position.x,this.cannonMesh.position.y,this.cannonMesh.position.z + 5);
             var impulse = new CANNON.Vec3(0,-3500 * (1/60),0);
             this.cannonMesh.applyImpulse(impulse,localPoint);
+            //this.cannonMesh.position.y -= 0.2;
 	    }
 
 	    if (keyState[40] || keyState[83]) {
@@ -36,6 +37,7 @@ THREE.PlayerControls = function ( camera, player, cannonMesh, domElement ) {
 	        var localPoint = new CANNON.Vec3(this.cannonMesh.position.x,this.cannonMesh.position.y,this.cannonMesh.position.z + 5);
             var impulse = new CANNON.Vec3(0,3500 * (1/60),0);
             this.cannonMesh.applyImpulse(impulse,localPoint);
+            //this.cannonMesh.position.y += 0.2;
 	    }
 
 	    if (keyState[37] || keyState[65]) {
@@ -44,6 +46,7 @@ THREE.PlayerControls = function ( camera, player, cannonMesh, domElement ) {
 			var localPoint = new CANNON.Vec3(this.cannonMesh.position.x,this.cannonMesh.position.y,this.cannonMesh.position.z + 5);
             var impulse = new CANNON.Vec3(-3500 * (1/60),0,0);
             this.cannonMesh.applyImpulse(impulse,localPoint);
+            //this.cannonMesh.position.x -= 0.2;
 	    }
 
 	    if (keyState[39] || keyState[68]) {
@@ -52,6 +55,7 @@ THREE.PlayerControls = function ( camera, player, cannonMesh, domElement ) {
 	        var localPoint = new CANNON.Vec3(this.cannonMesh.position.x,this.cannonMesh.position.y,this.cannonMesh.position.z + 0.5);
             var impulse = new CANNON.Vec3(3500 * (1/60),0,0);
             this.cannonMesh.applyImpulse(impulse,localPoint);
+            //this.cannonMesh.position.x += 0.2;
 	    }
 	};
 

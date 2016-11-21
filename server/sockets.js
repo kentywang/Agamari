@@ -1,11 +1,11 @@
+const store = require('./store');
+const { addUser, removeUser, assignRoom, unassignRoom } = require('./reducers/users');
+const { addPlayer, removePlayer } = require('./reducers/gameState');
+const { addRoom } = require('./utils');
+const { makeFood } = require('./engine');
+
 const validRoomNames = ['room1', 'room2'];
 
-const { addRoom } = require('./utils');
-const { addUser, removeUser, assignRoom, unassignRoom } = require('./reducers/users');
-
-const { addPlayer, removePlayer } = require('./reducers/gameState');
-
-const store = require('./store');
 
 const setUpSockets = io => {
   io.on('connection', function(socket){
@@ -39,14 +39,15 @@ const setUpSockets = io => {
           socket.leave(currentRoom);
         }
       }
+
       var initPos = {
-      x: 10,
-      y: 35,
-      z: 10,
-      rx: 0,
-      ry: 0,
-      rz: 0
-    };
+        x: 0,
+        y: 30,
+        z: 0,
+        rx: 0,
+        ry: 0,
+        rz: 0
+      };
 
 
       // let's make sure to do these in order(maybe with promises)
@@ -80,9 +81,12 @@ const setUpSockets = io => {
 
 const broadcastState = (io) => {
   setInterval(() => {
-    //console.log(store.getState())
 
+    // update bots and food
+    //bot();
+    //makeFood();
 
+    // update all in-game client's game states
     let rooms = Object.keys(io.sockets.adapter.rooms);
     for (let room of rooms) {
       // Only enter if room name is in valid room names array
@@ -93,6 +97,7 @@ const broadcastState = (io) => {
         }
       }
     }
+
   }, (1000 / 60));
 }
 

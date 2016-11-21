@@ -1,8 +1,8 @@
 
 /*----------  INITIAL STATE  ----------*/
 const initialState = {
-  room1: { color : 'red', players: {}},
-  room2: { color: 'pink', players: {}}
+  room1: { color: 'red', players: {}, food: []},
+  room2: { color: 'pink', players: {}, food: []}
 };
 
 /*----------  ACTION TYPES  ----------*/

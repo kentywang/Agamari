@@ -26,6 +26,8 @@ var lastTime;
 var fixedTimeStep = 1.0 / 60.0; // seconds
 var maxSubSteps = 3;
 
+// food (dev only)
+let cone, coneBody;
 
 export const init = () => {
   // initialize THREE scene, camera, renderer
@@ -40,7 +42,7 @@ export const init = () => {
 
 
   // shading
-  renderer.shadowMapEnabled = true;
+  renderer.shadowMap.enabled = true;
   renderer.shadowMapSoft = true;
 
 
@@ -92,11 +94,54 @@ export const init = () => {
   scene.add( plane );
   
 
-  // create Cannon planet
+  // create Cannon plane
   var groundShape = new CANNON.Box(new CANNON.Vec3(100,100,2.5));
   var groundBody = new CANNON.Body({ mass: 0, material: groundMaterial, shape: groundShape });
 
   world.add(groundBody);
+
+
+
+
+
+  // create THREE food (for dev build only)
+  var cone_geometry = new THREE.BoxGeometry( 20, 10, 10 );
+  var cone_material = new THREE.MeshPhongMaterial( { color: myColors['blue'] , shading:THREE.FlatShading});
+  cone = new THREE.Mesh( cone_geometry, cone_material );
+
+  cone.castShadow = true;
+  cone.position.set(50,10,50);
+
+  scene.add( cone );
+  
+  // create Cannon food
+  var coneShape = new CANNON.Box(new CANNON.Vec3(10,5,5));
+  coneBody = new CANNON.Body({ mass: 0, material: groundMaterial, shape: coneShape });
+
+  coneBody.position.x = cone.position.x;
+  coneBody.position.z = cone.position.y;
+  coneBody.position.y = cone.position.z;
+  world.add(coneBody);
+
+  coneBody.addEventListener("collide", function(e){
+    world.remove(coneBody); 
+    player.cannonMesh.addShape(coneShape, new CANNON.Vec3(coneBody.position.x,coneBody.position.z,coneBody.position.y));
+
+    // var mergeGeometry = new THREE.Geometry();
+    // cone_geometry.matrix
+    // mergeGeometry.merge( cone_geometry, cone_geometry.matrix );
+    // mergeGeometry.merge( player.mesh.geometry, player.mesh.geometry.matrix, 1 );
+
+    // var mesh = new THREE.Mesh( mergeGeometry, cone_material );
+    // player.mesh = mesh;
+    // scene.add( mesh );
+
+
+
+    player.mesh.add(cone);
+  } );
+
+
 
 
   // add some fog
@@ -143,7 +188,7 @@ export const init = () => {
   loadGame();
 
 
-  //botInit();
+
 
   // Events
   window.addEventListener( "resize", onWindowResize, false );
@@ -151,6 +196,11 @@ export const init = () => {
 
 export function animate() {
   requestAnimationFrame( animate );
+
+  // check if fallen off plane
+  if(player.mesh.position.y < -5){
+    alert("game over");
+  }
 
 
   // Set the direction of the light  
@@ -209,37 +259,3 @@ function onWindowResize() {
 
 
 export { scene, camera, canvas, renderer, playerID, plane, world, groundMaterial, myColors };
-
-// function botInit(){
-  // const bot_geometry = new THREE.BoxGeometry(1,1,1);
-  // const bot_material = new THREE.MeshBasicMaterial( {color: 0x7777ff, wireframe: false} );
-  // const bot = new THREE.Mesh( bot_geometry, bot_material );
-
-
-
-  // bot.position.x = 1;
-  // bot.position.y = 0;
-  // bot.position.z = 1;
-  // scene.add(bot);
-
-  // //create random directions for bot
-  //   let reverseDirectionX;
-  //   let reverseDirectionY;
-  //   let direction;
-  //   let counter = 0;
-  //   function animate() {
-  //     //counter 300 lopps then change direction
-  //         if(counter%300===0){
-  //           reverseDirectionX = Math.floor(Math.random()*2) == 1 ? 1 : -1;
-  //           reverseDirectionY = Math.floor(Math.random()*2) == 1 ? 1 : -1;
-
-  //           direction =  new THREE.Vector3(0.1*reverseDirectionX, 0, 0.2*reverseDirectionY); // amount to move per frame
-  //           //counter=0;
-  //         }
-  //          console.log(direction);
-  //         bot.position.add(direction); // add to position
-  //         requestAnimationFrame(animate); // keep looping
-  //         counter++
-  //       }
-  // requestAnimationFrame(animate);
-// }

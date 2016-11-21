@@ -36,7 +36,6 @@ class App extends Component {
       });
 
       socket.on('in_room', action=> {
-        console.log("has joined room, ", this.state.hasJoinedRoom)
         if(!this.state.hasJoinedRoom){
             init();
             animate();
