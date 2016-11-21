@@ -49,9 +49,10 @@ class ControlPanel extends Component {
       {this.state.windowIsOpen ?
         <div className="card blue-grey darken-1">
           <div className="card-content white-text">
-            <span className="card-title">Card Title</span>
-            <p>I am a very simple card. I am good at containing small bits of information.
-            I am convenient because I require little markup to use effectively.</p>
+            <div className="input-field">
+              <input type="text" placeholder="name" />
+            </div>
+            <button className="btn" onClick={() => console.log("clicked")}>Start Game</button>
             <button className="btn" onClick={this.closeWindow}>Close Window</button>
           </div>
           <div className="card-action">
