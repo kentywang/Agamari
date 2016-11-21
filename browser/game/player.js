@@ -1,6 +1,7 @@
 const THREE = require('three');
 const CANNON = require('../../public/cannon.min.js');
 const PlayerControls = require('../../public/PlayerControls');
+
 import { scene, camera, canvas, renderer, world, groundMaterial } from './main';
 import {playerID} from './main';
 //import {player} from './game';
@@ -34,7 +35,6 @@ export const Player = function( playerID, isMainPlayer ) {
 		//console.log(playerData)
 		//console.log("player data:    ", playerData);
 		scope.mesh = new THREE.Mesh( cube_geometry, cube_material );
-		scope.mesh.useQuaternion = true;
 		scope.mesh.castShadow = true;
 
 		scope.mesh.name = playerID;
@@ -81,9 +81,24 @@ export const Player = function( playerID, isMainPlayer ) {
 
 		//console.log(scope.playerID)
 		if ( scope.isMainPlayer ) {
-			controls = new THREE.PlayerControls( camera , scope.mesh, scope.cannonMesh );
+
+
+			// // add player to target camera
+			// camera.addTarget({
+			//     name: 'myTarget',
+			//     targetObject: scope.mesh,
+			//     cameraPosition: new THREE.Vector3(0, 10, 20),
+			//     fixed: true,
+			//     stiffness: 0.1,
+			//     matchRotation: false
+			// });
+			// camera.setTarget( 'myTarget' );
+
+			// add controls
+			controls = new THREE.PlayerControls( camera, scope.mesh, scope.cannonMesh );
 			controls.init();
 		}
+
 
 	};
 

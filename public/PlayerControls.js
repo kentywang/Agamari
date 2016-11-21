@@ -138,11 +138,11 @@ THREE.PlayerControls = function ( camera, player, cannonMesh, domElement ) {
 
 	this.init = function() {
 
-		this.camera.position.x = this.player.position.x + 2;
-		this.camera.position.y = this.player.position.y + 2;
-		this.camera.position.z = this.player.position.x + 2;
+		// this.camera.position.x = this.player.position.x + 2;
+		// this.camera.position.y = this.player.position.y + 2;
+		// this.camera.position.z = this.player.position.x + 2;
 
-		this.camera.lookAt( this.player.position );
+		// this.camera.lookAt( this.player.position );
 		
 	};
 
@@ -150,75 +150,83 @@ THREE.PlayerControls = function ( camera, player, cannonMesh, domElement ) {
 
 		this.checkKeyStates();
 
-		this.center = this.player.position;
+		this.camera.position.set(this.player.position.x ,this.player.position.y + 70, this.player.position.z + 70);
+		// this.camera.position.set(this.player.position.x - this.cannonMesh.velocity.x, this.player.position.y - this.cannonMesh.velocity.z, this.player.position.z - this.cannonMesh.velocity.y)
 
-		var position = this.camera.position;
-		var offset = position.clone().sub( this.center );
+  		this.camera.lookAt(this.player.position);
+
+
+  		console.log(this.cannonMesh.velocity)
+		//this.center = this.player.position;
+
+		// var position = this.camera.position;
+		//var offset = position.clone().sub( this.center );
 
 		// angle from z-axis around y-axis
 
-		var theta = Math.atan2( offset.x, offset.z );
+		// var theta = Math.atan2( offset.x, offset.z );
 
-		// angle from y-axis
+		// // angle from y-axis
 
-		var phi = Math.atan2( Math.sqrt( offset.x * offset.x + offset.z * offset.z ), offset.y );
+		// var phi = Math.atan2( Math.sqrt( offset.x * offset.x + offset.z * offset.z ), offset.y );
 
-		theta += thetaDelta;
-		phi += phiDelta;
+		// theta += thetaDelta;
+		// phi += phiDelta;
 
-		// restrict phi to be between desired limits
-		phi = Math.max( this.minPolarAngle, Math.min( this.maxPolarAngle, phi ) );
+		// // restrict phi to be between desired limits
+		// phi = Math.max( this.minPolarAngle, Math.min( this.maxPolarAngle, phi ) );
 
-		// restrict phi to be between EPS and PI-EPS
-		phi = Math.max( EPS, Math.min( Math.PI - EPS, phi ) );
+		// // restrict phi to be between EPS and PI-EPS
+		// phi = Math.max( EPS, Math.min( Math.PI - EPS, phi ) );
 
-		var radius = offset.length() * scale;
+		// var radius = offset.length() * scale;
 
-		radius = Math.max( this.minDistance, Math.min( this.maxDistance, radius ) );
+		// radius = Math.max( this.minDistance, Math.min( this.maxDistance, radius ) );
 
-		offset.x = radius * Math.sin( phi ) * Math.sin( theta );
-		offset.y = radius * Math.cos( phi );
-		offset.z = radius * Math.sin( phi ) * Math.cos( theta );
+		// offset.x = radius * Math.sin( phi ) * Math.sin( theta );
+		// offset.y = radius * Math.cos( phi );
+		// offset.z = radius * Math.sin( phi ) * Math.cos( theta );
 
-		if ( this.autoRotate ) {
+		// if ( this.autoRotate ) {
+		// 	// this.camera.position.set(this.player.position.x, this.player.position.y + 10, this.player.position.z - 10);
 
-			// this.camera.position.x += this.autoRotateSpeed * ( ( this.player.position.x + 8 * Math.sin( this.player.rotation.y ) ) - this.camera.position.x );
-			// this.camera.position.z += this.autoRotateSpeed * ( ( this.player.position.z + 8 * Math.cos( this.player.rotation.y ) ) - this.camera.position.z );
+		// 	// this.camera.position.x += this.autoRotateSpeed * ( ( this.player.position.x + 8 * Math.sin( this.player.rotation.y ) ) - this.camera.position.x );
+		// 	// this.camera.position.z += this.autoRotateSpeed * ( ( this.player.position.z + 8 * Math.cos( this.player.rotation.y ) ) - this.camera.position.z );
 
-		} else {
+		// } else {
 
-			position.copy( this.center ).add( offset );
+		// 	position.copy( this.center ).add( offset );
 
-		}
+		// }
 
-		this.camera.lookAt( this.center );
+		// // this.camera.lookAt( this.center );
 
-		thetaDelta = 0;
-		phiDelta = 0;
-		scale = 1;
-
-
-
-		if ( state === STATE.NONE && playerIsMoving ) {
-
-			this.autoRotate = true;
-
-		} else {
-
-			this.autoRotate = false;
-
-		}
-
-		if ( lastPosition.distanceTo( this.player.position) > 0 ) {
+		// thetaDelta = 0;
+		// phiDelta = 0;
+		// scale = 1;
 
 
-			lastPosition.copy( this.player.position );
 
-		} else if ( lastPosition.distanceTo( this.player.position) == 0 ) {
+		// if ( state === STATE.NONE && playerIsMoving ) {
 
-			playerIsMoving = false;
+		// 	this.autoRotate = true;
 
-		}
+		// } else {
+
+		// 	this.autoRotate = false;
+
+		// }
+
+		// if ( lastPosition.distanceTo( this.player.position) > 0 ) {
+
+
+		// 	lastPosition.copy( this.player.position );
+
+		// } else if ( lastPosition.distanceTo( this.player.position) == 0 ) {
+
+		// 	playerIsMoving = false;
+
+		// }
 
 	};
 
@@ -227,9 +235,11 @@ THREE.PlayerControls = function ( camera, player, cannonMesh, domElement ) {
 	    if (keyState[38] || keyState[87]) {
 
 	        // up arrow or 'w' - move forward
+          	var direction = this.player.position.clone().sub( this.camera.position ).normalize();
 
 	        var localPoint = new CANNON.Vec3(0,0,100);
-            var impulse = new CANNON.Vec3(0,-50 * (1/60),0);
+            var impulse = new CANNON.Vec3(direction.x /16,direction.z /16,direction.y /16);
+
             this.cannonMesh.applyImpulse(impulse,localPoint);
 
 		// this.cannonMesh.position.y -= .20;
@@ -247,9 +257,12 @@ THREE.PlayerControls = function ( camera, player, cannonMesh, domElement ) {
 	        playerIsMoving = true;
 
 
-               var localPoint = new CANNON.Vec3(0,0,100);
-            var impulse = new CANNON.Vec3(0,50 * (1/60),0);
-            this.cannonMesh.applyImpulse(impulse,localPoint);
+          	var direction = this.player.position.clone().sub( this.camera.position ).normalize();
+
+	        var localPoint = new CANNON.Vec3(0,0,100);
+            var impulse = new CANNON.Vec3(direction.x /64,direction.z /64,direction.y /64);
+            
+            this.cannonMesh.applyImpulse(impulse.negate(), localPoint);
 	        // this.player.position.x += this.moveSpeed * Math.sin( this.player.rotation.y );
 	        // this.player.position.z += this.moveSpeed * Math.cos( this.player.rotation.y );
 
@@ -263,10 +276,12 @@ THREE.PlayerControls = function ( camera, player, cannonMesh, domElement ) {
 	        // left arrow or 'a' - rotate left
 	        playerIsMoving = true;
 
-	        var localPoint = new CANNON.Vec3(0,0,100);
-            var impulse = new CANNON.Vec3(-50 * (1/60),0,0);
-            this.cannonMesh.applyImpulse(impulse,localPoint);
+	        var direction = this.player.position.clone().sub( this.camera.position ).normalize();
 
+	        var localPoint = new CANNON.Vec3(0,0,100);
+            var impulse = new CANNON.Vec3(direction.z /-256,direction.x /256,direction.y /256);
+            
+            this.cannonMesh.applyImpulse(impulse, localPoint);
 	        //this.player.rotation.y += this.turnSpeed;
 
 	    }
@@ -276,9 +291,13 @@ THREE.PlayerControls = function ( camera, player, cannonMesh, domElement ) {
 	        // right arrow or 'd' - rotate right
 	        playerIsMoving = true;
 
+	        var direction = this.player.position.clone().sub( this.camera.position ).normalize();
+
 	        var localPoint = new CANNON.Vec3(0,0,100);
-            var impulse = new CANNON.Vec3(50 * (1/60),0,0);
-            this.cannonMesh.applyImpulse(impulse,localPoint);
+            var impulse = new CANNON.Vec3(direction.z /-256,direction.x /256,direction.y /256);
+            
+            
+            this.cannonMesh.applyImpulse(impulse.negate(), localPoint);
 	        //this.player.rotation.y -= this.turnSpeed;
 
 	    }
@@ -287,11 +306,11 @@ THREE.PlayerControls = function ( camera, player, cannonMesh, domElement ) {
 	        // 'q' - strafe left
 	        playerIsMoving = true;
 
-	        this.player.position.x -= this.moveSpeed * Math.cos( this.player.rotation.y );
-	        this.player.position.z += this.moveSpeed * Math.sin( this.player.rotation.y );
+	        // this.player.position.x -= this.moveSpeed * Math.cos( this.player.rotation.y );
+	        // this.player.position.z += this.moveSpeed * Math.sin( this.player.rotation.y );
 
-	        this.camera.position.x -= this.moveSpeed * Math.cos( this.player.rotation.y );
-	        this.camera.position.z += this.moveSpeed * Math.sin( this.player.rotation.y );
+	        // this.camera.position.x -= this.moveSpeed * Math.cos( this.player.rotation.y );
+	        // this.camera.position.z += this.moveSpeed * Math.sin( this.player.rotation.y );
 
 	    }
 
@@ -300,11 +319,11 @@ THREE.PlayerControls = function ( camera, player, cannonMesh, domElement ) {
 	        // 'e' - strage right
 	        playerIsMoving = true;
 
-	        this.player.position.x += this.moveSpeed * Math.cos( this.player.rotation.y );
-	        this.player.position.z -= this.moveSpeed * Math.sin( this.player.rotation.y );
+	        // this.player.position.x += this.moveSpeed * Math.cos( this.player.rotation.y );
+	        // this.player.position.z -= this.moveSpeed * Math.sin( this.player.rotation.y );
 
-	        this.camera.position.x += this.moveSpeed * Math.cos( this.player.rotation.y );
-	        this.camera.position.z -= this.moveSpeed * Math.sin( this.player.rotation.y );
+	        // this.camera.position.x += this.moveSpeed * Math.cos( this.player.rotation.y );
+	        // this.camera.position.z -= this.moveSpeed * Math.sin( this.player.rotation.y );
 
 	    }
 

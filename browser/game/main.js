@@ -1,5 +1,6 @@
 const THREE = require('three');
 const CANNON = require('../../public/cannon.min.js');
+const TargetCamera = require('../../public/THREE.TargetCamera.min.js');
 let scene, camera, canvas, renderer, sphere;
 let world, groundMaterial;
 
@@ -29,8 +30,7 @@ var maxSubSteps = 3;
 export const init = () => {
   // initialize THREE scene, camera, renderer
   scene = new THREE.Scene();
-  camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 1, 500 );
-  camera.position.z = 5;
+  camera = new THREE.PerspectiveCamera( 60, window.innerWidth / window.innerHeight, 1, 500 );
   canvas = document.getElementById('canvas');
   renderer = new THREE.WebGLRenderer({alpha: true, canvas});
   renderer.setSize( window.innerWidth, window.innerHeight );
@@ -202,6 +202,11 @@ scene.add(ambientLight);
 export function animate() {
   requestAnimationFrame( animate );
 
+  // update camera position
+  // camera.update();
+
+
+  // receive and process controls
   if ( controls ) {
     controls.update();
   }

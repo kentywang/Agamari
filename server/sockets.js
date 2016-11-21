@@ -73,7 +73,7 @@ const setUpSockets = io => {
       let room = Object.keys(socket.rooms)[0];
       store.dispatch(addRoom(action, room));
       io.sockets.in(room).emit('change_state', action);
-      console.log(store.getState().gameState[room]);
+      //console.log(store.getState().gameState[room]);
     });
   });
 };
