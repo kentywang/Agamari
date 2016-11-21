@@ -1,12 +1,10 @@
-const room1 = 'room1';
-const room2 = 'room2';
-
-
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import store from '../store';
 import {updateColor} from '../reducers/gameState';
-//import {myColors} from '../game/main';
+
+const room1 = 'room1';
+const room2 = 'room2';
 
 class ControlPanel extends Component {
   constructor(props) {
@@ -41,7 +39,6 @@ class ControlPanel extends Component {
         <button className="btn" onClick={() => this.changeState("pink")}>Pink</button>
       </div>
       );
-
   }
 }
 
