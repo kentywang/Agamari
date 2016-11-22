@@ -15,9 +15,13 @@ class App extends Component {
   constructor (props) {
     super(props);
     this.state = {
-      hasJoinedRoom: false
+      hasJoinedRoom: false,
+      windowIsOpen: true
     };
+    this.closeWindow = this.closeWindow.bind(this);
+    this.openWindow = this.openWindow.bind(this);
   }
+
 
   componentDidMount() {
     socket = io('/');
@@ -62,15 +66,19 @@ class App extends Component {
     }
   }
 
+  closeWindow() {
+    this.setState({windowIsOpen: false});
+  }
+
+  openWindow() {
+    this.setState({windowIsOpen: true});
+  }
+
   render() {
     return (
       <div>
-        <div className="nav-wrapper">
           <ControlPanel />
-        </div>
-        <div>
           <Canvas />
-        </div>
       </div>
       );
 

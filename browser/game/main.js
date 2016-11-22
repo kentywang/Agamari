@@ -1,5 +1,4 @@
 import store from '../store';
-import {updateLocation} from '../reducers/gameState';
 import { loadGame, player } from './game';
 
 import {controls, Player} from './player';
