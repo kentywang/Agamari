@@ -110,7 +110,7 @@ export const init = () => {
   cone = new THREE.Mesh( cone_geometry, cone_material );
 
   cone.castShadow = true;
-  cone.position.set(-50,10,-30);
+  cone.position.set(20,10,20);
 
   scene.add( cone );
   
@@ -125,16 +125,26 @@ export const init = () => {
 
   coneBody.addEventListener("collide", function(e){
     world.remove(coneBody); 
-    //player.cannonMesh.addShape(coneShape, new CANNON.Vec3(coneBody.position.x,coneBody.position.z,coneBody.position.y));
+    player.cannonMesh.addShape(coneShape, new CANNON.Vec3(coneBody.position.x,coneBody.position.z,coneBody.position.y));
 
+    // cannon mesh only works on certain angles (same prob as visuals?, so try quaternions)
 
     //merge works when sphere never rotates, but when it does, it attaches at another point
 
     //cone.rotation.set( player.mesh.rotation.x, player.mesh.rotation.y, player.mesh.rotation.z )
+
     cone.position.set( cone.position.x - player.mesh.position.x,cone.position.y - player.mesh.position.y,cone.position.z - player.mesh.position.z )
+
+    var pivot1 = new THREE.Object3D();
+    pivot1.quaternion.z = player.mesh.quaternion.z;
+    pivot1.quaternion.x = player.mesh.quaternion.x;
+    pivot1.quaternion.y = player.mesh.quaternion.y;
+    pivot1.quaternion.w = -player.mesh.quaternion.w;
+
     //cone.rotation.set( cone.rotation.x - player.mesh.rotation.x,cone.rotation.y - player.mesh.rotation.y,cone.rotation.z - player.mesh.rotation.z )
     //player.mesh.geometry.updateProjectionMatrix();
-    player.mesh.add(cone);
+    player.mesh.add(pivot1);
+    pivot1.add(cone);
   } );
 
 
