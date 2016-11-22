@@ -110,7 +110,7 @@ export const init = () => {
   cone = new THREE.Mesh( cone_geometry, cone_material );
 
   cone.castShadow = true;
-  cone.position.set(50,10,50);
+  cone.position.set(-50,10,-30);
 
   scene.add( cone );
   
@@ -125,19 +125,15 @@ export const init = () => {
 
   coneBody.addEventListener("collide", function(e){
     world.remove(coneBody); 
-    player.cannonMesh.addShape(coneShape, new CANNON.Vec3(coneBody.position.x,coneBody.position.z,coneBody.position.y));
-
-    // var mergeGeometry = new THREE.Geometry();
-    // cone_geometry.matrix
-    // mergeGeometry.merge( cone_geometry, cone_geometry.matrix );
-    // mergeGeometry.merge( player.mesh.geometry, player.mesh.geometry.matrix, 1 );
-
-    // var mesh = new THREE.Mesh( mergeGeometry, cone_material );
-    // player.mesh = mesh;
-    // scene.add( mesh );
+    //player.cannonMesh.addShape(coneShape, new CANNON.Vec3(coneBody.position.x,coneBody.position.z,coneBody.position.y));
 
 
+    //merge works when sphere never rotates, but when it does, it attaches at another point
 
+    //cone.rotation.set( player.mesh.rotation.x, player.mesh.rotation.y, player.mesh.rotation.z )
+    cone.position.set( cone.position.x - player.mesh.position.x,cone.position.y - player.mesh.position.y,cone.position.z - player.mesh.position.z )
+    //cone.rotation.set( cone.rotation.x - player.mesh.rotation.x,cone.rotation.y - player.mesh.rotation.y,cone.rotation.z - player.mesh.rotation.z )
+    //player.mesh.geometry.updateProjectionMatrix();
     player.mesh.add(cone);
   } );
 
