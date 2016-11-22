@@ -205,7 +205,7 @@ export function animate() {
   if (JSON.stringify(prevData) !== JSON.stringify(currData)) {
     let action = updateLocation(player.playerID, player.getPlayerData());
     store.dispatch(action);
-    store.getState().socket.emit('state_changed', action);
+    socket.emit('state_changed', action);
   }
 
 
