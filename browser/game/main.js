@@ -77,8 +77,8 @@ export const init = () => {
   //console.log("fooding", food)
   let newFood;
 
-  food.forEach(item=>{
-    newFood = new Food(item);
+  food.forEach((item, index)=>{
+    newFood = new Food(item, index);
     newFood.init();
   });
 

@@ -53,11 +53,14 @@ class App extends Component {
       });
 
       socket.on('add_food', (food) => {
-          let newFood = new Food(food);
+          let index = store.getState().gameState.food.length -1;
+          let newFood = new Food(food, index);
           newFood.init();
       });
 
       socket.on('ate_food_got_bigger', index => {
+          // why does console not log when placed after dispatch?
+          console.log("in socket listen");
           store.dispatch(removeFoodAndAddMass(null, index));
       });
 

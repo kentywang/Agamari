@@ -77,6 +77,7 @@ const setUpSockets = io => {
 
     // Relay game state changes and update server state
     socket.on('state_changed', action => {
+      //console.log("state changed")
       let room = Object.keys(socket.rooms)[0];
       store.dispatch(addRoom(action, room));
       //io.sockets.in(room).emit('change_state', action);
@@ -85,21 +86,21 @@ const setUpSockets = io => {
 
     // update food array and player mass
     socket.on('ate_food_got_bigger', (id, index) => {
+      //console.log("got food eaten msg")
       let room = Object.keys(socket.rooms)[0];
       store.dispatch(removeFoodAndAddMass(id, index, room));
-      socket.broadcast.in(room).emit('ate_food_got_bigger', index);
+      io.sockets.in(room).emit('ate_food_got_bigger', index);
     });
   });
 };
 
 const broadcastState = (io) => {
   setInterval(() => {
-    console.log("games state in room 1: ", store.getState().gameState.room1.players);
+   // console.log("games state in room 1: ", store.getState().gameState.room1.players);
   }, 5000);
   setInterval(() => {
     //console.log(store.getState())
 
-    spawnFood(io);
     
     let rooms = Object.keys(io.sockets.adapter.rooms);
     for (let room of rooms) {
@@ -111,6 +112,7 @@ const broadcastState = (io) => {
         }
       }
     }
+    spawnFood(io);
   }, (1000 / 60));
 }
 
