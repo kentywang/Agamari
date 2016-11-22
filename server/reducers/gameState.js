@@ -1,8 +1,8 @@
 
 /*----------  INITIAL STATE  ----------*/
 const initialState = {
-  room1: { color : 'red', players: {}, food:[]},
-  room2: { color: 'pink', players: {}, food:[]}
+  room1: { color : 'red', players: {}, food:{}},
+  room2: { color: 'pink', players: {}, food:{}}
 };
 
 /*----------  ACTION TYPES  ----------*/
@@ -43,15 +43,15 @@ module.exports.updateLocation = (player, room) => ({
   type: REMOVE_PLAYER, room, id
 });
 
- module.exports.removeFoodAndAddMass = (id, index, room) => ({
+ module.exports.removeFoodAndAddMass = (id, foodId, room) => ({
   type: REMOVE_FOOD_AND_ADD_MASS,
   id,
-  index,
+  foodId,
   room
 });
 
- module.exports.createFood = (xPostion,zPostion,foodShape, room) => ({
-  type:CREATE_FOOD, xPostion, zPostion, foodShape, room
+ module.exports.createFood = (id, xPostion,zPostion,foodShape, room) => ({
+  type:CREATE_FOOD, id, xPostion, zPostion, foodShape, room
 });
 
 
@@ -77,7 +77,7 @@ module.exports.reducer = (state = initialState, action) => {
     case REMOVE_FOOD_AND_ADD_MASS:
       if (state[action.room]){
         state[action.room].players[action.id].scale += 0.1;
-        state[action.room].food.splice(action.index, 1);
+        delete state[action.room].food[action.foodId];
       } 
       return state;
     case UPDATE_LOCATION:
@@ -87,7 +87,7 @@ module.exports.reducer = (state = initialState, action) => {
       //WHY EMPTY?
       break;
     case CREATE_FOOD:
-      state[action.room].food.push({x:action.xPostion, z: action.zPostion, type:action.foodShape});
+      if (state[action.room]) state[action.room].food[action.id] = {x:action.xPostion, z: action.zPostion, type:action.foodShape};
       return state;
 
     default: return state;

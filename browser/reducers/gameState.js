@@ -1,5 +1,3 @@
-import {removeFood} from '../game/food';
-
 /*----------  INITIAL STATE  ----------*/
 const initialState = {};
 
@@ -8,7 +6,7 @@ const RECEIVE_GAMESTATE = 'RECEIVE_GAMESTATE';
 const UPDATE_COLOR = 'UPDATE_COLOR';
 const ADD_PLAYER = 'ADD_PLAYER';
 const UPDATE_LOCATION = 'UPDATE_LOCATION';
-const ADD_FOOD_POINTER = 'ADD_FOOD_POINTER';
+// const ADD_FOOD_POINTER = 'ADD_FOOD_POINTER';
 const REMOVE_PLAYER = 'REMOVE_PLAYER';
 const REMOVE_FOOD_AND_ADD_MASS = 'REMOVE_FOOD_AND_ADD_MASS';
 
@@ -34,17 +32,17 @@ export const removePlayer = id => ({
   id
 });
 
-export const addFoodPointer = (index, mesh, cannonMesh) => ({
-  type: ADD_FOOD_POINTER,
-  index,
-  mesh,
-  cannonMesh
-});
+// export const addFoodPointer = (index, mesh, cannonMesh) => ({
+//   type: ADD_FOOD_POINTER,
+//   index,
+//   mesh,
+//   cannonMesh
+// });
 
-export const removeFoodAndAddMass = (id, index) => ({
+export const removeFoodAndAddMass = (id, foodId) => ({
   type: REMOVE_FOOD_AND_ADD_MASS,
   id,
-  index
+  foodId
 });
 
 export const updateLocation = (id, data) => ({
@@ -68,11 +66,11 @@ let newState, players;
     case ADD_PLAYER:
       state.players[action.id] = action.data;
       return state;
-    case ADD_FOOD_POINTER:
-      state.food[action.index].mesh = action.mesh;
-      state.food[action.index].cannonMesh = action.cannonMesh;
-      //console.log("add food pointer", state);
-      return state//Object.assign({}, state);
+    // case ADD_FOOD_POINTER:
+    //   state.food[action.index].mesh = action.mesh;
+    //   state.food[action.index].cannonMesh = action.cannonMesh;
+    //   //console.log("add food pointer", state);
+    //   return state//Object.assign({}, state);
     case REMOVE_PLAYER:
     // WE NEED To still remove the player from scene 
       delete state.players[action.id];
@@ -81,8 +79,10 @@ let newState, players;
       // don't need to add mass if coming from other players since it'll be updated in anim loop
       //console.log("in reducer")
       if(action.id) state.players[action.id].scale += 0.1;
-      removeFood(action.index); // should do this in thunk
-      state.food.splice(action.index, 1)
+      //removeFood(foodId); // should do this in thunk
+      delete state.food[action.foodId];
+      //world.remove(scope.cannonMesh);
+      //state.food.splice(action.index, 1)
       return state;
     case UPDATE_LOCATION:
       state.players[action.id] = action.data;

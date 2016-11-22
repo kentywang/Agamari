@@ -1,5 +1,5 @@
 import store from '../store';
-import {removeFoodAndAddMass, addFoodPointer} from '../reducers/gameState';
+import {removeFoodAndAddMass} from '../reducers/gameState';
 import {socket} from '../components/App';
 import { scene, camera, canvas, renderer, world, groundMaterial, playerID, myColors } from './main';
 import {player} from './game';
@@ -10,13 +10,14 @@ const CANNON = require('../../public/cannon.min.js');
 
 let controls;
 
-export const Food = function( foodObj, index ) {
+export const Food = function( id, foodObj ) {
+	this.foodID = id;
 	this.foodData = foodObj;
-	this.index = index;
+
 	this.mesh;
 	this.cannonMesh;
 	var scope = this;
-	//console.log(this.index)
+//	console.log("in food")
 
 
 	if(foodObj.type == "sphere"){
@@ -41,6 +42,8 @@ export const Food = function( foodObj, index ) {
 
 		scene.add( scope.mesh );
 
+		scope.mesh.name = scope.foodID;
+
 
 		// add Cannon box
 		scope.cannonMesh.position.x = scope.mesh.position.x;
@@ -55,7 +58,7 @@ export const Food = function( foodObj, index ) {
 
 
 		// add pointed to meshes in local state food array
-		store.dispatch(addFoodPointer(scope.index, scope.mesh, scope.cannonMesh));
+		//store.dispatch(addFoodPointer(scope.index, scope.mesh, scope.cannonMesh));
 
 		scope.cannonMesh.addEventListener("collide", function(e){
 			world.remove(scope.cannonMesh);
@@ -69,20 +72,18 @@ export const Food = function( foodObj, index ) {
 			//remove the food 
 			scene.remove(scope.mesh);
 
+			// scale player
 			player.mesh.scale.x=player.mesh.scale.y=player.mesh.scale.z +=0.1;
 
 			// update local store
 			//console.log("getstate", store.getState())
-			store.getState().gameState.food.forEach((item,index) => {
-				if(item.x === scope.foodData.x && item.z === scope.foodData.z){
-					console.log("removing food and emitting")
+			//let foodToRemove = store.getState().gameState.food[scope.foodID];
 					// Why isn't this emitting when placed after the dispatch?
-					store.getState().socket.emit('ate_food_got_bigger', player.playerID, index);
 
-					store.dispatch(removeFoodAndAddMass(player.playerID, index));
+			store.getState().socket.emit('ate_food_got_bigger', player.playerID, scope.foodID);
 
-				}
-			});
+			store.dispatch(removeFoodAndAddMass(player.playerID, scope.foodID));
+
 
 			// emit event to server
 		});
@@ -109,12 +110,3 @@ export const Food = function( foodObj, index ) {
 	// 	};
 	// };
 };
-
-function removeFood(index) {
-	console.log("removing food at ", store.getState())
-	// the meshes don't exist even though they did in ADD FooD PoINTER, could RECEIVE_GAMESTATE be changing it??
-	scene.remove(store.getState().gameState.food[index].mesh);
-	world.remove(store.getState().gameState.food[index].cannonMesh);
-}
-
-export {removeFood};

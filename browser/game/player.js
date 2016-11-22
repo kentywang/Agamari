@@ -41,6 +41,7 @@ export const Player = function( playerID, isMainPlayer ) {
 		scope.mesh.rotation.y = playerData.ry;
 		scope.mesh.rotation.z = playerData.rz;
 
+		// should be scope.playerID
 		scope.mesh.name = playerID;
 
 		// initially scale player if scale props exist

@@ -74,13 +74,14 @@ export const init = () => {
 
   // initialize all existing food in room
   let { food } = store.getState().gameState;
-  //console.log("fooding", food)
+  console.log("fooding", food)
   let newFood;
 
-  food.forEach((item, index)=>{
-    newFood = new Food(item, index);
-    newFood.init();
-  });
+for (let aFood in food){
+          newFood = new Food(aFood);
+          newFood.init();
+  }
+
 
 
   // Adjust friction between ball & ground

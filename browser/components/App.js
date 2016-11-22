@@ -52,9 +52,10 @@ class App extends Component {
         }
       });
 
-      socket.on('add_food', (food) => {
-          let index = store.getState().gameState.food.length -1;
-          let newFood = new Food(food, index);
+      socket.on('add_food', (id, food) => {
+          //let index = store.getState().gameState.food.length -1;
+          console.log("got add food event")
+          let newFood = new Food(id, food);
           newFood.init();
       });
 

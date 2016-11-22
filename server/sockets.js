@@ -88,7 +88,7 @@ const setUpSockets = io => {
     socket.on('ate_food_got_bigger', (id, index) => {
       //console.log("got food eaten msg")
       let room = Object.keys(socket.rooms)[0];
-      store.dispatch(removeFoodAndAddMass(id, index, room));
+      store.dispatch(removeFoodAndAddMass(id, scope.foodID, room));
       io.sockets.in(room).emit('ate_food_got_bigger', index);
     });
   });
