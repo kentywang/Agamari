@@ -1,5 +1,7 @@
 /*----------  INITIAL STATE  ----------*/
-const initialState = {};
+const initialState = {
+  players: {}
+};
 
 /*----------  ACTION TYPES  ----------*/
 const RECEIVE_GAMESTATE = 'RECEIVE_GAMESTATE';

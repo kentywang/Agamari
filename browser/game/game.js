@@ -2,6 +2,7 @@ import store from '../store';
 import {addPlayer} from '../reducers/gameState';
 import { scene, camera, canvas, renderer, plane, playerID, myColors } from './main';
 import {Player} from './player';
+import {socket} from '../components/App';
 
 const THREE = require('three');
 
@@ -25,7 +26,6 @@ const loadGame = () => {
 }
 
 export function loadEnvironment() {
-	let { auth } = store.getState();
 	let { color, players } = store.getState().gameState;
 
 	// Kenty: added if statement below to get around undefined plane error
@@ -37,7 +37,7 @@ export function loadEnvironment() {
 	// set location and rotation for other players (I should probably use player.setOrientation instead)
 	for (let player in players){
   		// Kenty: added '&& scene.getobj' to if statement below to get around undefined error
-	  	if(player != auth.id && scene.getObjectByName(player)){
+	  	if(player != socket.id && scene.getObjectByName(player)){
 	  		currentPlayer = scene.getObjectByName(player);
 	  		data = players[player];
 
@@ -59,25 +59,3 @@ function initMainPlayer() {
 }
 
 export { loadGame, player };
-
-// function makeFood(){
-// 	const food_plane_geometry = new THREE.planeGeometry( 0.3 );
-// 	const food_plane_material = new THREE.MeshBasicMaterial( {color: 0x66669, wireframe: false} );
-
-// 	let gameBorderPosition = 100;
-
-// 	for (var i = 0; i < 10; i++) {
-// 		const food = new THREE.Mesh( food_plane_geometry, food_plane_material );
-
-// 		let xPostion = Math.floor(Math.random()*gameBorderPosition);
-// 		xPostion *= Math.floor(Math.random()*2) == 1 ? 1 : -1;
-
-// 		let zPostion = Math.floor(Math.random()*gameBorderPosition);
-// 		zPostion *= Math.floor(Math.random()*2) == 1 ? 1 : -1;
-
-// 		food.position.x = xPostion;
-// 		food.position.y = 0;
-// 		food.position.z = zPostion;
-// 		scene.add( food );
-// 	}
-// };
