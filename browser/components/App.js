@@ -5,7 +5,7 @@ import { receiveGameState } from '../reducers/gameState';
 import Canvas from './Canvas';
 import ControlPanel from './ControlPanel';
 import { loadEnvironment } from '../game/game';
-import { init, animate } from '../game/main';
+import { init, animate, scene } from '../game/main';
 import { Player } from '../game/player';
 import {Food} from '../game/food';
 
@@ -46,6 +46,7 @@ class App extends Component {
     socket.on('connect', () => {
 
       socket.on('game_state', state => {
+        // console.log(state)
         this.props.receiveGameState(state);
       });
 
@@ -54,6 +55,7 @@ class App extends Component {
       });
 
       socket.on('game_ready', () => {
+        console.log('game ready', this.props.gameState);
         init();
         animate();
         this.closeControlPanel();
@@ -61,8 +63,12 @@ class App extends Component {
 
       socket.on('add_player', id => {
         if (id !== socket.id){
-          let player = new Player(id);
-          player.init();
+          let { players } = this.props.gameState;
+          if (players[id]) {
+            let player = new Player(id, players[id], false);
+            player.init();
+
+          }
         }
       });
 
@@ -79,7 +85,7 @@ class App extends Component {
   }
 
   componentDidUpdate(prevProps) {
-    if (Object.keys(prevProps.gameState).length && prevProps.gameState !== this.props.gameState) {
+    if (scene && Object.keys(prevProps.gameState).length && prevProps.gameState !== this.props.gameState) {
       loadEnvironment();
     }
   }

@@ -13,7 +13,7 @@ const loadGame = () => {
 	loadEnvironment();
 
 	// load the player
-	initMainPlayer();
+	// initMainPlayer();
 
 
 	window.onunload = function() {
@@ -35,11 +35,11 @@ export function loadEnvironment() {
 	let data;
 
 	// set location and rotation for other players (I should probably use player.setOrientation instead)
-	for (let player in players){
+	for (let id in players){
   		// Kenty: added '&& scene.getobj' to if statement below to get around undefined error
-	  	if(player != socket.id && scene.getObjectByName(player)){
-	  		currentPlayer = scene.getObjectByName(player);
-	  		data = players[player];
+	  	if(id != socket.id && scene.getObjectByName(id)){
+	  		currentPlayer = scene.getObjectByName(id);
+	  		data = players[id];
 
 	  		currentPlayer.position.x = data.x;
 	  		currentPlayer.position.y = data.y;
@@ -49,7 +49,6 @@ export function loadEnvironment() {
 	  		currentPlayer.rotation.z = data.rz;
 	  	}
 	}
-
 	//makeFood();
 }
 

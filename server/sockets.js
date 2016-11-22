@@ -9,6 +9,12 @@ const initPos = {
   rz: 0
 };
 
+const joinRoom = (socket, room) => {
+  socket.join(room);
+  forOwn(socket.rooms, (value, key) => {
+    if (key !== room) socket.leave(key);
+  });
+};
 
 const { addRoom } = require('./utils');
 const { addUser, removeUser, assignRoom } = require('./reducers/users');
@@ -33,7 +39,6 @@ const setUpSockets = io => {
       User.create({ nickname, guest: true })
         .then(({id, nickname}) => {
           store.dispatch(assignRoom(socket.id, 'room1'));
-          socket.join('room1');
           let user = Object.assign(initPos, {id, nickname});
 
           // Maybe emit event and trigger thunk?
@@ -42,6 +47,8 @@ const setUpSockets = io => {
           socket.emit('game_state', roomState);
           io.sockets.in('room1').emit('change_state', addPlayer(socket.id, user));
           io.sockets.in('room1').emit('add_player', socket.id);
+          joinRoom(socket, 'room1');
+          console.log('joined room1');
           socket.emit('game_ready');
         })
         .catch(err => socket.emit('start_fail', err));
@@ -76,11 +83,13 @@ const broadcastState = (io) => {
   setInterval(() => {
     let { gameState } = store.getState();
     forOwn(gameState, (state, room) => {
+        // console.log('looping', state);
         io.sockets.in(room).emit('game_state', state);
     });
     spawnFood(io);
   }, (1000 / 60));
 };
+
 
 
 module.exports = { setUpSockets, broadcastState };

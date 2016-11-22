@@ -1,5 +1,5 @@
 import store from '../store';
-import { scene, camera, canvas, renderer, world, groundMaterial, playerID, myColors } from './main';
+import { scene, camera, canvas, renderer, world, groundMaterial, myColors } from './main';
 
 const THREE = require('three');
 const CANNON = require('../../public/cannon.min.js');
@@ -7,8 +7,8 @@ const PlayerControls = require('../../public/PlayerControls');
 
 let controls;
 
-export const Player = function( playerID, isMainPlayer ) {
-	this.playerID = playerID;
+export const Player = function( id, data, isMainPlayer ) {
+	this.id = id;
 	this.isMainPlayer = isMainPlayer;
 	this.mesh;
 	this.cannonMesh;
@@ -29,20 +29,20 @@ export const Player = function( playerID, isMainPlayer ) {
 
 
 	this.init = function() {
-		let playerData = store.getState().gameState.players[scope.playerID];
+		// let playerData = store.getState().gameState.players[scope.id];
 
 		// mesh the ball geom and mat
 		scope.mesh = new THREE.Mesh( ball_geometry, ball_material );
 		scope.mesh.castShadow = true;
 
-		scope.mesh.position.x = playerData.x;
-		scope.mesh.position.y = playerData.y;
-		scope.mesh.position.z = playerData.z;
-		scope.mesh.rotation.x = playerData.rx;
-		scope.mesh.rotation.y = playerData.ry;
-		scope.mesh.rotation.z = playerData.rz;
+		scope.mesh.position.x = data.x;
+		scope.mesh.position.y = data.y;
+		scope.mesh.position.z = data.z;
+		scope.mesh.rotation.x = data.rx;
+		scope.mesh.rotation.y = data.ry;
+		scope.mesh.rotation.z = data.rz;
 
-		scope.mesh.name = playerID;
+		scope.mesh.name = id;
 
 		scene.add( scope.mesh );
 
