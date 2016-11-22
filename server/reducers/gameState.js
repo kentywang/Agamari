@@ -52,7 +52,7 @@ module.exports.updateLocation = (player, room) => ({
 
 /*----------  REDUCER  ----------*/
 module.exports.reducer = (state = initialState, action) => {
-  console.log("state:", state, "action:", action)
+  // console.log("state:", state, "action:", action)
   let room = {};
   let newState, players;
   switch (action.type) {

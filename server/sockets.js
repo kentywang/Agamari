@@ -25,7 +25,7 @@ const setUpSockets = io => {
       let { gameState } = store.getState();
       let rooms = Object.keys(gameState);
       for (let room of rooms) {
-        if (gameState[room].players[socket.id]) {
+        if (gameState[room] && gameState[room].players[socket.id]) {
           store.dispatch(removePlayer(socket.id, room));
         }
       }
@@ -34,7 +34,8 @@ const setUpSockets = io => {
     });
 
     // Log out of other rooms before entering room
-    socket.on('room', room => {
+    socket.on('room', ({room, user}) => {
+      console.log('received room', room, user);
       let { gameState } = store.getState();
       store.dispatch(assignRoom(socket.id, room));
       socket.join(room);
@@ -55,17 +56,22 @@ const setUpSockets = io => {
       rz: 0
     };
 
-
+      let data = user ? Object.assign(initPos, user) : initPos;
       // let's make sure to do these in order(maybe with promises)
-      store.dispatch(addPlayer(socket.id, initPos, room));
+      console.log('dispatching data', data);
+      store.dispatch(addPlayer(socket.id, data, room));
+      setTimeout(() => {
+        let roomState = store.getState().gameState[room];
+        console.log('room state', roomState);
+        socket.emit('game_state', roomState);
 
-      socket.emit('game_state', store.getState().gameState[room]);
+        io.sockets.in(room).emit('change_state', addPlayer(socket.id, data));
 
-      io.sockets.in(room).emit('change_state', addPlayer(socket.id, initPos));
+        io.sockets.in(room).emit('add_player', socket.id);
 
-      io.sockets.in(room).emit('add_player', socket.id);
+        socket.emit('in_room');
 
-      socket.emit('in_room');
+      }, 2000);
 
       // store.dispatch(addRoom(addPlayer(socket.id), room));
 
@@ -78,7 +84,9 @@ const setUpSockets = io => {
     // Relay game state changes and update server state
     socket.on('state_changed', action => {
       let room = Object.keys(socket.rooms)[0];
-      store.dispatch(addRoom(action, room));
+      if (store.getState().gameState[room]) {
+        store.dispatch(addRoom(action, room));
+      }
       //io.sockets.in(room).emit('change_state', action);
       //console.log(store.getState().gameState[room]);
     });

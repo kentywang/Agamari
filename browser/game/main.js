@@ -1,10 +1,10 @@
 import store from '../store';
-import {updateLocation} from '../reducers/gameState';
 import { loadGame, player } from './game';
 
 import {controls, Player} from './player';
 import {Food} from './food';
 import {socket} from '../components/App';
+import {updateLocation} from '../reducers/gameState';
 
 
 const THREE = require('three');

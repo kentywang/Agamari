@@ -59,5 +59,3 @@ function initMainPlayer() {
 }
 
 export { loadGame, player };
-
-

@@ -6,9 +6,10 @@ import { receiveGameState } from '../reducers/gameState';
 import Canvas from './Canvas';
 import ControlPanel from './ControlPanel';
 import { loadEnvironment } from '../game/game';
-import { init, animate } from '../game/main';
+import { init, animate, scene } from '../game/main';
 import { Player } from '../game/player';
 import {Food} from '../game/food';
+
 
 let socket;
 
@@ -16,9 +17,13 @@ class App extends Component {
   constructor (props) {
     super(props);
     this.state = {
-      hasJoinedRoom: false
+      hasJoinedRoom: false,
+      windowIsOpen: true
     };
+    this.closeWindow = this.closeWindow.bind(this);
+    this.openWindow = this.openWindow.bind(this);
   }
+
 
   componentDidMount() {
     socket = io('/');
@@ -63,20 +68,24 @@ class App extends Component {
   }
 
   componentDidUpdate(prevProps) {
-    if(Object.keys(prevProps.gameState).length && prevProps.gameState !== this.props.gameState){
+    if(scene && Object.keys(prevProps.gameState).length && prevProps.gameState !== this.props.gameState){
       loadEnvironment();
     }
+  }
+
+  closeWindow() {
+    this.setState({windowIsOpen: false});
+  }
+
+  openWindow() {
+    this.setState({windowIsOpen: true});
   }
 
   render() {
     return (
       <div>
-        <div className="nav-wrapper">
           <ControlPanel />
-        </div>
-        <div>
           <Canvas />
-        </div>
       </div>
       );
 
