@@ -1,5 +1,6 @@
 import store from '../store';
 import { scene, camera, canvas, renderer, world, groundMaterial, playerID, myColors } from './main';
+import {player} from './game';
 
 const THREE = require('three');
 const CANNON = require('../../public/cannon.min.js');
@@ -21,10 +22,12 @@ export const Player = function( playerID, isMainPlayer ) {
 
 
 	// create Cannon box
+	var sphereShape = new CANNON.Sphere(10);
 	if(this.isMainPlayer){
-		var sphereShape = new CANNON.Sphere(10);
 		scope.cannonMesh = new CANNON.Body({mass: 50, material: groundMaterial, shape: sphereShape});
 		scope.cannonMesh.linearDamping = scope.cannonMesh.angularDamping = 0.4;
+	}else{
+		scope.cannonMesh = new CANNON.Body({mass: 0, shape: sphereShape});
 	}
 
 
@@ -48,7 +51,7 @@ export const Player = function( playerID, isMainPlayer ) {
 
 
 		// add Cannon box
-		if(scope.isMainPlayer){
+		// if(scope.isMainPlayer){
 			scope.cannonMesh.position.x = scope.mesh.position.x;
   			scope.cannonMesh.position.z = scope.mesh.position.y;
   			scope.cannonMesh.position.y = scope.mesh.position.z;
@@ -57,7 +60,20 @@ export const Player = function( playerID, isMainPlayer ) {
   			scope.cannonMesh.quaternion.z = scope.mesh.quaternion.z;
   			scope.cannonMesh.quaternion.w = scope.mesh.quaternion.w;
 
+  			scope.mesh.cannon = scope.cannonMesh;
 			world.add(scope.cannonMesh);
+		// }
+
+		if(!scope.isMainPlayer){
+			scope.cannonMesh.addEventListener("collide", function(e){
+				console.log("what is going on")
+			    for(var i=0; i<world.contacts.length; i++){
+			        var c = world.contacts[i];
+			        if((c.bi === scope.cannonMesh && c.bj === player.cannonMesh) || (c.bi === player.cannonMesh && c.bj === scope.cannonMesh)){
+			            return true;
+			        }
+			    }
+			});
 		}
 
 		// add controls and camera

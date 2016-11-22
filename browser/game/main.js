@@ -188,7 +188,26 @@ export function animate() {
   player.mesh.quaternion.z = -player.cannonMesh.quaternion.y;
   player.mesh.quaternion.y = -player.cannonMesh.quaternion.z;
   player.mesh.quaternion.w = player.cannonMesh.quaternion.w;
+ 
 
+ let { players } = store.getState().gameState;
+
+
+  // for all other players
+  for (let player in players){
+    if(player != socket.id && scene.getObjectByName(player)){
+      let currentPlayer = scene.getObjectByName(player);
+       
+     // console.log("bodies", world.bodies);
+      currentPlayer.cannon.position.x = currentPlayer.position.x;
+      currentPlayer.cannon.position.z = currentPlayer.position.y;
+      currentPlayer.cannon.position.y = currentPlayer.position.z;
+      currentPlayer.cannon.quaternion.x = -currentPlayer.quaternion.x;
+      currentPlayer.cannon.quaternion.z = -currentPlayer.quaternion.y;
+      currentPlayer.cannon.quaternion.y = -currentPlayer.quaternion.z;
+      currentPlayer.cannon.quaternion.w = currentPlayer.quaternion.w;
+    }
+}
 
   // run physics
   time = Date.now()
