@@ -1,7 +1,7 @@
 import store from '../store';
 import {removeFoodAndAddMass, addFoodPointer} from '../reducers/gameState';
 import {socket} from '../components/App';
-import { scene, world, groundMaterial, myColors } from './main';
+import { scene, camera, canvas, renderer, world, groundMaterial, playerID, myColors } from './main';
 import {player} from './game';
 
 const THREE = require('three');

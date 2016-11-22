@@ -37,7 +37,7 @@ export function loadEnvironment() {
 	// set location and rotation for other players (I should probably use player.setOrientation instead)
 	for (let player in players){
   		// Kenty: added '&& scene.getobj' to if statement below to get around undefined error
-	  	if(player != socket.id && scene.getObjectByName(player)){
+	  	if(player != socket.id && scene && scene.getObjectByName(player)){
 	  		currentPlayer = scene.getObjectByName(player);
 	  		data = players[player];
 
@@ -60,7 +60,7 @@ export function loadEnvironment() {
 }
 
 function initMainPlayer() {
-	player = new Player( playerID, true);
+	player = new Player( socket.id, true);
 	player.init();
 }
 

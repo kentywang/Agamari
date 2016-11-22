@@ -9,6 +9,7 @@ const RECEIVE_PLAYERS = 'RECEIVE_PLAYERS';
 const RECEIVE_PLAYER = 'RECEIVE_PLAYER';
 const UPDATE_PLAYER = 'UPDATE_PLAYER';
 const REMOVE_PLAYER = 'REMOVE_PLAYER';
+const CHANGE_SCALE = 'CHANGE_SCALE';
 
 /*----------  ACTION CREATORS  ----------*/
 export const receivePlayers = players => ({
@@ -32,6 +33,11 @@ export const updatePlayer = (id, data) => ({
   id,
   data
 });
+
+export const changeScale = (id, change) => ({
+  type: CHANGE_SCALE,
+  change
+})
 
 /*----------  THUNK CREATORS  ----------*/
 
@@ -68,6 +74,10 @@ export default (state = initialState, action) => {
     case UPDATE_PLAYER:
       player = state[action.id];
       Object.assign(player, action.data);
+      return state;
+    case CHANGE_SCALE:
+      player = state[action.id];
+      if (player.scale) player.scale += action.change;
       return state;
     default: return state;
   }

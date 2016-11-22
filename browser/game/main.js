@@ -14,8 +14,6 @@ let scene, camera, canvas, renderer, plane;
 let world, groundMaterial, shadowLight;
 
 
-let playerID;
-
 // our color pallet
 var myColors = {
   grey:"#556270",
@@ -48,9 +46,6 @@ export const init = () => {
   renderer.shadowMapEnabled = true;
   renderer.shadowMapSoft = true;
 
-
-  // store set playerID to socket.id from store
-  playerID = socket.id;
 
 
   // initialize Cannon world
@@ -200,10 +195,10 @@ export function animate() {
 
 
   // this dispatch happens 60 times a second, updating the local state with player's new info and emitting to server
-  let prevData = store.getState().gameState.players[player.playerID];
+  let prevData = store.getState().gameState.players[player.id];
   let currData = player.getPlayerData();
   if (JSON.stringify(prevData) !== JSON.stringify(currData)) {
-    let action = updateLocation(player.playerID, player.getPlayerData());
+    let action = updateLocation(player.id, player.getPlayerData());
     store.dispatch(action);
     socket.emit('state_changed', action);
   }
@@ -225,7 +220,7 @@ function onWindowResize() {
 }
 
 
-export { scene, camera, canvas, renderer, playerID, plane, world, groundMaterial, myColors };
+export { scene, camera, canvas, renderer, plane, world, groundMaterial, myColors };
 
 // function botInit(){
   // const bot_geometry = new THREE.BoxGeometry(1,1,1);
