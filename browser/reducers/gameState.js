@@ -1,6 +1,7 @@
 /*----------  INITIAL STATE  ----------*/
 const initialState = {
-  players: {}
+  players: {},
+  food: []
 };
 
 /*----------  ACTION TYPES  ----------*/
@@ -56,7 +57,7 @@ let newState, players;
       delete state.players[action.id];
       return state;
     case UPDATE_LOCATION:
-      state.players[action.id] = action.data;
+      Object.assign(state.players[action.id], action.data);
       return state;
     default: return state;
   }

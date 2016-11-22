@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import store from '../store';
-import { receiveSocket } from '../reducers/socket';
 import { receiveGameState } from '../reducers/gameState';
 import Canvas from './Canvas';
 import ControlPanel from './ControlPanel';
@@ -10,51 +9,71 @@ import { init, animate, scene } from '../game/main';
 import { Player } from '../game/player';
 import {Food} from '../game/food';
 
-
 let socket;
 
 class App extends Component {
-  constructor (props) {
+  constructor(props) {
     super(props);
     this.state = {
-      hasJoinedRoom: false,
-      windowIsOpen: true
+      consoleIsOpen: true,
+      error: null
     };
-    this.closeWindow = this.closeWindow.bind(this);
-    this.openWindow = this.openWindow.bind(this);
+    this.openControlPanel = this.openControlPanel.bind(this);
+    this.closeControlPanel = this.closeControlPanel.bind(this);
+    this.setError = this.setError.bind(this);
+    this.resetError = this.resetError.bind(this);
   }
 
+  openControlPanel() {
+    this.setState({ controlPanelIsOpen: true});
+  }
+
+  closeControlPanel() {
+    this.setState({ controlPanelIsOpen: false});
+  }
+
+  setError(error) {
+    this.setState({ error });
+  }
+
+  resetError() {
+    this.setState({ error: null })
+  }
 
   componentDidMount() {
     socket = io('/');
 
     socket.on('connect', () => {
 
-
-      socket.on('message', console.log);
-
       socket.on('game_state', state => {
+        // console.log(state)
         this.props.receiveGameState(state);
       });
 
-      socket.on('change_state', action=> {
+      socket.on('change_state', action => {
         store.dispatch(action);
       });
 
-      socket.on('in_room', action=> {
-        console.log("has joined room, ", this.state.hasJoinedRoom);
-        if(!this.state.hasJoinedRoom){
-            init();
-            animate();
-            this.setState({hasJoinedRoom: true});
-        }
+      socket.on('game_ready', () => {
+        console.log('game ready', this.props.gameState);
+        init();
+        animate();
+        this.closeControlPanel();
       });
 
       socket.on('add_player', id => {
-        if(id != socket.id){
-          let player = new Player(id);
-          player.init();
+        if (id !== socket.id){
+          let { players } = this.props.gameState;
+          if (players[id]) {
+            let player = new Player(id, players[id], false);
+            player.init();
+
+          }
         }
+      });
+
+      socket.on('start_fail', err => {
+        this.setState({ err: err.message });
       });
 
       socket.on('add_food', (food) => {
@@ -63,28 +82,25 @@ class App extends Component {
       });
 
     });
-
-    this.props.receiveSocket(socket);
   }
 
   componentDidUpdate(prevProps) {
-    if(scene && Object.keys(prevProps.gameState).length && prevProps.gameState !== this.props.gameState){
+    if (scene && Object.keys(prevProps.gameState).length && prevProps.gameState !== this.props.gameState) {
       loadEnvironment();
     }
   }
 
-  closeWindow() {
-    this.setState({windowIsOpen: false});
-  }
-
-  openWindow() {
-    this.setState({windowIsOpen: true});
-  }
-
   render() {
+    let { openControlPanel, closeControlPanel, setError, resetError } = this;
+    let { controlPanelIsOpen, error } = this.state;
     return (
       <div>
-          <ControlPanel />
+          <ControlPanel isOpen={controlPanelIsOpen}
+                        open={openControlPanel}
+                        close={closeControlPanel}
+                        setError={setError}
+                        resetError={resetError}
+                        error={error}/>
           <Canvas />
       </div>
       );
@@ -93,10 +109,9 @@ class App extends Component {
 }
 
 
-const mapStateToProps = ({gameState}) => ({gameState});
+const mapStateToProps = ({ gameState }) => ({ gameState });
 const mapDispatchToProps = dispatch => ({
-  receiveSocket: socket => dispatch(receiveSocket(socket)),
-  receiveGameState: state => dispatch(receiveGameState(state)),
+  receiveGameState: state => dispatch(receiveGameState(state))
 });
 
 export default connect(

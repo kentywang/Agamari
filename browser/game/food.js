@@ -1,6 +1,5 @@
 import store from '../store';
-import { scene, camera, canvas, renderer, world, groundMaterial, playerID, myColors } from './main';
-import {player} from './game';
+import { scene, player, camera, canvas, renderer, world, groundMaterial, playerID, myColors } from './main';
 
 const THREE = require('three');
 const CANNON = require('../../public/cannon.min.js');
@@ -59,7 +58,7 @@ export const Food = function( foodObj ) {
 			player.cannonMesh.mass += 0;
 			console.log(player.cannonMesh.mass);
 
-			//remove the food 
+			//remove the food
 			//also need to remove food from game state eventually
 			scene.remove(scope.mesh);
 

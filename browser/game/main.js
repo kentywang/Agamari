@@ -1,5 +1,5 @@
 import store from '../store';
-import { loadGame, player } from './game';
+import { loadGame } from './game';
 
 import {controls, Player} from './player';
 import {Food} from './food';
@@ -14,7 +14,7 @@ let scene, camera, canvas, renderer, plane;
 let world, groundMaterial, shadowLight;
 
 
-let playerID;
+let player;
 
 // our color pallet
 var myColors = {
@@ -50,7 +50,7 @@ export const init = () => {
 
 
   // store set playerID to socket.id from store
-  playerID = socket.id;
+  // playerID = socket.id;
 
 
   // initialize Cannon world
@@ -64,10 +64,13 @@ export const init = () => {
   let { players } = store.getState().gameState;
   let newPlayer;
 
-  for (let player in players){
-    if(player != socket.id){
-          newPlayer = new Player(player);
+  for (let id in players) {
+    if (id !== socket.id) {
+          newPlayer = new Player(id, players[id], false);
           newPlayer.init();
+    } else {
+      player = new Player(id, players[id], true);
+      player.init();
     }
   }
 
@@ -200,12 +203,12 @@ export function animate() {
 
 
   // this dispatch happens 60 times a second, updating the local state with player's new info and emitting to server
-  let prevData = store.getState().gameState.players[player.playerID];
+  let prevData = store.getState().gameState.players[player.id];
   let currData = player.getPlayerData();
   if (JSON.stringify(prevData) !== JSON.stringify(currData)) {
-    let action = updateLocation(player.playerID, player.getPlayerData());
+    let action = updateLocation(player.id, player.getPlayerData());
     store.dispatch(action);
-    store.getState().socket.emit('state_changed', action);
+    socket.emit('state_changed', action);
   }
 
 
@@ -225,7 +228,7 @@ function onWindowResize() {
 }
 
 
-export { scene, camera, canvas, renderer, playerID, plane, world, groundMaterial, myColors };
+export { scene, camera, canvas, renderer, player, plane, world, groundMaterial, myColors };
 
 // function botInit(){
   // const bot_geometry = new THREE.BoxGeometry(1,1,1);
