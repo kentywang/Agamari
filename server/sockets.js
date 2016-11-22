@@ -85,11 +85,11 @@ const setUpSockets = io => {
     });
 
     // update food array and player mass
-    socket.on('ate_food_got_bigger', (id, index) => {
+    socket.on('ate_food_got_bigger', (id, foodID) => {
       //console.log("got food eaten msg")
       let room = Object.keys(socket.rooms)[0];
-      store.dispatch(removeFoodAndAddMass(id, scope.foodID, room));
-      io.sockets.in(room).emit('ate_food_got_bigger', index);
+      store.dispatch(removeFoodAndAddMass(id, foodID, room));
+      io.sockets.in(room).emit('ate_food_got_bigger', foodID);
     });
   });
 };

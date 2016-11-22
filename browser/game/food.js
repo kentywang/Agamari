@@ -11,6 +11,7 @@ const CANNON = require('../../public/cannon.min.js');
 let controls;
 
 export const Food = function( id, foodObj ) {
+	//console.log(foodObj);
 	this.foodID = id;
 	this.foodData = foodObj;
 
@@ -35,13 +36,13 @@ export const Food = function( id, foodObj ) {
 		// mesh the ball geom and mat
 		scope.mesh = new THREE.Mesh( ball_geometry, ball_material );
 		scope.mesh.castShadow = true;
-
+		console.log("food Data:",this.foodData);
 		scope.mesh.position.x = this.foodData.x;
 		scope.mesh.position.y = 20;
 		scope.mesh.position.z = this.foodData.z;
 
 		scene.add( scope.mesh );
-
+		console.log("scope mesh",scope.mesh);
 		scope.mesh.name = scope.foodID;
 
 

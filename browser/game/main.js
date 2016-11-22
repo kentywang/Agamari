@@ -78,7 +78,7 @@ export const init = () => {
   let newFood;
 
 for (let aFood in food){
-          newFood = new Food(aFood);
+          newFood = new Food(aFood, food[aFood].type);
           newFood.init();
   }
 
