@@ -8,6 +8,7 @@ import ControlPanel from './ControlPanel';
 import { loadEnvironment } from '../game/game';
 import { init, animate } from '../game/main';
 import { Player } from '../game/player';
+import {Food} from '../game/food';
 
 let socket;
 
@@ -49,6 +50,11 @@ class App extends Component {
           let player = new Player(id);
           player.init();
         }
+      });
+
+      socket.on('add_food', (food) => {
+          let newFood = new Food(food);
+          newFood.init();
       });
 
     });
