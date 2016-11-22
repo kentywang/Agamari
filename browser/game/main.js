@@ -1,7 +1,9 @@
 import store from '../store';
+import {updateLocation} from '../reducers/gameState';
 import { loadGame, player } from './game';
 
 import {controls, Player} from './player';
+import {Food} from './food';
 import {socket} from '../components/App';
 
 
@@ -70,6 +72,16 @@ export const init = () => {
   }
 
 
+  // initialize all existing food in room
+  let { food } = store.getState().gameState;
+  //console.log("fooding", food)
+  let newFood;
+
+  food.forEach((item, index)=>{
+    newFood = new Food(item, index);
+    newFood.init();
+  });
+
 
   // Adjust friction between ball & ground
   groundMaterial = new CANNON.Material("groundMaterial");
@@ -87,7 +99,7 @@ export const init = () => {
   // create THREE plane
   let { color } = store.getState().gameState;
 
-  var box_geometry = new THREE.BoxGeometry( 200, 5, 200 );
+  var box_geometry = new THREE.BoxGeometry( 400, 5, 400 );
   var box_material = new THREE.MeshPhongMaterial( { color: myColors['blue'] , shading:THREE.FlatShading});
   plane = new THREE.Mesh( box_geometry, box_material );
 
@@ -96,8 +108,8 @@ export const init = () => {
   scene.add( plane );
 
 
-  // create Cannon planet
-  var groundShape = new CANNON.Box(new CANNON.Vec3(100,100,2.5));
+  // create Cannon plane
+  var groundShape = new CANNON.Box(new CANNON.Vec3(200,200,2.5));
   var groundBody = new CANNON.Body({ mass: 0, material: groundMaterial, shape: groundShape });
 
   world.add(groundBody);
@@ -193,7 +205,7 @@ export function animate() {
   if (JSON.stringify(prevData) !== JSON.stringify(currData)) {
     let action = updateLocation(player.playerID, player.getPlayerData());
     store.dispatch(action);
-    store.getState().socket.emit('state_changed', action);
+    socket.emit('state_changed', action);
   }
 
 
@@ -248,3 +260,25 @@ export { scene, camera, canvas, renderer, playerID, plane, world, groundMaterial
   //       }
   // requestAnimationFrame(animate);
 // }
+
+// function makeFood(){
+//  const food_plane_geometry = new THREE.planeGeometry( 0.3 );
+//  const food_plane_material = new THREE.MeshBasicMaterial( {color: 0x66669, wireframe: false} );
+
+//  let gameBorderPosition = 100;
+
+//  for (var i = 0; i < 10; i++) {
+//    const food = new THREE.Mesh( food_plane_geometry, food_plane_material );
+
+//    let xPostion = Math.floor(Math.random()*gameBorderPosition);
+//    xPostion *= Math.floor(Math.random()*2) == 1 ? 1 : -1;
+
+//    let zPostion = Math.floor(Math.random()*gameBorderPosition);
+//    zPostion *= Math.floor(Math.random()*2) == 1 ? 1 : -1;
+
+//    food.position.x = xPostion;
+//    food.position.y = 0;
+//    food.position.z = zPostion;
+//    scene.add( food );
+//  }
+// };

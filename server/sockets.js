@@ -1,83 +1,52 @@
-const validRoomNames = ['room1', 'room2'];
+const { validRoomNames, spawnFood } = require('./gameEngine');
+
+const initPos = {
+  x: 10,
+  y: 35,
+  z: 10,
+  rx: 0,
+  ry: 0,
+  rz: 0
+};
+
 
 const { addRoom } = require('./utils');
-const { addUser, removeUser, assignRoom, unassignRoom } = require('./reducers/users');
-
+const { addUser, removeUser, assignRoom } = require('./reducers/users');
 const { addPlayer, removePlayer } = require('./reducers/gameState');
-
+const { User } = require('./db');
 const store = require('./store');
+const { forOwn } = require('lodash');
+
 
 const setUpSockets = io => {
-  io.on('connection', function(socket){
+  io.on('connection', socket => {
 
-    // socket.on('made_connection', ()=>{
-      // Verify client connect
-      store.dispatch(addUser(socket.id));
-    // });
-
+    // User connects, add to user list with null room
+    store.dispatch(addUser(socket.id));
     console.log('A new client has connected');
     console.log('socket id: ', socket.id);
 
-    // Verify client disconnect
-    socket.on('disconnect', () => {
-      let { gameState } = store.getState();
-      let rooms = Object.keys(gameState);
-      for (let room of rooms) {
-        if (gameState[room] && gameState[room].players[socket.id]) {
-          store.dispatch(removePlayer(socket.id, room));
-        }
-      }
-      store.dispatch(removeUser(socket.id));
-      console.log(`socket id ${socket.id} has disconnected.`);
+
+    // Start game as guest
+    socket.on('start_as_guest', ({ nickname }) => {
+      console.log('creating guest account', nickname);
+      User.create({ nickname, guest: true })
+        .then(({id, nickname}) => {
+          store.dispatch(assignRoom(socket.id, 'room1'));
+          socket.join('room1');
+          let user = Object.assign(initPos, {id, nickname});
+
+          // Maybe emit event and trigger thunk?
+          store.dispatch(addPlayer(socket.id, user, 'room1'));
+          let roomState = store.getState().gameState['room1'];
+          socket.emit('game_state', roomState);
+          io.sockets.in('room1').emit('change_state', addPlayer(socket.id, user));
+          io.sockets.in('room1').emit('add_player', socket.id);
+          socket.emit('game_ready');
+        })
+        .catch(err => socket.emit('start_fail', err));
     });
 
-    // Log out of other rooms before entering room
-    socket.on('room', ({room, user}) => {
-      console.log('received room', room, user);
-      let { gameState } = store.getState();
-      store.dispatch(assignRoom(socket.id, room));
-      socket.join(room);
-      for (let currentRoom of Object.keys(socket.rooms)) {
-        if (currentRoom !== room) {
-          socket.leave(currentRoom);
-          if (gameState[currentRoom]) {
-            store.dispatch(removePlayer(socket.id, currentRoom));
-          }
-        }
-      }
-      var initPos = {
-      x: 10,
-      y: 35,
-      z: 10,
-      rx: 0,
-      ry: 0,
-      rz: 0
-    };
-
-      let data = user ? Object.assign(initPos, user) : initPos;
-      // let's make sure to do these in order(maybe with promises)
-      console.log('dispatching data', data);
-      store.dispatch(addPlayer(socket.id, data, room));
-      setTimeout(() => {
-        let roomState = store.getState().gameState[room];
-        console.log('room state', roomState);
-        socket.emit('game_state', roomState);
-
-        io.sockets.in(room).emit('change_state', addPlayer(socket.id, data));
-
-        io.sockets.in(room).emit('add_player', socket.id);
-
-        socket.emit('in_room');
-
-      }, 2000);
-
-      // store.dispatch(addRoom(addPlayer(socket.id), room));
-
-      //console.log(store.getState().gameState[room]);
-    });
-
-    // Log messages to all players in room (for testing/debugging)
-    socket.on('log', room => io.sockets.in(room).emit('message', `hello from ${room}`));
 
     // Relay game state changes and update server state
     socket.on('state_changed', action => {
@@ -85,31 +54,33 @@ const setUpSockets = io => {
       if (store.getState().gameState[room]) {
         store.dispatch(addRoom(action, room));
       }
-      //io.sockets.in(room).emit('change_state', action);
-      //console.log(store.getState().gameState[room]);
     });
+
+
+    // Verify client disconnect
+    socket.on('disconnect', () => {
+      // Log player out from all games
+      forOwn(store.getState().gameState, (state, room) => {
+        if (state.players[socket.id]) store.dispatch(removePlayer(socket.id, room));
+      });
+
+      // Remove from server-side user list
+      store.dispatch(removeUser(socket.id));
+      console.log(`socket id ${socket.id} has disconnected.`);
+    });
+
   });
 };
 
 const broadcastState = (io) => {
   setInterval(() => {
-    console.log(store.getState().gameState.room1.players);
-  }, 5000);
-  setInterval(() => {
-    //console.log(store.getState())
-
-
-    let rooms = Object.keys(io.sockets.adapter.rooms);
-    for (let room of rooms) {
-      // Only enter if room name is in valid room names array
-      if (validRoomNames.indexOf(room) + 1) {
-        let { gameState } = store.getState();
-        if (gameState[room]) {
-          io.sockets.in(room).emit('game_state', gameState[room]);
-        }
-      }
-    }
+    let { gameState } = store.getState();
+    forOwn(gameState, (state, room) => {
+        io.sockets.in(room).emit('game_state', state);
+    });
+    spawnFood(io);
   }, (1000 / 60));
-}
+};
+
 
 module.exports = { setUpSockets, broadcastState };

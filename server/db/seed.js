@@ -7,49 +7,49 @@ const { User, Room, Score, db } = require('./index');
 
 let rooms = [
     {
-      name: 'World1'
+      name: 'room1'
     },
     {
-      name: 'World2'
+      name: 'room2'
     },
     {
-      name: 'World3'
+      name: 'room3'
     }
   ];
 
- let scores = [
-    {
-      value: 10,
-      time: new Date()
-    },
-    {
-      value: 50,
-      time: new Date()
-    },
-    {
-      value: 90,
-      time: new Date()
-    }
-  ];
+ // let scores = [
+ //    {
+ //      value: 10,
+ //      time: new Date()
+ //    },
+ //    {
+ //      value: 50,
+ //      time: new Date()
+ //    },
+ //    {
+ //      value: 90,
+ //      time: new Date()
+ //    }
+ //  ];
 
  let users = [
     {
       email: 'dan@fullstack.com',
       password: 'diggitydan',
       admin: false,
-      displayName: 'dan'
+      nickname: 'dan'
     },
     {
       email: 'ben@fullstack.com',
       password: 'diggityben',
       admin: true,
-      displayName: 'ben'
+      nickname: 'ben'
     },
     {
       email: 'joe@fullstack.com',
       password: 'diggityjoe',
       admin: false,
-      displayName: 'joe'
+      nickname: 'joe'
     }
 
     ];
@@ -59,9 +59,9 @@ db.sync({force: true})
  console.log('Dropped old data, now inserting data');
  return rooms.map((room) =>  Room.create(room));
 })
-.then(() => {
- return scores.map((score) =>  Score.create(score));
-})
+// .then(() => {
+//  return scores.map((score) =>  Score.create(score));
+// })
 .then(() => {
  return users.map((user) =>  User.create(user));
 })

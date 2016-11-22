@@ -1,11 +1,10 @@
 'use strict';
 const PORT = process.env.PORT || 8000;
 
-const express = require('express'),
-      path = require('path'),
-      chalk = require('chalk'),
-      http = require('http');
-const store = require('./store');
+const express = require('express');
+const path = require('path');
+const chalk = require('chalk');
+const http = require('http');
 const { setUpSockets, broadcastState } = require('./sockets');
 
 // Create server and app

@@ -1,13 +1,13 @@
 /*----------  INITIAL STATE  ----------*/
-const initialState = null;
+const initialState = 'red';
 
 /*----------  ACTION TYPES  ----------*/
-const RECEIVE_CAMERA = 'RECEIVE_CAMERA';
+const SET_COLOR = 'SET_COLOR';
 
 /*----------  ACTION CREATORS  ----------*/
-export const receiveCamera = camera => ({
-  type: RECEIVE_CAMERA,
-  camera
+export const setColor = color => ({
+  type: SET_COLOR,
+  color
 });
 
 /*----------  THUNK CREATORS  ----------*/
@@ -15,7 +15,8 @@ export const receiveCamera = camera => ({
 /*----------  REDUCER  ----------*/
 export default (state = initialState, action) => {
   switch (action.type) {
-    case RECEIVE_CAMERA: return action.camera;
+    case SET_COLOR:
+      return action.color;
     default: return state;
   }
 };

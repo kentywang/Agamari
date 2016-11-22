@@ -5,5 +5,8 @@ import thunk from 'redux-thunk';
 import reducer from './reducers';
 
 const store = createStore(reducer, applyMiddleware(thunk));
+
 window.store = store;
+window._ = require('lodash');
+
 export default store;
