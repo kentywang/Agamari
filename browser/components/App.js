@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import store from '../store';
 import { receiveSocket } from '../reducers/socket';
-import { receiveGameState } from '../reducers/gameState';
+import { receiveGameState, removeFoodAndAddMass } from '../reducers/gameState';
 import Canvas from './Canvas';
 import ControlPanel from './ControlPanel';
 import { loadEnvironment } from '../game/game';
@@ -55,6 +55,10 @@ class App extends Component {
       socket.on('add_food', (food) => {
           let newFood = new Food(food);
           newFood.init();
+      });
+
+      socket.on('ate_food_got_bigger', index => {
+          store.dispatch(removeFoodAndAddMass(null, index));
       });
 
     });

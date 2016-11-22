@@ -3,7 +3,7 @@ const {validRoomNames} = require('./gameEngine');
 const { addRoom } = require('./utils');
 const { addUser, removeUser, assignRoom, unassignRoom } = require('./reducers/users');
 
-const { addPlayer, removePlayer } = require('./reducers/gameState');
+const { addPlayer, removePlayer, removeFoodAndAddMass } = require('./reducers/gameState');
 
 const store = require('./store');
 
@@ -81,6 +81,13 @@ const setUpSockets = io => {
       store.dispatch(addRoom(action, room));
       //io.sockets.in(room).emit('change_state', action);
       //console.log(store.getState().gameState[room]);
+    });
+
+    // update food array and player mass
+    socket.on('ate_food_got_bigger', (id, index) => {
+      let room = Object.keys(socket.rooms)[0];
+      store.dispatch(removeFoodAndAddMass(id, index, room));
+      socket.broadcast.in(room).emit('ate_food_got_bigger', index);
     });
   });
 };

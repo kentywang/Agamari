@@ -1,4 +1,6 @@
 import store from '../store';
+import {removeFoodAndAddMass} from '../reducers/gameState';
+import {socket} from '../components/App';
 import { scene, camera, canvas, renderer, world, groundMaterial, playerID, myColors } from './main';
 import {player} from './game';
 
@@ -17,11 +19,11 @@ export const Food = function( foodObj ) {
 
 	if(foodObj.type == "sphere"){
 		// create THREE object
-		var ball_geometry = new THREE.TetrahedronGeometry( 2, 1 );
+		var ball_geometry = new THREE.TetrahedronGeometry( 3, 1 );
 		var ball_material = new THREE.MeshPhongMaterial( {color: myColors["blue"], shading:THREE.FlatShading} );
 
 		// create Cannon object
-		var sphereShape = new CANNON.Sphere(2);
+		var sphereShape = new CANNON.Sphere(3);
 		scope.cannonMesh = new CANNON.Body({mass: 0, material: groundMaterial, shape: sphereShape});
 	}
 
@@ -32,7 +34,7 @@ export const Food = function( foodObj ) {
 		scope.mesh.castShadow = true;
 
 		scope.mesh.position.x = this.foodData.x;
-		scope.mesh.position.y = 12;
+		scope.mesh.position.y = 20;
 		scope.mesh.position.z = this.foodData.z;
 
 		scene.add( scope.mesh );
@@ -52,19 +54,31 @@ export const Food = function( foodObj ) {
 		scope.cannonMesh.addEventListener("collide", function(e){
 			world.remove(scope.cannonMesh);
 			let playerRadius = player.cannonMesh.shapes[0].radius;
+			//let playerbsRadius = player.cannonMesh.shapes[0].boundingSphereRadius;
 
-			console.log("radius", playerRadius);
-			player.cannonMesh.shapes[0].radius+=0
+			console.log("radius", playerRadius, player.cannonMesh.shapes[0].boundingSphereRadius);
+			player.cannonMesh.shapes[0].radius+=1;
+			player.cannonMesh.shapes[0].boundingSphereRadius+=1;
 			console.log("mass",player.cannonMesh.mass);
-			player.cannonMesh.mass += 0;
+			player.cannonMesh.mass += 5;
 			console.log(player.cannonMesh.mass);
 
 			//remove the food 
 			//also need to remove food from game state eventually
 			scene.remove(scope.mesh);
 
+			player.mesh.scale.x=player.mesh.scale.y=player.mesh.scale.z +=0.1;
 
-			player.mesh.scale.x=player.mesh.scale.y=player.mesh.scale.z +=1;
+			// update local store
+			console.log("getstate", store.getState())
+			store.getState().gameState.food.forEach((item,index) => {
+				if(item.x === scope.foodData.x && item.z === scope.foodData.z){
+					store.dispatch(removeFoodAndAddMass(player.playerID, index));
+					socket.emit('ate_food_got_bigger', player.playerID, index);
+				}
+			});
+
+			// emit event to server
 		});
 	};
 
@@ -90,4 +104,8 @@ export const Food = function( foodObj ) {
 	// };
 };
 
-export {controls};
+function removeFood(index) {
+	world.remove(scope.cannonMesh);
+}
+
+export {removeFood};

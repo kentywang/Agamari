@@ -47,6 +47,12 @@ export function loadEnvironment() {
 	  		currentPlayer.rotation.x = data.rx;
 	  		currentPlayer.rotation.y = data.ry;
 	  		currentPlayer.rotation.z = data.rz;
+
+			//console.log("scaling", data.scale)
+
+	  		if(data.scale){
+	  			currentPlayer.scale.x=currentPlayer.scale.y=currentPlayer.scale.z = data.scale;
+	  		}
 	  	}
 	}
 

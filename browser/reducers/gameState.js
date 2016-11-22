@@ -1,3 +1,5 @@
+import {removeFood} from '../game/food';
+
 /*----------  INITIAL STATE  ----------*/
 const initialState = {};
 
@@ -7,6 +9,7 @@ const UPDATE_COLOR = 'UPDATE_COLOR';
 const ADD_PLAYER = 'ADD_PLAYER';
 const UPDATE_LOCATION = 'UPDATE_LOCATION';
 const REMOVE_PLAYER = 'REMOVE_PLAYER';
+const REMOVE_FOOD_AND_ADD_MASS = 'REMOVE_FOOD_AND_ADD_MASS';
 
 /*----------  ACTION CREATORS  ----------*/
 export const receiveGameState = state => ({
@@ -30,6 +33,12 @@ export const removePlayer = id => ({
   id
 });
 
+export const removeFoodAndAddMass = (id, index) => ({
+  type: REMOVE_FOOD_AND_ADD_MASS,
+  id,
+  index
+});
+
 export const updateLocation = (id, data) => ({
   type: UPDATE_LOCATION,
   id,
@@ -51,7 +60,14 @@ let newState, players;
       state.players[action.id] = action.data;
       return state;
     case REMOVE_PLAYER:
+    // WE NEED To still remove the player from scene 
       delete state.players[action.id];
+      return state;
+    case REMOVE_FOOD_AND_ADD_MASS:
+      // don't need to add mass if coming from other players since it'll be updated in anim loop
+      if(action.id) state.players[action.id].scale += 0.1;
+      //removeFood(action.index); // should do this in thunk
+      state.food.splice(action.index, 1)
       return state;
     case UPDATE_LOCATION:
       state.players[action.id] = action.data;

@@ -19,7 +19,6 @@ export const Player = function( playerID, isMainPlayer ) {
 	var ball_geometry = new THREE.TetrahedronGeometry( 10, 2 );
 	var ball_material = new THREE.MeshPhongMaterial( {color: myColors["grey"], shading:THREE.FlatShading} );
 
-
 	// create Cannon box
 	if(this.isMainPlayer){
 		var sphereShape = new CANNON.Sphere(10);
@@ -43,6 +42,11 @@ export const Player = function( playerID, isMainPlayer ) {
 		scope.mesh.rotation.z = playerData.rz;
 
 		scope.mesh.name = playerID;
+
+		// initially scale player if scale props exist
+		if(playerData.scale){
+			scope.mesh.scale.x=scope.mesh.scale.y=scope.mesh.scale.z = playerData.scale
+		}
 
 		scene.add( scope.mesh );
 
@@ -78,12 +82,13 @@ export const Player = function( playerID, isMainPlayer ) {
 	// Kenty: I added this method to get a player's positional data
 	this.getPlayerData = function() {
 		return {
-				x: scope.mesh.position.x,
-				y: scope.mesh.position.y,
-				z: scope.mesh.position.z,
-				rx: scope.mesh.rotation.x,
-				ry: scope.mesh.rotation.y,
-				rz: scope.mesh.rotation.z
+			x: scope.mesh.position.x,
+			y: scope.mesh.position.y,
+			z: scope.mesh.position.z,
+			rx: scope.mesh.rotation.x,
+			ry: scope.mesh.rotation.y,
+			rz: scope.mesh.rotation.z,
+			scale: scope.mesh.scale.x // y or z would work too
 		};
 	};
 };

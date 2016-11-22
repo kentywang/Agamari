@@ -12,7 +12,7 @@ const ADD_PLAYER = 'ADD_PLAYER';
 const UPDATE_LOCATION = 'UPDATE_LOCATION';
 const REMOVE_PLAYER = 'REMOVE_PLAYER';
 const CREATE_FOOD = 'CREATE_FOOD';
-
+const REMOVE_FOOD_AND_ADD_MASS = 'REMOVE_FOOD_AND_ADD_MASS';
 
 /*----------  ACTION CREATORS  ----------*/
  module.exports.receiveGameState = (state, room) => ({
@@ -43,6 +43,13 @@ module.exports.updateLocation = (player, room) => ({
   type: REMOVE_PLAYER, room, id
 });
 
+ module.exports.removeFoodAndAddMass = (id, index, room) => ({
+  type: REMOVE_FOOD_AND_ADD_MASS,
+  id,
+  index,
+  room
+});
+
  module.exports.createFood = (xPostion,zPostion,foodShape, room) => ({
   type:CREATE_FOOD, xPostion, zPostion, foodShape, room
 });
@@ -66,6 +73,12 @@ module.exports.reducer = (state = initialState, action) => {
       return state;
     case REMOVE_PLAYER:
       if (state[action.room]) delete state[action.room].players[action.id];
+      return state;
+    case REMOVE_FOOD_AND_ADD_MASS:
+      if (state[action.room]){
+        state[action.room].players[action.id].scale += 0.1;
+        state[action.room].food.splice(action.index, 1);
+      } 
       return state;
     case UPDATE_LOCATION:
       if (state[action.room]) state[action.room].players[action.id] = action.data;

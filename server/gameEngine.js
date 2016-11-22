@@ -11,7 +11,7 @@ let elapsedTime = Date.now();
 function spawnFood(io){
  		
 	
-	if (Date.now()-elapsedTime>5000){
+	if (Date.now()-elapsedTime>1000){
 		elapsedTime = Date.now();
 		let rooms = Object.keys(io.sockets.adapter.rooms);
 	    for (let room of rooms) {
@@ -19,7 +19,7 @@ function spawnFood(io){
 	      if (validRoomNames.indexOf(room) + 1) {
 	        let { gameState } = store.getState();
 	        if (gameState[room]) {
-	          	if (gameState[room].food.length<15){
+	          	if (gameState[room].food.length<40){
 	          		let xPostion = (Math.random()*400)-200;
 					let zPostion = (Math.random()*400)-200;
 
