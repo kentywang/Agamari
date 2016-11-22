@@ -1,8 +1,8 @@
 
 /*----------  INITIAL STATE  ----------*/
 const initialState = {
-  room1: { color : 'red', players: {}, food:[]},
-  room2: { color: 'pink', players: {}, food:[]}
+  room1: { color: 'red', players: {}, food: []},
+  room2: { color: 'pink', players: {}, food: []}
 };
 
 /*----------  ACTION TYPES  ----------*/
@@ -54,7 +54,7 @@ module.exports.updateLocation = (player, room) => ({
 module.exports.reducer = (state = initialState, action) => {
   // console.log("state:", state, "action:", action)
   let room = {};
-  let newState, players;
+  let newState, players, player;
   switch (action.type) {
     case UPDATE_COLOR:
       room = Object.assign({}, state[action.room], {color: action.color});
@@ -62,13 +62,24 @@ module.exports.reducer = (state = initialState, action) => {
       newState[action.room] = room;
       return newState;
     case ADD_PLAYER:
-      if (state[action.room]) state[action.room].players[action.id] = action.data;
+      console.log('before', JSON.stringify(state[action.room].players));
+
+      if (state[action.room]) {
+        player = {};
+        player[action.id] = Object.assign({}, state[action.room].players[action.id], action.data);
+        Object.assign(state[action.room].players, player);
+      }
+      console.log('after', JSON.stringify(state[action.room].players));
       return state;
     case REMOVE_PLAYER:
       if (state[action.room]) delete state[action.room].players[action.id];
       return state;
     case UPDATE_LOCATION:
-      if (state[action.room]) state[action.room].players[action.id] = action.data;
+      console.log('before location', JSON.stringify(state[action.room].players));
+      if (state[action.room]) {
+        Object.assign(state[action.room].players[action.id], action.data);
+      }
+      console.log('after location', JSON.stringify(state[action.room].players));
       return state;
     case RECEIVE_GAMESTATE:
       //WHY EMPTY?
