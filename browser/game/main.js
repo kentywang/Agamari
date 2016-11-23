@@ -159,7 +159,7 @@ export const init = () => {
 
 export function animate() {
   requestAnimationFrame( animate );
-  console.log('scene', scene);
+  //console.log('scene', scene);
   let playerMesh = scene.getObjectByName(socket.id);
   let cannonMesh = playerMesh.cannon;
   // Set the direction of the light

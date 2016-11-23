@@ -100,14 +100,28 @@ const setUpSockets = io => {
       }
     });
 
-    socket.on('update_position', data => {
+    socket.on('got_eaten', id => {
+      console.log('this guy ate!', id);
+      let { players } = store.getState();
       let room = Object.keys(socket.rooms)[0];
-      if (data.y < 0) {
-        console.log('remove/create player', data.y);
+      if (players[room][socket.id]) {
+        store.dispatch(changePlayerScale(id, players[room][id].scale, room));
+        // store.dispatch(removePlayer(socket.id, room));
+        // io.sockets.in(room).emit('remove_player', socket.id);
         io.sockets.in(room).emit('remove_player', socket.id);
         store.dispatch(updatePlayer(socket.id, initPos, room));
         io.sockets.in(room).emit('add_player', socket.id, initPos, true);
-        socket.emit('you_lose', 'You fell off the board!');
+        socket.emit('you_lose', 'You died!');
+      }
+    });
+
+    socket.on('update_position', data => {
+      let room = Object.keys(socket.rooms)[0];
+      if (data.y < 0) {
+        io.sockets.in(room).emit('remove_player', socket.id);
+        store.dispatch(updatePlayer(socket.id, initPos, room));
+        io.sockets.in(room).emit('add_player', socket.id, initPos, true);
+        socket.emit('you_lose', 'You died!');
       } else {
        store.dispatch(updatePlayer(socket.id, data, room));
       }
@@ -127,4 +141,4 @@ const broadcastState = (io) => {
 };
 
 
-module.exports = { setUpSockets, broadcastState };
+module.exports = { setUpSockets, broadcastState, initPos };

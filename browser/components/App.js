@@ -79,6 +79,7 @@ class App extends Component {
       socket.on('remove_player', id => {
         let playerObject = scene.getObjectByName(id);
         if (playerObject) {
+          console.log("remove player")
           world.remove(playerObject.cannon);
           scene.remove(playerObject);
         }

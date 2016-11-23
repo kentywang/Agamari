@@ -3,6 +3,9 @@ const reducerMode = 'immutable';
 const validRoomNames = ['room1', 'room2'];
 
 const { receiveFood } = require('./reducers/food');
+const { updatePlayer } = require('./reducers/players');
+
+const { initPos } = require('./sockets');
 
 
 let elapsedTime = Date.now(),
@@ -34,5 +37,13 @@ function spawnFood(io, store) {
       }
     }
 }
+
+// function respawn(io, store, socket, room){
+//   console.log("in respawn")
+//     io.sockets.in(room).emit('remove_player', socket.id);
+//     store.dispatch(updatePlayer(socket.id, initPos, room));
+//     io.sockets.in(room).emit('add_player', socket.id, initPos, true);
+//     socket.emit('you_lose', 'You died!');
+// }
 
 module.exports = { spawnFood, validRoomNames, reducerMode };
