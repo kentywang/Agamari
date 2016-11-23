@@ -9,7 +9,6 @@ let controls;
 
 export const Player = function( id, data, isMainPlayer) {
   this.id = id;
-  let player = scene.getObjectByName(socket.id);
   this.isMainPlayer = isMainPlayer;
   this.mesh;
   this.cannonMesh;
@@ -64,13 +63,17 @@ export const Player = function( id, data, isMainPlayer) {
 
     if (!scope.isMainPlayer){
       scope.cannonMesh.addEventListener('collide', e => {
+        let player = scene.getObjectByName(socket.id);
+
         if (player) {
           for (let i = 0; i < world.contacts.length; i++){
             let c = world.contacts[i];
-            if ((c.bi === scope.cannonMesh && c.bj === player.cannonMesh) ||
-                 (c.bi === player.cannonMesh && c.bj === scope.cannonMesh)) {
-              if(scope.mesh.scale.x < player.mesh.scale.x){
-                socket.emit('got_eaten', player.id);
+            console.log("world contact", c.bi === scope.cannonMesh, c.bj === player.cannon , c.bi === player.cannon , c.bj === scope.cannonMesh);
+            if ((c.bi === scope.cannonMesh && c.bj === player.cannon) ||
+                 (c.bi === player.cannon && c.bj === scope.cannonMesh)) {
+                console.log("scale,", scope.mesh.scale.x, player.scale.x)
+              if(scope.mesh.scale.x > player.scale.x){
+                socket.emit('got_eaten', scope.id);
               }
             }
           }

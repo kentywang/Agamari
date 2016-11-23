@@ -1,4 +1,4 @@
-const { validRoomNames, spawnFood, respawn } = require('./gameEngine');
+const { validRoomNames, spawnFood } = require('./gameEngine');
 const { forOwn } = require('lodash');
 let Promise = require('bluebird');
 
@@ -104,18 +104,24 @@ const setUpSockets = io => {
       console.log('this guy ate!', id);
       let { players } = store.getState();
       let room = Object.keys(socket.rooms)[0];
-      if (players[room][id]) {
-        store.dispatch(changePlayerScale(id, players[room][socket.id].scale, room));
+      if (players[room][socket.id]) {
+        store.dispatch(changePlayerScale(id, players[room][id].scale, room));
         // store.dispatch(removePlayer(socket.id, room));
         // io.sockets.in(room).emit('remove_player', socket.id);
-        respawn(io, store, socket);
+        io.sockets.in(room).emit('remove_player', socket.id);
+        store.dispatch(updatePlayer(socket.id, initPos, room));
+        io.sockets.in(room).emit('add_player', socket.id, initPos, true);
+        socket.emit('you_lose', 'You died!');
       }
     });
 
     socket.on('update_position', data => {
       let room = Object.keys(socket.rooms)[0];
       if (data.y < 0) {
-        respawn(io, store, socket);
+        io.sockets.in(room).emit('remove_player', socket.id);
+        store.dispatch(updatePlayer(socket.id, initPos, room));
+        io.sockets.in(room).emit('add_player', socket.id, initPos, true);
+        socket.emit('you_lose', 'You died!');
       } else {
        store.dispatch(updatePlayer(socket.id, data, room));
       }
@@ -135,4 +141,4 @@ const broadcastState = (io) => {
 };
 
 
-module.exports = { setUpSockets, broadcastState };
+module.exports = { setUpSockets, broadcastState, initPos };
