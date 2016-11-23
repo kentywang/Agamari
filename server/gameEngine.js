@@ -35,4 +35,11 @@ function spawnFood(io, store) {
     }
 }
 
-module.exports = { spawnFood, validRoomNames, reducerMode };
+function respawn(io, store, socket){
+    io.sockets.in(room).emit('remove_player', socket.id);
+    store.dispatch(updatePlayer(socket.id, initPos, room));
+    io.sockets.in(room).emit('add_player', socket.id, initPos, true);
+    socket.emit('you_lose', 'You died!');
+}
+
+module.exports = { spawnFood, validRoomNames, reducerMode, respawn };
