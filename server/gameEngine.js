@@ -21,8 +21,7 @@ function spawnFood(io, store) {
         if (validRoomNames.indexOf(room) + 1) {
           let { food } = store.getState();
           if (food[room]) {
-              if (Object.keys(food).length < 15) {
-
+              if (Object.keys(food[room]).length < 15) {
                 let x = (Math.random() * 400) - 200,
                     z = (Math.random() * 400) - 200,
                     type = 'sphere';

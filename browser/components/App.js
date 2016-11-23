@@ -70,16 +70,13 @@ class App extends Component {
 
       socket.on('add_player', (id, initialData) => {
         let isMainPlayer = id === socket.id;
-        // console.log('adding_player', isMainPlayer, initialData);
         let player = new Player(id, initialData, isMainPlayer);
-        // console.log('the player', player);
         player.init();
       });
 
       socket.on('remove_player', id => {
         let playerObject = scene.getObjectByName(id);
         if (playerObject) {
-          console.log("remove player")
           world.remove(playerObject.cannon);
           scene.remove(playerObject);
         }
@@ -94,7 +91,6 @@ class App extends Component {
 
       socket.on('remove_food', id => {
         let foodObject = scene.getObjectByName(id);
-        //console.log("in remvoe food", id, foodObject)
         if (foodObject) {
           world.remove(foodObject.cannon);
           scene.remove(foodObject);

@@ -49,13 +49,7 @@ export const Food = function( id, data ) {
 
     scope.cannonMesh.addEventListener('collide', e => {
       world.remove(scope.cannonMesh);
-
-      //remove the food
-      //also need to remove food from game state eventually
       socket.emit('eat_food', id);
-      // scene.remove(scope.mesh);
-
-      // player.mesh.scale.x = player.mesh.scale.y = player.mesh.scale.z += 1;
     });
   };
 

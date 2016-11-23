@@ -90,7 +90,6 @@ const setUpSockets = io => {
 
 
     socket.on('eat_food', id => {
-      console.log('eating food!', id);
       let { food } = store.getState();
       let room = Object.keys(socket.rooms)[0];
       if (food[room][id]) {
@@ -101,7 +100,6 @@ const setUpSockets = io => {
     });
 
     socket.on('got_eaten', id => {
-      console.log('this guy ate!', id);
       let { players } = store.getState();
       let room = Object.keys(socket.rooms)[0];
       if (players[room][socket.id]) {

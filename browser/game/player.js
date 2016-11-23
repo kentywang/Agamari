@@ -64,14 +64,10 @@ export const Player = function( id, data, isMainPlayer) {
     if (!scope.isMainPlayer){
       scope.cannonMesh.addEventListener('collide', e => {
         let player = scene.getObjectByName(socket.id);
-
         if (player) {
           for (let i = 0; i < world.contacts.length; i++){
             let c = world.contacts[i];
-            console.log("world contact", c.bi === scope.cannonMesh, c.bj === player.cannon , c.bi === player.cannon , c.bj === scope.cannonMesh);
-            if ((c.bi === scope.cannonMesh && c.bj === player.cannon) ||
-                 (c.bi === player.cannon && c.bj === scope.cannonMesh)) {
-                console.log("scale,", scope.mesh.scale.x, player.scale.x)
+            if ((c.bi === scope.cannonMesh && c.bj === player.cannon) || (c.bi === player.cannon && c.bj === scope.cannonMesh)) {
               if(scope.mesh.scale.x > player.scale.x){
                 socket.emit('got_eaten', scope.id);
               }
