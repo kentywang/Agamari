@@ -111,9 +111,9 @@ export const init = () => {
   var cone_geometry = new THREE.BoxGeometry( 4, 4, 4 );
   var cone_material = new THREE.MeshPhongMaterial( { color: myColors['blue'] , shading:THREE.FlatShading});
   cone = new THREE.Mesh( cone_geometry, cone_material );
-  var cone_geometry2 = new THREE.TetrahedronGeometry(4,2);
+  var cone_geometry2 = new THREE.TetrahedronGeometry(4,1);
   cone2 = new THREE.Mesh( cone_geometry2, cone_material );
-  var cone_geometry3 = new THREE.BoxGeometry( 5, 2, 2 );
+  var cone_geometry3 = new THREE.BoxGeometry( 10, 2, 2 );
   cone3 = new THREE.Mesh( cone_geometry3, cone_material );
 
   cone.castShadow = true;
@@ -145,7 +145,7 @@ export const init = () => {
   coneBody2.position.y = cone2.position.z;
   world.add(coneBody2);
 
-  var coneShape3 = new CANNON.Box(new CANNON.Vec3(2.5,1,1));
+  var coneShape3 = new CANNON.Box(new CANNON.Vec3(5,1,1));
   coneBody3 = new CANNON.Body({ mass: 0, material: groundMaterial, shape: coneShape3 });
 
   coneBody3.position.x = cone3.position.x;
@@ -192,7 +192,7 @@ export const init = () => {
   } );
 var stop = false;
   coneBody3.addEventListener("collide", function(e){
-    console.log("......aaaaaarttt!")
+    console.log(player.mesh)
    if(stop){return}
     stop= true;
     world.remove(coneBody3);
