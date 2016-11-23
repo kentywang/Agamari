@@ -1,22 +1,33 @@
 /*----------  INITIAL STATE  ----------*/
-const initialState = {id: null};
+const initialState = null;
 
 /*----------  ACTION TYPES  ----------*/
-const RECEIVE_PLAYER = 'RECEIVE_PLAYER';
+const AUTHENTICATED = 'AUTHENTICATED';
+const LOGOUT = 'LOGOUT';
 
 /*----------  ACTION CREATORS  ----------*/
-export const receivePlayer = id => ({
-  type: RECEIVE_PLAYER,
-  id
+export const authenticated = user => ({
+  type: AUTHENTICATED,
+  user
+});
+
+
+export const logout = () => ({
+  type: LOGOUT
 });
 
 /*----------  THUNK CREATORS  ----------*/
+export const loginGuest = (socket, nickname) => dispatch => {
+
+};
 
 /*----------  REDUCER  ----------*/
 export default (state = initialState, action) => {
   switch (action.type) {
-    case RECEIVE_PLAYER:
-      return Object.assign({}, state, {id: action.id});
+    case AUTHENTICATED:
+      return action.user;
+    case LOGOUT:
+      return null;
     default: return state;
   }
 };

@@ -1,9 +1,8 @@
-import store from '../store';
+import store, { socket } from '../store';
 import { loadGame } from './game';
 
 import {controls, Player} from './player';
 import {Food} from './food';
-import {socket} from '../components/App';
 import { forOwn } from 'lodash';
 
 const THREE = require('three');

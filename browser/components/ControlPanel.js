@@ -1,36 +1,29 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import {socket} from './App';
+import { socket } from '../store';
+
+import { openConsole,
+         closeConsole,
+         setNickname,
+         resetNickname,
+         setError,
+         resetError,
+         startAsGuest } from '../reducers/controlPanel';
 
 class ControlPanel extends Component {
-  constructor(props) {
-    super(props);
-    this.state = { nickname: '' };
-    this.startAsGuest = this.startAsGuest.bind(this);
-    this.updateNickname = this.updateNickname.bind(this);
-  }
-
-  startAsGuest() {
-    let { nickname } = this.state;
-    let { resetError, setError } = this.props;
-    if (nickname) {
-      socket.emit('start_as_guest', { nickname });
-      resetError();
-    } else {
-      setError('Please enter a nickname.');
-    }
-  }
-
-  updateNickname(event) {
-    this.setState({ nickname: event.target.value });
-  }
-
-
   render() {
-    let {players, isOpen, open, close, error } = this.props;
-    let { nickname } = this.state;
-    let { updateNickname, startAsGuest } = this;
+    let { players,
+          controlPanel,
+          open,
+          close,
+          updateNickname,
+          signInAsGuest } = this.props;
+    let { isOpen,
+          nickname,
+          error } = controlPanel;
+
     let player = socket && players[socket.id];
+
     return (
       <div style={{position: 'absolute', zIndex: 1}}>
       {isOpen ?
@@ -38,9 +31,13 @@ class ControlPanel extends Component {
           <div className="card-content white-text">
             {error && <p>{error}</p>}
             <div className="input-field">
-              <input type="text" onChange={updateNickname} value={nickname} placeholder="name" />
+              <input type="text"
+                     placeholder="Nickname"
+                     value={nickname}
+                     onChange={updateNickname}/>
             </div>
-            <button className="btn" onClick={startAsGuest}>Start Game As Guest</button>
+            <button className="btn"onClick={() => signInAsGuest(nickname, socket)}>
+              Start Game As Guest</button>
             <button className="btn" onClick={close}>Close Window</button>
           </div>
         </div> :
@@ -53,8 +50,19 @@ class ControlPanel extends Component {
   }
 }
 
-const mapStateToProps = ({ players }) => ({ players });
+const mapStateToProps = ({ players, controlPanel }) => ({ players, controlPanel });
+
+const mapDispatchToProps = dispatch => ({
+  open: () => dispatch(openConsole()),
+  close: () => dispatch(closeConsole()),
+  updateNickname: e => dispatch(setNickname(e.target.value)),
+  clearNickname: () => dispatch(resetNickname()),
+  updateError: error => dispatch(setError(error)),
+  clearError: () => dispatch(resetError()),
+  signInAsGuest: (nickname, socket) => dispatch(startAsGuest(nickname, socket))
+});
 
 export default connect(
-  mapStateToProps
+  mapStateToProps,
+  mapDispatchToProps
 )(ControlPanel);
