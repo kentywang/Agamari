@@ -111,7 +111,6 @@ const setUpSockets = io => {
       }
     });
 
-
     // Verify client disconnect
     socket.on('disconnect', () => {
       let player = store.getState().players[socket.id];
@@ -123,6 +122,22 @@ const setUpSockets = io => {
         io.sockets.in(room).emit('remove_player', socket.id);
 
         console.log(`socket id ${socket.id} has disconnected.`);
+      }
+    });
+
+    socket.on('got_eaten', id => {
+      console.log('this guy ate!', id);
+      let { players } = store.getState();
+      let eaten = players[socket.id]
+      let eater = players[id];
+
+      if (eaten && eater) {
+        let { room } = eaten;
+        store.dispatch(changePlayerScale(id, eaten.scale));
+        io.sockets.in(room).emit('remove_player', socket.id);
+        store.dispatch(updatePlayer(socket.id, initPos));
+        io.sockets.in(room).emit('add_player', socket.id, initPos, true);
+        socket.emit('you_lose', 'You died!');
       }
     });
 
@@ -142,4 +157,4 @@ const broadcastState = (io) => {
 };
 
 
-module.exports = { setUpSockets, broadcastState };
+module.exports = { setUpSockets, broadcastState, initPos };
