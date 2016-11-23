@@ -28,6 +28,8 @@ var maxSubSteps = 3;
 
 // food (dev only)
 let cone, coneBody;
+let cone2, coneBody2;
+let cone3, coneBody3;
 
 export const init = () => {
   // initialize THREE scene, camera, renderer
@@ -98,6 +100,7 @@ export const init = () => {
   var groundShape = new CANNON.Box(new CANNON.Vec3(100,100,2.5));
   var groundBody = new CANNON.Body({ mass: 0, material: groundMaterial, shape: groundShape });
 
+
   world.add(groundBody);
 
 
@@ -105,17 +108,28 @@ export const init = () => {
 
 
   // create THREE food (for dev build only)
-  var cone_geometry = new THREE.BoxGeometry( 20, 10, 10 );
+  var cone_geometry = new THREE.BoxGeometry( 4, 4, 4 );
   var cone_material = new THREE.MeshPhongMaterial( { color: myColors['blue'] , shading:THREE.FlatShading});
   cone = new THREE.Mesh( cone_geometry, cone_material );
+  var cone_geometry2 = new THREE.TetrahedronGeometry(4,2);
+  cone2 = new THREE.Mesh( cone_geometry2, cone_material );
+  var cone_geometry3 = new THREE.BoxGeometry( 5, 2, 2 );
+  cone3 = new THREE.Mesh( cone_geometry3, cone_material );
 
   cone.castShadow = true;
-  cone.position.set(20,10,20);
+  cone2.castShadow = true;
+  cone3.castShadow = true;
+  cone.position.set(60,10,0);
+    cone2.position.set(-50,10,0);
+      cone3.position.set(90,10,0);
 
   scene.add( cone );
+    scene.add( cone2 );
+      scene.add( cone3 );
+
   
   // create Cannon food
-  var coneShape = new CANNON.Box(new CANNON.Vec3(10,5,5));
+  var coneShape = new CANNON.Box(new CANNON.Vec3(2,2,2));
   coneBody = new CANNON.Body({ mass: 0, material: groundMaterial, shape: coneShape });
 
   coneBody.position.x = cone.position.x;
@@ -123,15 +137,28 @@ export const init = () => {
   coneBody.position.y = cone.position.z;
   world.add(coneBody);
 
+  var coneShape2 = new CANNON.Sphere(4);
+  coneBody2 = new CANNON.Body({ mass: 0, material: groundMaterial, shape: coneShape2 });
+
+  coneBody2.position.x = cone2.position.x;
+  coneBody2.position.z = cone2.position.y;
+  coneBody2.position.y = cone2.position.z;
+  world.add(coneBody2);
+
+  var coneShape3 = new CANNON.Box(new CANNON.Vec3(2.5,1,1));
+  coneBody3 = new CANNON.Body({ mass: 0, material: groundMaterial, shape: coneShape3 });
+
+  coneBody3.position.x = cone3.position.x;
+  coneBody3.position.z = cone3.position.y;
+  coneBody3.position.y = cone3.position.z;
+  world.add(coneBody3);
+
   coneBody.addEventListener("collide", function(e){
-    world.remove(coneBody); 
-    player.cannonMesh.addShape(coneShape, new CANNON.Vec3(coneBody.position.x,coneBody.position.z,coneBody.position.y));
+    world.remove(coneBody);
 
-    // cannon mesh only works on certain angles (same prob as visuals?, so try quaternions)
 
-    //merge works when sphere never rotates, but when it does, it attaches at another point
-
-    //cone.rotation.set( player.mesh.rotation.x, player.mesh.rotation.y, player.mesh.rotation.z )
+    // hell yes. -- Kenty
+    player.cannonMesh.addShape(coneShape, player.cannonMesh.quaternion.inverse().vmult(new CANNON.Vec3(cone.position.x - player.mesh.position.x,cone.position.z - player.mesh.position.z,cone.position.y - player.mesh.position.y)), player.cannonMesh.quaternion.inverse());
 
     cone.position.set( cone.position.x - player.mesh.position.x,cone.position.y - player.mesh.position.y,cone.position.z - player.mesh.position.z )
 
@@ -141,10 +168,49 @@ export const init = () => {
     pivot1.quaternion.y = player.mesh.quaternion.y;
     pivot1.quaternion.w = -player.mesh.quaternion.w;
 
-    //cone.rotation.set( cone.rotation.x - player.mesh.rotation.x,cone.rotation.y - player.mesh.rotation.y,cone.rotation.z - player.mesh.rotation.z )
-    //player.mesh.geometry.updateProjectionMatrix();
-    player.mesh.add(pivot1);
     pivot1.add(cone);
+    player.mesh.add(pivot1);
+  } );
+
+  coneBody2.addEventListener("collide", function(e){
+    world.remove(coneBody2);
+
+
+    // hell yes. -- Kenty
+    player.cannonMesh.addShape(coneShape, player.cannonMesh.quaternion.inverse().vmult(new CANNON.Vec3(cone2.position.x - player.mesh.position.x,cone2.position.z - player.mesh.position.z,cone2.position.y - player.mesh.position.y)), player.cannonMesh.quaternion.inverse());
+
+    cone2.position.set( cone2.position.x - player.mesh.position.x,cone2.position.y - player.mesh.position.y,cone2.position.z - player.mesh.position.z )
+
+    var pivot1 = new THREE.Object3D();
+    pivot1.quaternion.z = player.mesh.quaternion.z;
+    pivot1.quaternion.x = player.mesh.quaternion.x;
+    pivot1.quaternion.y = player.mesh.quaternion.y;
+    pivot1.quaternion.w = -player.mesh.quaternion.w;
+
+    pivot1.add(cone2);
+    player.mesh.add(pivot1);
+  } );
+var stop = false;
+  coneBody3.addEventListener("collide", function(e){
+    console.log("......aaaaaarttt!")
+   if(stop){return}
+    stop= true;
+    world.remove(coneBody3);
+
+
+    // hell yes. -- Kenty
+    player.cannonMesh.addShape(coneShape, player.cannonMesh.quaternion.inverse().vmult(new CANNON.Vec3(cone3.position.x - player.mesh.position.x,cone3.position.z - player.mesh.position.z,cone3.position.y - player.mesh.position.y)), player.cannonMesh.quaternion.inverse());
+
+    cone3.position.set( cone3.position.x - player.mesh.position.x,cone3.position.y - player.mesh.position.y,cone3.position.z - player.mesh.position.z )
+
+    var pivot1 = new THREE.Object3D();
+    pivot1.quaternion.z = player.mesh.quaternion.z;
+    pivot1.quaternion.x = player.mesh.quaternion.x;
+    pivot1.quaternion.y = player.mesh.quaternion.y;
+    pivot1.quaternion.w = -player.mesh.quaternion.w;
+
+    pivot1.add(cone3);
+    player.mesh.add(pivot1);
   } );
 
 
@@ -227,7 +293,7 @@ export function animate() {
   player.mesh.quaternion.z = -player.cannonMesh.quaternion.y;
   player.mesh.quaternion.y = -player.cannonMesh.quaternion.z;
   player.mesh.quaternion.w = player.cannonMesh.quaternion.w;
-
+  //console.log("hello");
 
   // run physics
   time = Date.now()
