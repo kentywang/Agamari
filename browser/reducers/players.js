@@ -1,22 +1,24 @@
 /*----------  INITIAL STATE  ----------*/
-const initialState = {id: null};
+const initialState = {};
 
 /*----------  ACTION TYPES  ----------*/
-const RECEIVE_PLAYER = 'RECEIVE_PLAYER';
+const RECEIVE_PLAYERS = 'RECEIVE_PLAYERS';
+
 
 /*----------  ACTION CREATORS  ----------*/
-export const receivePlayer = id => ({
-  type: RECEIVE_PLAYER,
-  id
+export const receivePlayers = (players) => ({
+  type: RECEIVE_PLAYERS,
+  players
 });
+
 
 /*----------  THUNK CREATORS  ----------*/
 
 /*----------  REDUCER  ----------*/
 export default (state = initialState, action) => {
   switch (action.type) {
-    case RECEIVE_PLAYER:
-      return Object.assign({}, state, {id: action.id});
+    case RECEIVE_PLAYERS:
+      return action.players;
     default: return state;
   }
 };

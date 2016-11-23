@@ -4,11 +4,11 @@ import { loadGame } from './game';
 import {controls, Player} from './player';
 import {Food} from './food';
 import {socket} from '../components/App';
-import {updateLocation} from '../reducers/gameState';
-
+import { forOwn } from 'lodash';
 
 const THREE = require('three');
 const CANNON = require('../../public/cannon.min.js');
+
 
 let scene, camera, canvas, renderer, plane;
 let world, groundMaterial, shadowLight;
@@ -18,11 +18,11 @@ let player;
 
 // our color pallet
 var myColors = {
-  grey:"#556270",
-  green:"#C7F464",
-  blue:"#4ECDC4",
-  pink:"#FF6B6B",
-  red:"#C44D58"
+  grey: '#556270',
+  green: '#C7F464',
+  blue: '#4ECDC4',
+  pink: '#FF6B6B',
+  red: '#C44D58'
 };
 
 // variables for physics
@@ -55,39 +55,29 @@ export const init = () => {
 
   // initialize Cannon world
   world = new CANNON.World();
-  world.gravity.set(0,0,-200);
+  world.gravity.set(0, 0, -200);
   world.broadphase = new CANNON.NaiveBroadphase();
 
 
   // initialize all existing players in room
-  let { auth } = store.getState();
-  let { players } = store.getState().gameState;
-  let newPlayer;
+  let { players, food } = store.getState();
+  let newPlayer, newFood;
 
-  for (let id in players) {
-    if (id !== socket.id) {
-          newPlayer = new Player(id, players[id], false);
-          newPlayer.init();
-    } else {
-      player = new Player(id, players[id], true);
-      player.init();
-    }
-  }
+  forOwn(players, (data, id) => {
+    let isMainPlayer = id === socket.id;
+    newPlayer = new Player(id, data, isMainPlayer);
+    newPlayer.init();
+    if (isMainPlayer) player = newPlayer;
+  });
 
-
-  // initialize all existing food in room
-  let { food } = store.getState().gameState;
-  //console.log("fooding", food)
-  let newFood;
-
-  food.forEach(item=>{
-    newFood = new Food(item);
+  forOwn(food, (data, id) => {
+    newFood = new Food(id, data);
     newFood.init();
   });
 
 
   // Adjust friction between ball & ground
-  groundMaterial = new CANNON.Material("groundMaterial");
+  groundMaterial = new CANNON.Material('groundMaterial');
   var ground_ground_cm = new CANNON.ContactMaterial(groundMaterial, groundMaterial, {
       friction: .5,
       restitution: 0.2,
@@ -100,10 +90,8 @@ export const init = () => {
 
 
   // create THREE plane
-  let { color } = store.getState().gameState;
-
   var box_geometry = new THREE.BoxGeometry( 400, 5, 400 );
-  var box_material = new THREE.MeshPhongMaterial( { color: myColors['blue'] , shading:THREE.FlatShading});
+  var box_material = new THREE.MeshPhongMaterial( { color: myColors['blue'], shading: THREE.FlatShading});
   plane = new THREE.Mesh( box_geometry, box_material );
 
   plane.receiveShadow = true;
@@ -112,7 +100,7 @@ export const init = () => {
 
 
   // create Cannon plane
-  var groundShape = new CANNON.Box(new CANNON.Vec3(200,200,2.5));
+  var groundShape = new CANNON.Box(new CANNON.Vec3(200, 200, 2.5));
   var groundBody = new CANNON.Body({ mass: 0, material: groundMaterial, shape: groundShape });
 
   world.add(groundBody);
@@ -128,11 +116,11 @@ export const init = () => {
   // A hemiplane light is a gradient colored light;
   // the first parameter is the sky color, the second parameter is the ground color,
   // the third parameter is the intensity of the light
-  hemisphereLight = new THREE.HemisphereLight(0xaaaaaa,0x000000, .9)
+  hemisphereLight = new THREE.HemisphereLight(0xaaaaaa, 0x000000, 0.9);
 
   // A directional light shines from a specific direction.
   // It acts like the sun, that means that all the rays produced are parallel.
-  shadowLight = new THREE.DirectionalLight(0xffffff, .9);
+  shadowLight = new THREE.DirectionalLight(0xffffff, 0.9);
 
   // Allow shadow casting
   shadowLight.castShadow = true;
@@ -156,7 +144,7 @@ export const init = () => {
   scene.add(shadowLight);
 
   // an ambient light modifies the global color of a scene and makes the shadows softer
-  var ambientLight = new THREE.AmbientLight(myColors["red"], .5);
+  var ambientLight = new THREE.AmbientLight(myColors['red'], 0.5);
   scene.add(ambientLight);
 
 
@@ -166,8 +154,8 @@ export const init = () => {
   //botInit();
 
   // Events
-  window.addEventListener( "resize", onWindowResize, false );
-}
+  window.addEventListener( 'resize', onWindowResize, false );
+};
 
 export function animate() {
   requestAnimationFrame( animate );
@@ -191,30 +179,28 @@ export function animate() {
   player.mesh.quaternion.z = -player.cannonMesh.quaternion.y;
   player.mesh.quaternion.y = -player.cannonMesh.quaternion.z;
   player.mesh.quaternion.w = player.cannonMesh.quaternion.w;
- 
 
- let { players } = store.getState().gameState;
+
+ let { players } = store.getState();
 
 
   // for all other players
-  for (let player in players){
-    if(player != socket.id && scene.getObjectByName(player)){
-      let currentPlayer = scene.getObjectByName(player);
-       
-     // console.log("bodies", world.bodies);
-      currentPlayer.cannon.position.x = currentPlayer.position.x;
-      currentPlayer.cannon.position.z = currentPlayer.position.y;
-      currentPlayer.cannon.position.y = currentPlayer.position.z;
-      currentPlayer.cannon.quaternion.x = -currentPlayer.quaternion.x;
-      currentPlayer.cannon.quaternion.z = -currentPlayer.quaternion.y;
-      currentPlayer.cannon.quaternion.y = -currentPlayer.quaternion.z;
-      currentPlayer.cannon.quaternion.w = currentPlayer.quaternion.w;
+  forOwn(players, (currentPlayer, id) => {
+    let playerObject = scene.getObjectByName(id);
+    if (currentPlayer !== socket.id && playerObject) {
+      playerObject.cannon.position.x = playerObject.position.x;
+      playerObject.cannon.position.z = playerObject.position.y;
+      playerObject.cannon.position.y = playerObject.position.z;
+      playerObject.cannon.quaternion.x = -playerObject.quaternion.x;
+      playerObject.cannon.quaternion.z = -playerObject.quaternion.y;
+      playerObject.cannon.quaternion.y = -playerObject.quaternion.z;
+      playerObject.cannon.quaternion.w = playerObject.quaternion.w;
     }
-}
+  });
 
   // run physics
-  time = Date.now()
-  if(lastTime !== undefined){
+  time = Date.now();
+  if (lastTime !== undefined) {
      var dt = (time - lastTime) / 1000;
      world.step(fixedTimeStep, dt, maxSubSteps);
   }
@@ -222,14 +208,9 @@ export function animate() {
 
 
   // this dispatch happens 60 times a second, updating the local state with player's new info and emitting to server
-  let prevData = store.getState().gameState.players[player.id];
+  let prevData = players[player.id];
   let currData = player.getPlayerData();
-  if (JSON.stringify(prevData) !== JSON.stringify(currData)) {
-    let action = updateLocation(player.id, player.getPlayerData());
-    store.dispatch(action);
-    socket.emit('state_changed', action);
-  }
-
+  socket.emit('update_position', player.getPlayerData());
 
   render();
 }

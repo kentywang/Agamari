@@ -1,60 +1,60 @@
 import store from '../store';
-import {addPlayer} from '../reducers/gameState';
-import { scene, camera, canvas, renderer, plane, playerID, myColors } from './main';
-import {Player} from './player';
-import {socket} from '../components/App';
+import { scene, plane, playerID, myColors } from './main';
+import { Player } from './player';
+import { socket } from '../components/App';
+import { forOwn } from 'lodash';
 
 const THREE = require('three');
 
 let player;
+let color = 'red';
 
 const loadGame = () => {
-	// load the environment
-	loadEnvironment();
+  // load the environment
+  loadEnvironment();
 
-	// load the player
-	// initMainPlayer();
+  // load the player
+  // initMainPlayer();
 
 
-	window.onunload = function() {
-		//remove self from server db here
-	};
+  window.onunload = function() {
+    //remove self from server db here
+  };
 
-	window.onbeforeunload = function() {
-		//remove self from server db here
-	};
-}
+  window.onbeforeunload = function() {
+    //remove self from server db here
+  };
+};
 
 export function loadEnvironment() {
-	let { color, players } = store.getState().gameState;
+  let { players } = store.getState();
 
-	// Kenty: added if statement below to get around undefined plane error
-	if (plane) plane.material.color = new THREE.Color(myColors[color]);
+  // Kenty: added if statement below to get around undefined plane error
+  if (plane) plane.material.color = new THREE.Color(myColors[color]);
 
-	let currentPlayer;
-	let data;
+  // set location and rotation for other players (I should probably use player.setOrientation instead)
+  forOwn(players, (data, id) => {
+    // Kenty: added '&& scene.getobj' to if statement below to get around undefined error
+    let playerObject = scene.getObjectByName(id);
+    if (playerObject) {
+       if (id !== socket.id) {
+        playerObject.position.x = data.x;
+        playerObject.position.y = data.y;
+        playerObject.position.z = data.z;
+        playerObject.rotation.x = data.rx;
+        playerObject.rotation.y = data.ry;
+        playerObject.rotation.z = data.rz;
+      }
+      playerObject.scale.x = playerObject.scale.y = playerObject.scale.z = data.scale;
+    }
 
-	// set location and rotation for other players (I should probably use player.setOrientation instead)
-	for (let id in players){
-  		// Kenty: added '&& scene.getobj' to if statement below to get around undefined error
-	  	if(id != socket.id && scene.getObjectByName(id)){
-	  		currentPlayer = scene.getObjectByName(id);
-	  		data = players[id];
-
-	  		currentPlayer.position.x = data.x;
-	  		currentPlayer.position.y = data.y;
-	  		currentPlayer.position.z = data.z;
-	  		currentPlayer.rotation.x = data.rx;
-	  		currentPlayer.rotation.y = data.ry;
-	  		currentPlayer.rotation.z = data.rz;
-	  	}
-	}
-	//makeFood();
+  });
+  //makeFood();
 }
 
 function initMainPlayer() {
-	player = new Player( playerID, true);
-	player.init();
+  player = new Player( playerID, true);
+  player.init();
 }
 
 export { loadGame, player };
