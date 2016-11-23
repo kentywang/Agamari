@@ -1,8 +1,12 @@
 const { combineReducers } = require('redux');
 const users = require('./users').reducer;
-const gameState = require('./gameState').reducer;
+const players = require('./players').reducer;
+const food = require('./food').reducer;
+const environment = require('./environment').reducer;
 
 module.exports = combineReducers({
   users,
-  gameState
+  players,
+  food,
+  environment
 });

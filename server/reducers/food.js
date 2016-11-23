@@ -1,4 +1,3 @@
-let { reducerMode } = require('../constants');
 let newState;
 
 /*----------  INITIAL STATE  ----------*/
@@ -19,19 +18,23 @@ module.exports.addRoom = name => ({
   name
 });
 
-module.exports.receiveFood = (room, id, data) => ({
+module.exports.receiveFood = (id, data, room) => ({
   type: RECEIVE_FOOD,
-  room, id, data
+  id,
+  data,
+  room
 });
 
-module.exports.receiveMultipleFood = (room, food) => ({
+module.exports.receiveMultipleFood = (food, room) => ({
   type: RECEIVE_MULTIPLE_FOOD,
-  room, food
+  food,
+  room
 });
 
-module.exports.removeFood = (room, id) => ({
+module.exports.removeFood = (id, room) => ({
   type: REMOVE_FOOD,
-  room, id
+  id,
+  room
 });
 
 
@@ -115,4 +118,4 @@ const chooseReducer = reducerMode => {
   }
 };
 
-module.exports.reducer = chooseReducer(reducerMode);
+module.exports.reducer = chooseReducer('immutable');

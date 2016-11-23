@@ -9,9 +9,9 @@ const RECEIVE_PLAYERS = 'RECEIVE_PLAYERS';
 
 
 /*----------  ACTION CREATORS  ----------*/
-export const receivePlayers = (players, room) => ({
+export const receivePlayers = (players) => ({
   type: RECEIVE_PLAYERS,
-  players, room
+  players
 });
 
 
@@ -21,9 +21,7 @@ export const receivePlayers = (players, room) => ({
 const immutable = (state = initialState, action) => {
   switch (action.type) {
     case RECEIVE_PLAYERS:
-      newState = Object.assign({}, state);
-      newState[action.room] = action.players;
-      return newState;
+      return action.players;
     default: return state;
   }
 };
@@ -32,9 +30,7 @@ const immutable = (state = initialState, action) => {
 const semimutable = (state = initialState, action) => {
   switch (action.type) {
     case RECEIVE_PLAYERS:
-      newState = Object.assign({}, state);
-      newState[action.room] = action.players;
-      return newState;
+      return action.players;
     default: return state;
   }
 };
@@ -43,8 +39,7 @@ const semimutable = (state = initialState, action) => {
 const mutable = (state = initialState, action) => {
   switch (action.type) {
     case RECEIVE_PLAYERS:
-      state[action.room] = action.players;
-      return state;
+      return action.players;
     default: return state;
   }
 };
@@ -58,4 +53,4 @@ const chooseReducer = reducerMode => {
   }
 };
 
-export default chooseReducer(reducerMode);
+export default chooseReducer('immutable');

@@ -1,36 +1,38 @@
 
-const store = require('./store');
-const validRoomNames = ['room1', 'room2'];
 const reducerMode = 'immutable';
+const validRoomNames = ['room1', 'room2'];
 
-const { createFood } = require('./reducers/gameState');
-
-
-let elapsedTime = Date.now();
+const { receiveFood } = require('./reducers/food');
 
 
-function spawnFood(io){
+let elapsedTime = Date.now(),
+    id = 0;
 
 
-	if (Date.now()-elapsedTime>5000){
-		elapsedTime = Date.now();
-		let rooms = Object.keys(io.sockets.adapter.rooms);
-	    for (let room of rooms) {
-	      // Only enter if room name is in valid room names array
-	      if (validRoomNames.indexOf(room) + 1) {
-	        let { gameState } = store.getState();
-	        if (gameState[room]) {
-	          	if (gameState[room].food.length<15){
-	          		let xPostion = (Math.random()*400)-200;
-					let zPostion = (Math.random()*400)-200;
+function spawnFood(io, store) {
+  if (Date.now() - elapsedTime > 5000){
+    elapsedTime = Date.now();
+    let rooms = Object.keys(io.sockets.adapter.rooms);
+      for (let room of rooms) {
+        // Only enter if room name is in valid room names array
+        if (validRoomNames.indexOf(room) + 1) {
+          let { food } = store.getState();
+          if (food[room]) {
+              if (Object.keys(food).length < 15) {
 
-					store.dispatch(createFood(xPostion,zPostion,"sphere", room));
-					io.sockets.in(room).emit('add_food', {x: xPostion, z: zPostion, type: "sphere"});
-				}
-          	}
+                let x = (Math.random() * 400) - 200,
+                    z = (Math.random() * 400) - 200,
+                    type = 'sphere';
+                let data = { x, z, type};
+
+                store.dispatch(receiveFood(id, data, room));
+                io.sockets.in(room).emit('add_food', id, data);
+                id++;
+              }
+            }
         }
       }
     }
 }
 
-module.exports = {spawnFood, validRoomNames, reducerMode}
+module.exports = { spawnFood, validRoomNames, reducerMode };

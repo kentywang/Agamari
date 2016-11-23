@@ -1,8 +1,12 @@
 import { combineReducers } from 'redux';
 import auth from './auth';
-import gameState from './gameState';
+import players from './players';
+import food from './food';
+import environment from './environment';
 
 export default combineReducers({
   auth,
-  gameState,
+  players,
+  food,
+  environment
 });

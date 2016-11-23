@@ -1,4 +1,3 @@
-let { reducerMode } = require('../gameEngine');
 let newState;
 
 /*----------  INITIAL STATE  ----------*/
@@ -149,4 +148,4 @@ const chooseReducer = reducerMode => {
   }
 };
 
-module.exports.reducer =  chooseReducer(reducerMode);
+module.exports.reducer =  chooseReducer('immutable');

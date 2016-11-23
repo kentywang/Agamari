@@ -27,10 +27,10 @@ class ControlPanel extends Component {
 
 
   render() {
-    let {gameState, isOpen, open, close, error } = this.props;
+    let {players, isOpen, open, close, error } = this.props;
     let { nickname } = this.state;
     let { updateNickname, startAsGuest } = this;
-    let player = socket && gameState.players[socket.id];
+    let player = socket && players[socket.id];
     return (
       <div style={{position: 'absolute', zIndex: 1}}>
       {isOpen ?
@@ -53,7 +53,7 @@ class ControlPanel extends Component {
   }
 }
 
-const mapStateToProps = ({ gameState }) => ({ gameState });
+const mapStateToProps = ({ players }) => ({ players });
 
 export default connect(
   mapStateToProps
