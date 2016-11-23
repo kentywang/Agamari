@@ -1,4 +1,4 @@
-import { scene, player, world, groundMaterial, myColors } from './main';
+import { scene, world, groundMaterial, myColors } from './main';
 import { socket } from '../components/App';
 const THREE = require('three');
 const CANNON = require('../../public/cannon.min.js');
@@ -49,13 +49,6 @@ export const Food = function( id, data ) {
 
     scope.cannonMesh.addEventListener('collide', e => {
       world.remove(scope.cannonMesh);
-      let playerRadius = player.cannonMesh.shapes[0].radius;
-
-      // console.log('radius', playerRadius);
-      // player.cannonMesh.shapes[0].radius += 0;
-      // console.log('mass', player.cannonMesh.mass);
-      // player.cannonMesh.mass += 0;
-      // console.log(player.cannonMesh.mass);
 
       //remove the food
       //also need to remove food from game state eventually

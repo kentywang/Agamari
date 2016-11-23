@@ -67,7 +67,7 @@ export const init = () => {
     let isMainPlayer = id === socket.id;
     newPlayer = new Player(id, data, isMainPlayer);
     newPlayer.init();
-    if (isMainPlayer) player = newPlayer;
+    // if (isMainPlayer) player = newPlayer;
   });
 
   forOwn(food, (data, id) => {
@@ -159,10 +159,11 @@ export const init = () => {
 
 export function animate() {
   requestAnimationFrame( animate );
-
-
+  console.log('scene', scene);
+  let playerMesh = scene.getObjectByName(socket.id);
+  let cannonMesh = playerMesh.cannon;
   // Set the direction of the light
-  shadowLight.position.set(player.mesh.position.x + 150, player.mesh.position.y + 300, player.mesh.position.z + 150);
+  shadowLight.position.set(playerMesh.position.x + 150, playerMesh.position.y + 300, playerMesh.position.z + 150);
 
 
   // receive and process controls and camera
@@ -172,13 +173,13 @@ export function animate() {
 
   // sync THREE mesh with Cannon mesh
   // Cannon's y & z are swapped from THREE, and w is flipped
-  player.mesh.position.x = player.cannonMesh.position.x;
-  player.mesh.position.z = player.cannonMesh.position.y;
-  player.mesh.position.y = player.cannonMesh.position.z;
-  player.mesh.quaternion.x = -player.cannonMesh.quaternion.x;
-  player.mesh.quaternion.z = -player.cannonMesh.quaternion.y;
-  player.mesh.quaternion.y = -player.cannonMesh.quaternion.z;
-  player.mesh.quaternion.w = player.cannonMesh.quaternion.w;
+  playerMesh.position.x = cannonMesh.position.x;
+  playerMesh.position.z = cannonMesh.position.y;
+  playerMesh.position.y = cannonMesh.position.z;
+  playerMesh.quaternion.x = -cannonMesh.quaternion.x;
+  playerMesh.quaternion.z = -cannonMesh.quaternion.y;
+  playerMesh.quaternion.y = -cannonMesh.quaternion.z;
+  playerMesh.quaternion.w = cannonMesh.quaternion.w;
 
 
  let { players } = store.getState();
@@ -206,11 +207,22 @@ export function animate() {
   }
   lastTime = time;
 
+  const getMeshData = mesh => {
+    return {
+      x: mesh.position.x,
+      y: mesh.position.y,
+      z: mesh.position.z,
+      rx: mesh.rotation.x,
+      ry: mesh.rotation.y,
+      rz: mesh.rotation.z
+    };
+  };
+
 
   // this dispatch happens 60 times a second, updating the local state with player's new info and emitting to server
-  let prevData = players[player.id];
-  let currData = player.getPlayerData();
-  socket.emit('update_position', player.getPlayerData());
+  // let prevData = players[player.id];
+  // let currData = player.getPlayerData();
+  socket.emit('update_position', getMeshData(playerMesh));
 
   render();
 }

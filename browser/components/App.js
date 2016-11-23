@@ -70,7 +70,9 @@ class App extends Component {
 
       socket.on('add_player', (id, initialData) => {
         let isMainPlayer = id === socket.id;
+        // console.log('adding_player', isMainPlayer, initialData);
         let player = new Player(id, initialData, isMainPlayer);
+        // console.log('the player', player);
         player.init();
       });
 
