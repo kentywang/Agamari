@@ -1,6 +1,7 @@
 
 const store = require('./store');
 const validRoomNames = ['room1', 'room2'];
+const reducerMode = 'immutable';
 
 const { createFood } = require('./reducers/gameState');
 
@@ -9,8 +10,8 @@ let elapsedTime = Date.now();
 
 
 function spawnFood(io){
- 		
-	
+
+
 	if (Date.now()-elapsedTime>5000){
 		elapsedTime = Date.now();
 		let rooms = Object.keys(io.sockets.adapter.rooms);
@@ -25,11 +26,11 @@ function spawnFood(io){
 
 					store.dispatch(createFood(xPostion,zPostion,"sphere", room));
 					io.sockets.in(room).emit('add_food', {x: xPostion, z: zPostion, type: "sphere"});
-				}			 
+				}
           	}
         }
       }
     }
-};
+}
 
-module.exports = {spawnFood, validRoomNames}
+module.exports = {spawnFood, validRoomNames, reducerMode}

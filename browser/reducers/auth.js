@@ -2,7 +2,7 @@
 const initialState = {id: null};
 
 /*----------  ACTION TYPES  ----------*/
-const RECEIVE_PLAYER = "RECEIVE_PLAYER";
+const RECEIVE_PLAYER = 'RECEIVE_PLAYER';
 
 /*----------  ACTION CREATORS  ----------*/
 export const receivePlayer = id => ({
@@ -15,8 +15,8 @@ export const receivePlayer = id => ({
 /*----------  REDUCER  ----------*/
 export default (state = initialState, action) => {
   switch (action.type) {
-  	case RECEIVE_PLAYER:
-  		return Object.assign({}, state, {id: action.id})
+    case RECEIVE_PLAYER:
+      return Object.assign({}, state, {id: action.id});
     default: return state;
   }
 };
