@@ -63,6 +63,9 @@ const setUpSockets = io => {
             .then(() => {
               socket.emitAsync('player_data', store.getState().players['room1']);
             })
+            .then(() => {
+              socket.emitAsync('food_data', store.getState().food['room1']);
+            })
             .then(() => socket.joinAsync('room1'))
             .then(() => socket.emit('start_game'));
         })
@@ -91,7 +94,7 @@ const setUpSockets = io => {
       let { food } = store.getState();
       let room = Object.keys(socket.rooms)[0];
       if (food[room][id]) {
-        store.dispatch(removeFood(id));
+        store.dispatch(removeFood(id, room));
         store.dispatch(changePlayerScale(socket.id, 0.1, room));
         io.sockets.in(room).emit('remove_food', id);
       }

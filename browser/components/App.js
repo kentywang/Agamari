@@ -4,7 +4,7 @@ import store from '../store';
 
 
 import { receivePlayers } from '../reducers/players';
-import { removeFood, receiveFood } from '../reducers/food';
+import { removeFood, receiveFood, receiveMultipleFood } from '../reducers/food';
 
 
 import Canvas from './Canvas';
@@ -54,6 +54,10 @@ class App extends Component {
         this.props.receivePlayers(state);
       });
 
+      socket.on('food_data', state => {
+        this.props.receiveMultipleFood(state);
+      });
+
       socket.on('start_fail', err => {
         this.setState({ err: err.message });
       });
@@ -79,6 +83,7 @@ class App extends Component {
       });
 
       socket.on('add_food', (id, data) => {
+        id = id.toString();
         let food = new Food(id, data);
         food.init();
         this.props.receiveFood(id, data);
@@ -86,6 +91,7 @@ class App extends Component {
 
       socket.on('remove_food', id => {
         let foodObject = scene.getObjectByName(id);
+        //console.log("in remvoe food", id, foodObject)
         if (foodObject) {
           world.remove(foodObject.cannon);
           scene.remove(foodObject);
@@ -122,6 +128,7 @@ const mapStateToProps = ({ players }) => ({ players });
 const mapDispatchToProps = dispatch => ({
   receivePlayers: state => dispatch(receivePlayers(state)),
   receiveFood: (id, data) => dispatch(receiveFood(id, data)),
+  receiveMultipleFood: food => dispatch(receiveMultipleFood(food)),
   removeFood: id => dispatch(removeFood(id))
 });
 
