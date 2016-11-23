@@ -45,7 +45,7 @@ export const init = () => {
 
 
   // shading
-  renderer.shadowMapEnabled = true;
+  renderer.shadowMap.enabled = true;
   renderer.shadowMapSoft = true;
 
 
