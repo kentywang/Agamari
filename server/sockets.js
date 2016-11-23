@@ -103,8 +103,10 @@ const setUpSockets = io => {
     socket.on('update_position', data => {
       let room = Object.keys(socket.rooms)[0];
       if (data.y < 0) {
+        console.log('remove/create player', data.y);
         io.sockets.in(room).emit('remove_player', socket.id);
         store.dispatch(updatePlayer(socket.id, initPos, room));
+        io.sockets.in(room).emit('add_player', socket.id, initPos, true);
         socket.emit('you_lose', 'You fell off the board!');
       } else {
        store.dispatch(updatePlayer(socket.id, data, room));

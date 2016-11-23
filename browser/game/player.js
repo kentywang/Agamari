@@ -1,5 +1,5 @@
 import { scene, camera, world, groundMaterial, myColors } from './main';
-import { player } from './game';
+import { socket } from '../components/App';
 
 const THREE = require('three');
 const CANNON = require('../../public/cannon.min.js');
@@ -9,6 +9,7 @@ let controls;
 
 export const Player = function( id, data, isMainPlayer) {
   this.id = id;
+  let player = scene.getObjectByName(socket.id);
   this.isMainPlayer = isMainPlayer;
   this.mesh;
   this.cannonMesh;
