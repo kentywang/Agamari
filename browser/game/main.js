@@ -1,5 +1,5 @@
 import store, { socket } from '../store';
-import { loadGame } from './game';
+import { loadGame, loadEnvironment } from './game';
 
 import {controls, Player} from './player';
 import {Food} from './food';
@@ -157,6 +157,7 @@ export const init = () => {
 };
 
 export function animate() {
+  loadEnvironment();
   requestAnimationFrame( animate );
   let playerMesh = scene.getObjectByName(socket.id);
   let cannonMesh = playerMesh.cannon;

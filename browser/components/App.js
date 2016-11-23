@@ -3,14 +3,8 @@ import { connect } from 'react-redux';
 
 import Canvas from './Canvas';
 import ControlPanel from './ControlPanel';
-import { loadEnvironment } from '../game/game';
-import { scene } from '../game/main';
 
 class App extends Component {
-  componentDidUpdate() {
-    if (scene) loadEnvironment();
-  }
-
   render() {
     return (
       <div>
@@ -21,7 +15,6 @@ class App extends Component {
 
   }
 }
-
 
 const mapStateToProps = state => ({});
 const mapDispatchToProps = dispatch => ({});

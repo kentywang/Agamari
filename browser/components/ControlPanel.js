@@ -21,7 +21,6 @@ class ControlPanel extends Component {
     let { isOpen,
           nickname,
           error } = controlPanel;
-
     let player = socket && players[socket.id];
 
     return (
