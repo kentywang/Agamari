@@ -51,11 +51,11 @@ export const Food = function( id, data ) {
       world.remove(scope.cannonMesh);
       let playerRadius = player.cannonMesh.shapes[0].radius;
 
-      console.log('radius', playerRadius);
-      player.cannonMesh.shapes[0].radius += 0;
-      console.log('mass', player.cannonMesh.mass);
-      player.cannonMesh.mass += 0;
-      console.log(player.cannonMesh.mass);
+      // console.log('radius', playerRadius);
+      // player.cannonMesh.shapes[0].radius += 0;
+      // console.log('mass', player.cannonMesh.mass);
+      // player.cannonMesh.mass += 0;
+      // console.log(player.cannonMesh.mass);
 
       //remove the food
       //also need to remove food from game state eventually

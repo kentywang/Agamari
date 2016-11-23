@@ -10,7 +10,7 @@ import { removeFood, receiveFood } from '../reducers/food';
 import Canvas from './Canvas';
 import ControlPanel from './ControlPanel';
 import { loadEnvironment } from '../game/game';
-import { init, animate, scene } from '../game/main';
+import { init, animate, scene, world } from '../game/main';
 import { Player } from '../game/player';
 import {Food} from '../game/food';
 
@@ -54,7 +54,6 @@ class App extends Component {
         this.props.receivePlayers(state);
       });
 
-
       socket.on('start_fail', err => {
         this.setState({ err: err.message });
       });
@@ -74,7 +73,7 @@ class App extends Component {
       socket.on('remove_player', id => {
         let playerObject = scene.getObjectByName(id);
         if (playerObject) {
-          scene.remove(playerObject.cannon);
+          world.remove(playerObject.cannon);
           scene.remove(playerObject);
         }
       });
@@ -88,7 +87,7 @@ class App extends Component {
       socket.on('remove_food', id => {
         let foodObject = scene.getObjectByName(id);
         if (foodObject) {
-          scene.remove(foodObject.cannonMesh);
+          world.remove(foodObject.cannon);
           scene.remove(foodObject);
         }
         this.props.removeFood(id);
