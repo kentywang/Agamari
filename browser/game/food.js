@@ -17,7 +17,6 @@ export const Food = function( id, data ) {
     // create THREE object
     ball_geometry = new THREE.TetrahedronGeometry( 2, 1 );
     ball_material = new THREE.MeshPhongMaterial( {color: myColors['blue'], shading: THREE.FlatShading} );
-    console.log()
     // create Cannon object
     sphereShape = new CANNON.Sphere(2);
     scope.cannonMesh = new CANNON.Body({mass: 0, material: groundMaterial, shape: sphereShape});
@@ -27,6 +26,7 @@ export const Food = function( id, data ) {
   this.init = function() {
     // mesh the ball geom and mat
     scope.mesh = new THREE.Mesh( ball_geometry, ball_material );
+    scope.mesh.name = id;
     scope.mesh.castShadow = true;
 
     scope.mesh.position.x = this.data.x;
@@ -44,7 +44,7 @@ export const Food = function( id, data ) {
     scope.cannonMesh.quaternion.y = scope.mesh.quaternion.y;
     scope.cannonMesh.quaternion.z = scope.mesh.quaternion.z;
     scope.cannonMesh.quaternion.w = scope.mesh.quaternion.w;
-
+    scope.mesh.cannon = scope.cannonMesh;
     world.add(scope.cannonMesh);
 
     scope.cannonMesh.addEventListener('collide', e => {

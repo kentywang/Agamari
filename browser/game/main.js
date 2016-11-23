@@ -1,6 +1,3 @@
-
-const reducerMode = 'immutable';
-
 import store from '../store';
 import { loadGame } from './game';
 
@@ -66,16 +63,11 @@ export const init = () => {
   let { players, food } = store.getState();
   let newPlayer, newFood;
 
-  console.log('players', players);
   forOwn(players, (data, id) => {
     let isMainPlayer = id === socket.id;
-    console.log('isMainPlayer', id, socket.id, isMainPlayer);
     newPlayer = new Player(id, data, isMainPlayer);
     newPlayer.init();
-    if (isMainPlayer) {
-      player = newPlayer;
-      console.log('setting player', newPlayer);
-    }
+    if (isMainPlayer) player = newPlayer;
   });
 
   forOwn(food, (data, id) => {
@@ -236,7 +228,7 @@ function onWindowResize() {
 }
 
 
-export { scene, camera, canvas, renderer, player, plane, world, groundMaterial, myColors, reducerMode };
+export { scene, camera, canvas, renderer, player, plane, world, groundMaterial, myColors };
 
 // function botInit(){
   // const bot_geometry = new THREE.BoxGeometry(1,1,1);

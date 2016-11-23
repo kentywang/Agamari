@@ -33,7 +33,7 @@ const store = require('./store');
 
 
 const { removeFood } = require('./reducers/food');
-const { updatePlayer, changeScale } = require('./reducers/players');
+const { updatePlayer, changePlayerScale } = require('./reducers/players');
 
 
 const setUpSockets = io => {
@@ -71,13 +71,6 @@ const setUpSockets = io => {
         .catch(err => socket.emit('start_fail', err));
     });
 
-    // Relay game state changes and update server state
-    socket.on('state_changed', action => {
-      let room = Object.keys(socket.rooms)[0];
-      if (store.getState().players[room]) {
-        store.dispatch(addRoom(action, room));
-      }
-    });
 
 
     // Verify client disconnect
@@ -100,11 +93,12 @@ const setUpSockets = io => {
 
 
     socket.on('eat_food', id => {
+      console.log('eating food!', id);
       let { food } = store.getState();
-      let room = socket.rooms[0];
-      if (food[id]) {
+      let room = Object.keys(socket.rooms)[0];
+      if (food[room][id]) {
         store.dispatch(removeFood(id));
-        store.dispatch(changeScale(socket.id, 1));
+        store.dispatch(changePlayerScale(socket.id, 1, room));
         io.sockets.in(room).emit('remove_food', id);
       }
     })

@@ -1,6 +1,3 @@
-import { reducerMode } from '../game/main';
-let newState;
-
 /*----------  INITIAL STATE  ----------*/
 const initialState = {};
 
@@ -18,39 +15,10 @@ export const receivePlayers = (players) => ({
 /*----------  THUNK CREATORS  ----------*/
 
 /*----------  REDUCER  ----------*/
-const immutable = (state = initialState, action) => {
+export default (state = initialState, action) => {
   switch (action.type) {
     case RECEIVE_PLAYERS:
       return action.players;
     default: return state;
   }
 };
-
-
-const semimutable = (state = initialState, action) => {
-  switch (action.type) {
-    case RECEIVE_PLAYERS:
-      return action.players;
-    default: return state;
-  }
-};
-
-
-const mutable = (state = initialState, action) => {
-  switch (action.type) {
-    case RECEIVE_PLAYERS:
-      return action.players;
-    default: return state;
-  }
-};
-
-const chooseReducer = reducerMode => {
-  switch (reducerMode) {
-    case 'mutable': return mutable;
-    case 'semimutable': return semimutable;
-    case 'immutable': return immutable;
-    default: return mutable;
-  }
-};
-
-export default chooseReducer('immutable');

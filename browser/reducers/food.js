@@ -1,4 +1,3 @@
-import { reducerMode } from '../game/main';
 let newState;
 
 /*----------  INITIAL STATE  ----------*/
@@ -11,23 +10,20 @@ const REMOVE_FOOD = 'REMOVE_FOOD';
 
 
 /*----------  ACTION CREATORS  ----------*/
-module.exports.receiveFood = (id, data, room) => ({
+export const receiveFood = (id, data) => ({
   type: RECEIVE_FOOD,
   id,
-  data,
-  room
+  data
 });
 
-module.exports.receiveMultipleFood = (food, room) => ({
+export const receiveMultipleFood = food => ({
   type: RECEIVE_MULTIPLE_FOOD,
-  food,
-  room
+  food
 });
 
-module.exports.removeFood = (id, room) => ({
+export const removeFood = id => ({
   type: REMOVE_FOOD,
-  id,
-  room
+  id
 });
 
 
@@ -38,17 +34,14 @@ const immutable = (state = initialState, action) => {
   switch (action.type) {
     case RECEIVE_FOOD:
       newState = Object.assign({}, state);
-      newState[action.room] = Object.assign({}, newState[action.room]);
-      newState[action.room][action.id] = action.data;
+      newState[action.id] = action.data;
       return newState;
     case RECEIVE_MULTIPLE_FOOD:
-      newState = Object.assign({}, state);
-      newState[action.room] = Object.assign({}, newState[action.room], action.food);
+      newState = Object.assign({}, state, action.food);
       return newState;
     case REMOVE_FOOD:
       newState = Object.assign({}, state);
-      newState[action.room] = Object.assign({}, newState[action.room]);
-      delete newState[action.room][action.id];
+      delete newState[action.id];
       return newState;
     default: return state;
   }
@@ -59,15 +52,15 @@ const semimutable = (state = initialState, action) => {
   switch (action.type) {
     case RECEIVE_FOOD:
       newState = Object.assign({}, state);
-      newState[action.room][action.id] = action.data;
+      newState[action.id] = action.data;
       return newState;
     case RECEIVE_MULTIPLE_FOOD:
       newState = Object.assign({}, state);
-      Object.assign(newState[action.room], action.food);
+      Object.assign(newState, action.food);
       return newState;
     case REMOVE_FOOD:
       newState = Object.assign({}, state);
-      delete newState[action.room][action.id];
+      delete newState[action.id];
       return newState;
     default: return state;
   }
@@ -77,13 +70,13 @@ const semimutable = (state = initialState, action) => {
 const mutable = (state = initialState, action) => {
   switch (action.type) {
     case RECEIVE_FOOD:
-      state[action.room][action.id] = action.data;
+      state[action.id] = action.data;
       return state;
     case RECEIVE_MULTIPLE_FOOD:
-      Object.assign(state[action.room], action.food);
+      Object.assign(state, action.food);
       return state;
     case REMOVE_FOOD:
-      delete state[action.room][action.id];
+      delete state[action.id];
       return state;
     default: return state;
   }

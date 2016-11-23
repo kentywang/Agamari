@@ -4,7 +4,7 @@ import store from '../store';
 
 
 import { receivePlayers } from '../reducers/players';
-import { removeFood } from '../reducers/food';
+import { removeFood, receiveFood } from '../reducers/food';
 
 
 import Canvas from './Canvas';
@@ -55,12 +55,8 @@ class App extends Component {
         this.props.receivePlayers(state);
       });
 
-      socket.on('change_state', action => {
-        store.dispatch(action);
-      });
 
       socket.on('start_game', () => {
-        console.log('game ready', this.props.players);
         init();
         animate();
         this.closeControlPanel();
@@ -69,25 +65,34 @@ class App extends Component {
       socket.on('add_player', (id, initialData) => {
         let isMainPlayer = id === socket.id;
         let player = new Player(id, initialData, isMainPlayer);
-        console.log('adding player', player);
         player.init();
+      });
+
+      socket.on('remove_player', id => {
+        let playerObject = scene.getObjectByName(id);
+        if (playerObject) {
+          scene.remove(playerObject.cannon);
+          scene.remove(playerObject);
+        }
       });
 
       socket.on('start_fail', err => {
         this.setState({ err: err.message });
       });
 
-
-
       socket.on('add_food', (id, data) => {
         let food = new Food(id, data);
         food.init();
+        this.props.receiveFood(id, data);
       });
 
 
       socket.on('remove_food', id => {
         let foodObject = scene.getObjectByName(id);
-        if (foodObject) scene.remove(foodObject);
+        if (foodObject) {
+          scene.remove(foodObject.cannonMesh);
+          scene.remove(foodObject);
+        }
         this.props.removeFood(id);
       });
     });
@@ -119,6 +124,7 @@ class App extends Component {
 const mapStateToProps = ({ players }) => ({ players });
 const mapDispatchToProps = dispatch => ({
   receivePlayers: state => dispatch(receivePlayers(state)),
+  receiveFood: (id, data) => dispatch(receiveFood(id, data)),
   removeFood: id => dispatch(removeFood(id))
 });
 

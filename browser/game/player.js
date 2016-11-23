@@ -64,13 +64,16 @@ export const Player = function( id, data, isMainPlayer) {
     if (!scope.isMainPlayer){
       scope.cannonMesh.addEventListener('collide', e => {
         console.log('what is going on');
-        for (let i = 0; i < world.contacts.length; i++){
-          let c = world.contacts[i];
-          if ((c.bi === scope.cannonMesh && c.bj === player.cannonMesh) ||
-               (c.bi === player.cannonMesh && c.bj === scope.cannonMesh)) {
-            return true;
+        if (player) {
+          for (let i = 0; i < world.contacts.length; i++){
+            let c = world.contacts[i];
+            if ((c.bi === scope.cannonMesh && c.bj === player.cannonMesh) ||
+                 (c.bi === player.cannonMesh && c.bj === scope.cannonMesh)) {
+              return true;
+            }
           }
         }
+
       });
     }
 
