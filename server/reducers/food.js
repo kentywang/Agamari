@@ -1,40 +1,35 @@
 let newState;
 
 /*----------  INITIAL STATE  ----------*/
-const initialState = {
-  room1: {}
-};
+const initialState = {};
 
 /*----------  ACTION TYPES  ----------*/
-const ADD_ROOM = 'ADD_ROOM';
+const RECEIVE_ALL_FOOD = 'RECEIVE_ALL_FOOD';
 const RECEIVE_FOOD = 'RECEIVE_FOOD';
 const RECEIVE_MULTIPLE_FOOD = 'RECEIVE_MULTIPLE_FOOD';
 const REMOVE_FOOD = 'REMOVE_FOOD';
 
 
 /*----------  ACTION CREATORS  ----------*/
-module.exports.addRoom = name => ({
-  type: ADD_ROOM,
-  name
+module.exports.receiveAllFood = food => ({
+  type: RECEIVE_ALL_FOOD,
+  food
 });
 
-module.exports.receiveFood = (id, data, room) => ({
+module.exports.receiveFood = (id, data) => ({
   type: RECEIVE_FOOD,
   id,
-  data,
-  room
+  data
 });
 
-module.exports.receiveMultipleFood = (food, room) => ({
+module.exports.receiveMultipleFood = food => ({
   type: RECEIVE_MULTIPLE_FOOD,
-  food,
-  room
+  food
 });
 
-module.exports.removeFood = (id, room) => ({
+module.exports.removeFood = id => ({
   type: REMOVE_FOOD,
-  id,
-  room
+  id
 });
 
 
@@ -44,67 +39,38 @@ module.exports.removeFood = (id, room) => ({
 /*----------  REDUCER  ----------*/
 const immutable = (state = initialState, action) => {
   switch (action.type) {
-    case ADD_ROOM:
-      newState = Object.assign({}, state);
-      newState[action.name] = {};
-      return newState;
+    case RECEIVE_ALL_FOOD:
+      return action.food;
     case RECEIVE_FOOD:
       newState = Object.assign({}, state);
-      newState[action.room] = Object.assign({}, newState[action.room]);
-      newState[action.room][action.id] = action.data;
+      newState[action.id] = action.data;
       return newState;
     case RECEIVE_MULTIPLE_FOOD:
-      newState = Object.assign({}, state);
-      newState[action.room] = Object.assign({}, newState[action.room], action.food);
+      newState = Object.assign({}, state, action.food);
       return newState;
     case REMOVE_FOOD:
       newState = Object.assign({}, state);
-      newState[action.room] = Object.assign({}, newState[action.room]);
-      delete newState[action.room][action.id];
+      delete newState[action.id];
       return newState;
-    default: return state;
+    default:
+      return state;
   }
 };
-
-
-const semimutable = (state = initialState, action) => {
-  switch (action.type) {
-    case ADD_ROOM:
-      newState = Object.assign({}, state);
-      newState[action.name] = {};
-      return newState;
-    case RECEIVE_FOOD:
-      newState = Object.assign({}, state);
-      newState[action.room][action.id] = action.data;
-      return newState;
-    case RECEIVE_MULTIPLE_FOOD:
-      newState = Object.assign({}, state);
-      Object.assign(newState[action.room], action.food);
-      return newState;
-    case REMOVE_FOOD:
-      newState = Object.assign({}, state);
-      delete newState[action.room][action.id];
-      return newState;
-    default: return state;
-  }
-};
-
 
 const mutable = (state = initialState, action) => {
   switch (action.type) {
-    case ADD_ROOM:
-      state[action.name] = {};
-      return newState;
+    case RECEIVE_ALL_FOOD:
+      return action.food;
     case RECEIVE_FOOD:
-      state[action.room][action.id] = action.data;
+      state[action.id] = action.data;
       return state;
     case RECEIVE_MULTIPLE_FOOD:
-      Object.assign(state[action.room], action.food);
-      return state;
+      return Object.assign(state, action.food);
     case REMOVE_FOOD:
-      delete state[action.room][action.id];
+      delete state[action.id];
       return state;
-    default: return state;
+    default:
+      return state;
   }
 };
 
@@ -112,7 +78,6 @@ const mutable = (state = initialState, action) => {
 const chooseReducer = reducerMode => {
   switch (reducerMode) {
     case 'mutable': return mutable;
-    case 'semimutable': return semimutable;
     case 'immutable': return immutable;
     default: return mutable;
   }

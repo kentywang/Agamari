@@ -1,48 +1,50 @@
 let newState;
 
 /*----------  INITIAL STATE  ----------*/
-const initialState = {
-  room1: {}
-};
+const initialState = {};
 
 /*----------  ACTION TYPES  ----------*/
-const ADD_ROOM = 'ADD_ROOM';
 const RECEIVE_PLAYERS = 'RECEIVE_PLAYERS';
 const RECEIVE_PLAYER = 'RECEIVE_PLAYER';
+const ASSIGN_ROOM = 'ASSIGN_ROOM';
 const UPDATE_PLAYER = 'UPDATE_PLAYER';
 const CHANGE_PLAYER_SCALE = 'CHANGE_PLAYER_SCALE';
 const REMOVE_PLAYER = 'REMOVE_PLAYER';
 
 
 /*----------  ACTION CREATORS  ----------*/
-module.exports.addRoom = name => ({
-  type: ADD_ROOM,
-  name
-});
 
-module.exports.receivePlayers = (players, room) => ({
+module.exports.receivePlayers = players => ({
   type: RECEIVE_PLAYERS,
-  players, room
+  players
 });
 
-module.exports.receivePlayer = (id, data, room) => ({
+module.exports.receivePlayer = (id, data) => ({
   type: RECEIVE_PLAYER,
-  id, data, room
+  id,
+  data
 });
 
-module.exports.updatePlayer = (id, data, room) => ({
+module.exports.assignRoom = (id, room) => ({
+  type: ASSIGN_ROOM,
+  id,
+  room
+});
+
+module.exports.updatePlayer = (id, data) => ({
   type: UPDATE_PLAYER,
-  id, data, room
+  id,
+  data
 });
 
-module.exports.changePlayerScale = (id, change, room) => ({
+module.exports.changePlayerScale = (id, change) => ({
   type: CHANGE_PLAYER_SCALE,
-  id, change, room
+  id, change
 });
 
-module.exports.removePlayer = (id, room) => ({
+module.exports.removePlayer = id => ({
   type: REMOVE_PLAYER,
-  id, room
+  id
 });
 
 
@@ -51,98 +53,62 @@ module.exports.removePlayer = (id, room) => ({
 /*----------  REDUCER  ----------*/
 const immutable = (state = initialState, action) => {
   switch (action.type) {
-    case ADD_ROOM:
-      newState = Object.assign({}, state);
-      newState[action.name] = {};
-      return newState;
     case RECEIVE_PLAYERS:
-      newState = Object.assign({}, state);
-      newState[action.room] = action.players;
-      return newState;
+      return action.players;
     case RECEIVE_PLAYER:
       newState = Object.assign({}, state);
-      newState[action.room] = Object.assign({}, newState[action.room]);
-      newState[action.room][action.id] = action.data;
+      newState[action.id] = action.data;
+      return newState;
+    case ASSIGN_ROOM:
+      newState = Object.assign({}, state);
+      newState[action.id] = Object.assign({}, state[action.id], { room: action.data });
       return newState;
     case UPDATE_PLAYER:
       newState = Object.assign({}, state);
-      newState[action.room] = Object.assign({}, newState[action.room]);
-      newState[action.room][action.id] = Object.assign({}, newState[action.room][action.id], action.data);
+      newState[action.id] = Object.assign({}, state[action.id], action.data);
       return newState;
     case CHANGE_PLAYER_SCALE:
       newState = Object.assign({}, state);
-      newState[action.room] = Object.assign({}, newState[action.room]);
-      newState[action.room][action.id] = Object.assign({}, newState[action.room][action.id], {scale: newState[action.room][action.id].scale + action.change});
+      newState[action.id] = Object.assign({}, state[action.id]);
+      newState[action.id].scale += action.change;
       return newState;
     case REMOVE_PLAYER:
       newState = Object.assign({}, state);
-      newState[action.room] = Object.assign({}, newState[action.room]);
-      delete newState[action.room][action.id];
+      delete newState[action.id];
       return newState;
-    default: return state;
-  }
-};
-
-
-const semimutable = (state = initialState, action) => {
-  switch (action.type) {
-    case ADD_ROOM:
-      newState = Object.assign({}, state);
-      newState[action.name] = {};
-      return newState;
-    case RECEIVE_PLAYERS:
-      newState = Object.assign({}, state);
-      newState[action.room] = action.players;
-      return newState;
-    case RECEIVE_PLAYER:
-      newState = Object.assign({}, state);
-      newState[action.room][action.id] = action.data;
-      return newState;
-    case UPDATE_PLAYER:
-      newState = Object.assign({}, state);
-      Object.assign(newState[action.room][action.id], action.data);
-      return newState;
-    case CHANGE_PLAYER_SCALE:
-      newState = Object.assign({}, state);
-      newState[action.room][action.id].scale += action.change;
-      return newState;
-    case REMOVE_PLAYER:
-      newState = Object.assign({}, state);
-      delete newState[action.room][action.id];
-      return newState;
-    default: return state;
+    default:
+      return state;
   }
 };
 
 
 const mutable = (state = initialState, action) => {
   switch (action.type) {
-    case ADD_ROOM:
-      state[action.name] = {};
-      return state;
     case RECEIVE_PLAYERS:
-      state[action.room] = action.players;
-      return state;
+      return action.players;
     case RECEIVE_PLAYER:
-      state[action.room][action.id] = action.data;
+      state[action.id] = action.data;
+      return state;
+    case ASSIGN_ROOM:
+      state[action.id].room = action.room;
       return state;
     case UPDATE_PLAYER:
-    Object.assign(state[action.room[action.id]], action.data);
+      Object.assign(state[action.id], action.data);
       return state;
     case CHANGE_PLAYER_SCALE:
-      state[action.room][action.id].scale += action.change;
+      state[action.id].scale += action.change;
       return state;
     case REMOVE_PLAYER:
-      delete state[action.room][action.id];
+      delete state[action.id];
       return state;
-    default: return state;
+    default:
+      return state;
   }
 };
 
 const chooseReducer = reducerMode => {
   switch (reducerMode) {
     case 'mutable': return mutable;
-    case 'semimutable': return semimutable;
     case 'immutable': return immutable;
     default: return mutable;
   }
