@@ -1,3 +1,5 @@
+const reducerMode = 'immutable';
+
 import store from '../store';
 import { loadGame } from './game';
 
@@ -9,6 +11,7 @@ import {updateLocation} from '../reducers/gameState';
 
 const THREE = require('three');
 const CANNON = require('../../public/cannon.min.js');
+
 
 let scene, camera, canvas, renderer, plane;
 let world, groundMaterial, shadowLight;
@@ -247,7 +250,7 @@ function onWindowResize() {
 }
 
 
-export { scene, camera, canvas, renderer, player, plane, world, groundMaterial, myColors };
+export { scene, camera, canvas, renderer, player, plane, world, groundMaterial, myColors, reducerMode };
 
 // function botInit(){
   // const bot_geometry = new THREE.BoxGeometry(1,1,1);

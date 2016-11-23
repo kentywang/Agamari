@@ -1,22 +1,26 @@
 /*----------  INITIAL STATE  ----------*/
-const initialState = {id: null};
+const initialState = 'red';
+
 
 /*----------  ACTION TYPES  ----------*/
-const RECEIVE_PLAYER = 'RECEIVE_PLAYER';
+
+const SET_COLOR = 'SET_COLOR';
 
 /*----------  ACTION CREATORS  ----------*/
-export const receivePlayer = id => ({
-  type: RECEIVE_PLAYER,
-  id
+export const addUser = color => ({
+  type: SET_COLOR,
+  color
 });
 
+
 /*----------  THUNK CREATORS  ----------*/
+
 
 /*----------  REDUCER  ----------*/
 export default (state = initialState, action) => {
   switch (action.type) {
-    case RECEIVE_PLAYER:
-      return Object.assign({}, state, {id: action.id});
+    case SET_COLOR:
+      return Object.assign({}, state, { color: action.color });
     default: return state;
   }
 };
