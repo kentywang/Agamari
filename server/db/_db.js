@@ -1,3 +1,8 @@
 const Sequelize = require('sequelize');
-const db = new Sequelize('postgres://localhost:5432/blobworld', { logging: false });
+
+const name = (process.env.DATABASE_NAME || "blobworld");
+
+const url = process.env.DATABASE_URL || `postgres://localhost:5432/${name}`;
+
+const db = new Sequelize(url, { logging: false });
 module.exports = db;
