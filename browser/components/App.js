@@ -50,11 +50,14 @@ class App extends Component {
 
     socket.on('connect', () => {
 
-
       socket.on('player_data', state => {
         this.props.receivePlayers(state);
       });
 
+
+      socket.on('start_fail', err => {
+        this.setState({ err: err.message });
+      });
 
       socket.on('start_game', () => {
         init();
@@ -76,16 +79,11 @@ class App extends Component {
         }
       });
 
-      socket.on('start_fail', err => {
-        this.setState({ err: err.message });
-      });
-
       socket.on('add_food', (id, data) => {
         let food = new Food(id, data);
         food.init();
         this.props.receiveFood(id, data);
       });
-
 
       socket.on('remove_food', id => {
         let foodObject = scene.getObjectByName(id);

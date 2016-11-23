@@ -48,7 +48,7 @@ const setUpSockets = io => {
     // Start game as guest
     socket.on('start_as_guest', ({ nickname }) => {
       Promise.promisifyAll(socket);
-      console.log('creating guest account', nickname);
+
       User.create({ nickname, guest: true })
         .then(({id, nickname}) => {
           let leavePromises = [];
@@ -57,20 +57,17 @@ const setUpSockets = io => {
           store.dispatch(assignRoom(socket.id, 'room1'));
           let user = Object.assign(initPos, {id, nickname});
           store.dispatch(receivePlayer(socket.id, user, 'room1'));
-          let players = store.getState().players['room1'];
-          console.log(players);
+
           io.sockets.in('room1').emit('add_player', socket.id, user);
           Promise.all(leavePromises)
             .then(() => {
-              console.log('player_data', players)
-              socket.emitAsync('player_data', players)
+              socket.emitAsync('player_data', store.getState().players['room1']);
             })
             .then(() => socket.joinAsync('room1'))
             .then(() => socket.emit('start_game'));
         })
         .catch(err => socket.emit('start_fail', err));
     });
-
 
 
     // Verify client disconnect
@@ -89,25 +86,27 @@ const setUpSockets = io => {
     });
 
 
-
-
-
     socket.on('eat_food', id => {
       console.log('eating food!', id);
       let { food } = store.getState();
       let room = Object.keys(socket.rooms)[0];
       if (food[room][id]) {
         store.dispatch(removeFood(id));
-        store.dispatch(changePlayerScale(socket.id, 1, room));
+        store.dispatch(changePlayerScale(socket.id, 0.1, room));
         io.sockets.in(room).emit('remove_food', id);
       }
-    })
+    });
 
     socket.on('update_position', data => {
       let room = Object.keys(socket.rooms)[0];
-
-      store.dispatch(updatePlayer(socket.id, data, room));
-    })
+      if (data.y < 0) {
+        io.sockets.in(room).emit('remove_player', socket.id);
+        store.dispatch(updatePlayer(socket.id, initPos, room));
+        socket.emit('you_lose', 'You fell off the board!');
+      } else {
+       store.dispatch(updatePlayer(socket.id, data, room));
+      }
+    });
 
   });
 };
