@@ -1,9 +1,10 @@
-import { scene, camera, world, groundMaterial, myColors } from './main';
-import { socket } from '../components/App';
-
 const THREE = require('three');
 const CANNON = require('../../public/cannon.min.js');
 const PlayerControls = require('../../public/PlayerControls');
+
+import { scene, camera, world, groundMaterial, myColors } from './main';
+import socket from '../socket';
+
 
 let controls;
 
