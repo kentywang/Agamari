@@ -75,41 +75,29 @@ export default socket => {
 
       // still need to implement physics food attachment and other players eaten too (recursive?)
 
-      //delete scene.getObjectByName(id).cannon;
-      // let playerObject = scene.getObjectByName(id);
-      // let player = scene.getObjectByName(playerId);
-      // let newQuat = new CANNON.Quaternion(-playerData.qx,-playerData.qz,-playerData.qy,playerData.qw);
-      // let newEatenQuat = new CANNON.Quaternion(-eatenData.qx,-eatenData.qz,-eatenData.qy,eatenData.qw);
-      // let threeQuat = new THREE.Quaternion(-playerData.qx,-playerData.qy,-playerData.qz,playerData.qw);
+      // for other players
+      // if(eatenData.diet && eatenData.diet.length){
+      //   let newQuat = new CANNON.Quaternion(-playerData.qx,-playerData.qz,-playerData.qy,playerData.qw);
+      //   let newEatenQuat = new CANNON.Quaternion(-eatenData.qx,-eatenData.qz,-eatenData.qy,eatenData.qw);
+      //   for(var i = 1; i < playerObject.cannon.shapes.length; i++){
+      //     let eatenPos = newEatenQuat.inverse().vmult(new CANNON.Vec3(eatenData.diet[i - 1].food.x - eatenData.x,eatenData.diet[i - 1].food.z - eatenData.z, eatenData.diet[i - 1].food.y - eatenData.y))
+      //     let eatenOrient = newEatenQuat.inverse();
 
-      // // attach food to player
-      // if (playerObject) {
-      //   world.remove(playerObject.cannon);
-      //   player.cannon.addShape(playerObject.cannon.shapes[0], newQuat.inverse().vmult(new CANNON.Vec3(eatenData.x - playerData.x,eatenData.z - playerData.z,eatenData.y - playerData.y)), newQuat.inverse());
+      //     scene.getObjectByName(playerId).cannon.addShape(playerObject.cannon.shapes[i], newQuat.inverse().vmult(new CANNON.Vec3(playerObject.position.x - playerData.x,playerObject.position.z - playerData.z,playerObject.position.y - playerData.y)).vadd(eatenPos), newQuat.inverse().mult(eatenOrient));
+      //   }
+      // }
 
-      //   // if(eatenData.diet && eatenData.diet.length){
-      //   //   for(var i = 1; i < playerObject.cannon.shapes.length; i++){
-      //   //     console.log("rast")
-      //   //     // let eatenPos = newEatenQuat.inverse().vmult(new CANNON.Vec3(eatenData.diet[i - 1].food.x - eatenData.x,eatenData.diet[i - 1].food.z - eatenData.z, eatenData.diet[i - 1].food.y - eatenData.y))
-      //   //     // let eatenOrient = newEatenQuat.inverse();
+      // for just food
+      // if(eatenData.diet && eatenData.diet.length){
+      //   let newQuat = new CANNON.Quaternion(-playerData.qx,-playerData.qz,-playerData.qy,playerData.qw);
+      //   let newEatenQuat = new CANNON.Quaternion(-eatenData.qx,-eatenData.qz,-eatenData.qy,eatenData.qw);
+      //   for(var i = 1; i < playerObject.cannon.shapes.length; i++){
 
-      //   //     // player.cannon.addShape(playerObject.cannon.shapes[i], eatenPos);
-      //   //   }
-      //   // }
-      //   //need recursive case;
-      //   delete playerObject.cannon;
+      //     let eatenPos = newEatenQuat.inverse().vmult(new CANNON.Vec3(eatenData.diet[i - 1].food.x - eatenData.x,eatenData.diet[i - 1].food.z - eatenData.z, eatenData.diet[i - 1].food.y - eatenData.y))
+      //     let eatenOrient = newEatenQuat.inverse();
 
-      //   playerObject.position.set(eatenData.x - playerData.x, eatenData.y - playerData.y, eatenData.z - playerData.z)
-
-      //   var pivot = new THREE.Object3D();
-      //   pivot.quaternion.x = playerData.qx;
-      //   pivot.quaternion.y = playerData.qy;
-      //   pivot.quaternion.z = playerData.qz;
-      //   pivot.quaternion.w = -playerData.qw;
-
-      //   pivot.add(playerObject);
-      //   player.add(pivot);
-
+      //     scene.getObjectByName(playerId).cannon.addShape(playerObject.cannon.shapes[i], newQuat.inverse().vmult(new CANNON.Vec3(playerObject.position.x - playerData.x,playerObject.position.z - playerData.z,playerObject.position.y - playerData.y)).vadd(eatenPos));
+      //   }
       // }
 
     });
@@ -151,7 +139,7 @@ function attachCopyOfFood(id, playerId, playerData){
   foodObject.name = undefined;
   let player = scene.getObjectByName(playerId);
   let newQuat = new CANNON.Quaternion(-playerData.qx,-playerData.qz,-playerData.qy,playerData.qw);
-  console.log(foodObject)
+
   // attach food to player
   if (foodObject) {
     player.cannon.addShape(realFoodObject.cannon.shapes[0], newQuat.inverse().vmult(new CANNON.Vec3(foodObject.position.x - playerData.x,foodObject.position.z - playerData.z,foodObject.position.y - playerData.y)), newQuat.inverse());
