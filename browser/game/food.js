@@ -22,19 +22,19 @@ export const Food = function( id, data ) {
 
   if (data.type === 'sphere') {
     // create THREE object
-    ball_geometry = new THREE.TetrahedronGeometry( 2, 1 );
+    ball_geometry = new THREE.TetrahedronGeometry( data.parms[0], 1 );
     ball_material = new THREE.MeshPhongMaterial( {color: myColors[color], shading: THREE.FlatShading} );
     // create Cannon object
-    sphereShape = new CANNON.Sphere(2);
+    sphereShape = new CANNON.Sphere(data.parms[0]);
     scope.cannonMesh = new CANNON.Body({mass: 0, material: groundMaterial, shape: sphereShape});
   }
 
   if (data.type === 'box') {
     // create THREE object
-    ball_geometry = new THREE.BoxGeometry( 2, 1, 1 );
+    ball_geometry = new THREE.BoxGeometry( data.parms[0], data.parms[1], data.parms[2] );
     ball_material = new THREE.MeshPhongMaterial( {color: myColors[color], shading: THREE.FlatShading} );
     // create Cannon object
-    sphereShape = new CANNON.Box(new CANNON.Vec3(1,0.5,0.5));
+    sphereShape = new CANNON.Box(new CANNON.Vec3(data.parms[0]/2, data.parms[1]/2, data.parms[2]/2));
     scope.cannonMesh = new CANNON.Body({mass: 0, material: groundMaterial, shape: sphereShape});
   }
 
@@ -62,14 +62,34 @@ export const Food = function( id, data ) {
     scope.cannonMesh.quaternion.w = scope.mesh.quaternion.w;
     scope.mesh.cannon = scope.cannonMesh;
     world.add(scope.cannonMesh);
+    //console.log(world.bodies.length)
 
     // disable collisions
     scope.cannonMesh.collisionResponse = 0; 
 
     scope.cannonMesh.addEventListener('collide', e => {
+      //console.log("crash")
       if(!scope.eaten){
-        scope.eaten = true;
-        socket.emit('eat_food', id);
+        let player = scene.getObjectByName(socket.id);
+        if (player) {
+          for (let i = 0; i < world.contacts.length; i++){
+            let c = world.contacts[i];
+            if ((c.bi === scope.cannonMesh && c.bj === player.cannon) || (c.bi === player.cannon && c.bj === scope.cannonMesh)) {
+              let playerVol = store.getState().players[socket.id].volume;
+              let foodVol = scope.mesh.cannon.shapes[0].volume();
+
+             //console.log("vol", foodVol, scope.mesh.cannon.shapes[0].halfExtents || scope.mesh.cannon.shapes[0].radius)
+              // player must be 10 times the volume of food to eat it
+              if(playerVol > foodVol * 10){
+                // pass new volume so that server can update its store if/when food eaten goes thru
+                var volume = foodVol + player.cannon.shapes.reduce((sum, next) => (sum + next.volume()), 0);
+
+                scope.eaten = true;
+                socket.emit('eat_food', id, volume);
+              }
+            }
+          }
+        }
       }
     });
   };
