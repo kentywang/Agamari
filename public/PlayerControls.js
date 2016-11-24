@@ -26,7 +26,7 @@ THREE.PlayerControls = function ( camera, player, cannonMesh, domElement ) {
 
 	        // up arrow or 'w' - move forward
 	        var localPoint = new CANNON.Vec3(this.cannonMesh.position.x,this.cannonMesh.position.y,this.cannonMesh.position.z + 5);
-            var impulse = new CANNON.Vec3(0,-3500 * (1/60),0);
+            var impulse = new CANNON.Vec3(0,-7000 * (1/60),0);
             this.cannonMesh.applyImpulse(impulse,localPoint);
 	    }
 
@@ -34,7 +34,7 @@ THREE.PlayerControls = function ( camera, player, cannonMesh, domElement ) {
 
 	        // down arrow or 's' - move backward
 	        var localPoint = new CANNON.Vec3(this.cannonMesh.position.x,this.cannonMesh.position.y,this.cannonMesh.position.z + 5);
-            var impulse = new CANNON.Vec3(0,3500 * (1/60),0);
+            var impulse = new CANNON.Vec3(0,7000 * (1/60),0);
             this.cannonMesh.applyImpulse(impulse,localPoint);
 	    }
 
@@ -42,7 +42,7 @@ THREE.PlayerControls = function ( camera, player, cannonMesh, domElement ) {
 
 	        // left arrow or 'a' - rotate left
 			var localPoint = new CANNON.Vec3(this.cannonMesh.position.x,this.cannonMesh.position.y,this.cannonMesh.position.z + 5);
-            var impulse = new CANNON.Vec3(-3500 * (1/60),0,0);
+            var impulse = new CANNON.Vec3(-7000 * (1/60),0,0);
             this.cannonMesh.applyImpulse(impulse,localPoint);
 	    }
 
@@ -50,7 +50,7 @@ THREE.PlayerControls = function ( camera, player, cannonMesh, domElement ) {
 
 	        // right arrow or 'd' - rotate right
 	        var localPoint = new CANNON.Vec3(this.cannonMesh.position.x,this.cannonMesh.position.y,this.cannonMesh.position.z + 0.5);
-            var impulse = new CANNON.Vec3(3500 * (1/60),0,0);
+            var impulse = new CANNON.Vec3(7000 * (1/60),0,0);
             this.cannonMesh.applyImpulse(impulse,localPoint);
 	    }
 	};

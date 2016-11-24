@@ -13,7 +13,7 @@ let elapsedTime = Date.now(),
 
 
 function spawnFood(io, store) {
-  if (Date.now() - elapsedTime > 2000){
+  if (Date.now() - elapsedTime > 50){
     elapsedTime = Date.now();
     let rooms = Object.keys(io.sockets.adapter.rooms);
       for (let room of rooms) {
