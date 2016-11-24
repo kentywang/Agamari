@@ -4,9 +4,9 @@ let Promise = require('bluebird');
 
 
 const initPos = {
-  x: 10,
-  y: 35,
-  z: 10,
+  x: 0,
+  y: 40,
+  z: 0,
   qx: 0,
   qy: 0,
   qz: 0,
@@ -21,7 +21,7 @@ const store = require('./store');
 
 
 const { removeFood } = require('./reducers/food');
-const { updatePlayer, updateVolume, changePlayerScale, saveDiet, clearDiet } = require('./reducers/players');
+const { updatePlayer, updateVolume, changePlayerScale, addFoodToDiet, addPlayerToDiet, clearDiet } = require('./reducers/players');
 
 
 const setUpSockets = io => {
@@ -109,7 +109,7 @@ const setUpSockets = io => {
       // First, verify that food still exists.
       // Then increase player size and tell other players to remove food object
       if (eaten) {
-        store.dispatch(saveDiet(eaten, socket.id, store.getState().players[socket.id]));
+        store.dispatch(addFoodToDiet(eaten, socket.id, store.getState().players[socket.id]));
         //console.log("in eat food socket listener, number of diets: ", store.getState().players[socket.id].diet.length)
         store.dispatch(removeFood(id));
         store.dispatch(updateVolume(socket.id, volume));
@@ -132,7 +132,7 @@ const setUpSockets = io => {
       }
     });
 
-    socket.on('got_eaten', id => {
+    socket.on('got_eaten', (id, volume) => {
       //console.log('this guy ate!', id);
       let { players } = store.getState();
       let eaten = players[socket.id]
@@ -140,8 +140,11 @@ const setUpSockets = io => {
 
       if (eaten && eater) {
         let { room } = eaten;
-        store.dispatch(changePlayerScale(id, eaten.scale));
-        io.sockets.in(room).emit('remove_player', socket.id);
+        //store.dispatch(changePlayerScale(id, eaten.scale));
+        store.dispatch(addPlayerToDiet(eaten, id, store.getState().players[id]));
+        //console.log(store.getState().players[id].diet);
+        io.sockets.in(room).emit('remove_eaten_player', socket.id, id, store.getState().players[id], store.getState().players[socket.id]);
+        store.dispatch(updateVolume(id, volume));
         store.dispatch(updatePlayer(socket.id, initPos));
         store.dispatch(clearDiet(socket.id));
         io.sockets.in(room).emit('add_player', socket.id, initPos, true);

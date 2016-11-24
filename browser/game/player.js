@@ -15,6 +15,7 @@ export const Player = function( id, data, isMainPlayer) {
   this.mesh;
   this.cannonMesh;
   var scope = this;
+  this.eaten = Date.now();
 
 
   // create THREE ball
@@ -67,7 +68,8 @@ export const Player = function( id, data, isMainPlayer) {
     if (!scope.isMainPlayer){
       scope.cannonMesh.addEventListener('collide', e => {
         let player = scene.getObjectByName(socket.id);
-        if (player) {
+        // cooldown timer for being eaten
+        if (player && (Date.now() - scope.eaten) > 3000) {
           for (let i = 0; i < world.contacts.length; i++){
             let c = world.contacts[i];
             if ((c.bi === scope.cannonMesh && c.bj === player.cannon) || (c.bi === player.cannon && c.bj === scope.cannonMesh)) {
@@ -77,13 +79,16 @@ export const Player = function( id, data, isMainPlayer) {
 
               // player must be 2 times the volume of enemy to eat it
               if(enemyVol > playerVol /*  * 2  */){
-                socket.emit('got_eaten', scope.id);
+                scope.eaten = Date.now();
+                socket.emit('got_eaten', scope.id, enemyVol + playerVol);
               }
             }
           }
         }
 
       });
+
+      // must add cases for players, and players on players
     // add items from player's diet
       if(data.diet){  
         data.diet.forEach(e => {

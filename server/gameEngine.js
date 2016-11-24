@@ -12,7 +12,7 @@ let elapsedTime = Date.now(),
     id = 1;
 
 function spawnFood(io, store) {
-  if (Date.now() - elapsedTime > 150){
+  if (Date.now() - elapsedTime > 66){
     //console.log('spawning food');
     elapsedTime = Date.now();
     let { rooms, food, players } = store.getState();
@@ -22,7 +22,7 @@ function spawnFood(io, store) {
         let roomPlayers = pickBy(players, ({ room }) => room === currentRoom);
         if (Object.keys(roomPlayers).length) {
         //  console.log('generating food');
-          if (Object.keys(food).length < 15) {
+          if (Object.keys(food).length < 300) {
             let x = (Math.random() * 400) - 200,
                 z = (Math.random() * 400) - 200,
                 type = types[~~(Math.random() * types.length)],
@@ -30,14 +30,14 @@ function spawnFood(io, store) {
                 switch (type){
                   case 'box':
                     parms = [
-                      -~(Math.random() * 10),
-                      -~(Math.random() * 8),
-                      -~(Math.random() * 6),
+                      -~(Math.random() * 5),
+                      -~(Math.random() * 4),
+                      -~(Math.random() * 3),
                     ];
                     break;
                   case 'sphere':
                     parms = [
-                      -~(Math.random() * 4)
+                      -~(Math.random() * 2.5)
                     ];
                     break;
                   default:
