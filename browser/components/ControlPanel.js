@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { socket } from '../store';
+import socket from '../socket';
 
 import { openConsole,
          closeConsole,

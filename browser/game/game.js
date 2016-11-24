@@ -1,9 +1,12 @@
-import store, { socket } from '../store';
+const THREE = require('three');
+
+import store from '../store';
+import socket from '../socket';
+
 import { scene, plane, playerID, myColors } from './main';
 import { Player } from './player';
 import { forOwn } from 'lodash';
 
-const THREE = require('three');
 
 let player;
 let color = 'red';

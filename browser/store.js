@@ -8,9 +8,4 @@ const store = createStore(reducer, applyMiddleware(thunk));
 window.store = store;
 
 
-import listeners from './game/sockets';
-const socket = io('/');
-socket.on('connect', () => { listeners(socket); });
-export { socket };
-
 export default store;

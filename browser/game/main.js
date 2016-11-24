@@ -1,12 +1,13 @@
-import store, { socket } from '../store';
-import { loadGame, loadEnvironment } from './game';
-
-import {controls, Player} from './player';
-import {Food} from './food';
 import { forOwn } from 'lodash';
-
 const THREE = require('three');
 const CANNON = require('../../public/cannon.min.js');
+
+import store from '../store';
+import socket from '../socket';
+
+import { loadGame, loadEnvironment } from './game';
+import {controls, Player} from './player';
+import {Food} from './food';
 
 
 let scene, camera, canvas, renderer, plane;
@@ -157,7 +158,6 @@ export const init = () => {
 };
 
 export function animate() {
-  loadEnvironment();
   requestAnimationFrame( animate );
   let playerMesh = scene.getObjectByName(socket.id);
   let cannonMesh = playerMesh.cannon;
@@ -223,6 +223,7 @@ export function animate() {
   // let currData = player.getPlayerData();
   socket.emit('update_position', getMeshData(playerMesh));
 
+  loadEnvironment();
   render();
 }
 

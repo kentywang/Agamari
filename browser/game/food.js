@@ -1,5 +1,5 @@
 import { scene, world, groundMaterial, myColors } from './main';
-import { socket } from '../store';
+import socket from '../socket';
 const THREE = require('three');
 const CANNON = require('../../public/cannon.min.js');
 
