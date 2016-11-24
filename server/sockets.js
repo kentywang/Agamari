@@ -11,7 +11,8 @@ const initPos = {
   qy: 0,
   qz: 0,
   qw: 1,
-  scale: 1
+  scale: 1,
+  volume: 4200 // this would change depending on what we choose for starting ball size
 };
 
 const { receivePlayer, removePlayer } = require('./reducers/players');
@@ -20,7 +21,7 @@ const store = require('./store');
 
 
 const { removeFood } = require('./reducers/food');
-const { updatePlayer, changePlayerScale } = require('./reducers/players');
+const { updatePlayer, updateVolume, changePlayerScale, saveDiet, clearDiet } = require('./reducers/players');
 
 
 const setUpSockets = io => {
@@ -60,8 +61,9 @@ const setUpSockets = io => {
 
                 return player.room === 'room1'
               })
-              console.log('roomPlayers', roomPlayers)
+              //console.log('roomPlayers', roomPlayers)
               // let roomPlayers = players.filter(({ room }) => room === 'room1');
+              // here we pass the entire players store (incl. diet arrays)
               socket.emitAsync('player_data', roomPlayers);
             })
             .then(() => {
@@ -92,6 +94,7 @@ const setUpSockets = io => {
           // For now, we are automatically respawning player
           io.sockets.in(player.room).emit('remove_player', socket.id);
           store.dispatch(updatePlayer(socket.id, initPos));
+          store.dispatch(clearDiet(socket.id));
           io.sockets.in(player.room).emit('add_player', socket.id, initPos, true);
           socket.emit('you_lose', 'You fell off the board!');
         }
@@ -99,14 +102,17 @@ const setUpSockets = io => {
     });
 
     // When players collide with food objects, they emit the food's id
-    socket.on('eat_food', id => {
+    socket.on('eat_food', (id, volume) => {
+     // console.log("sss")
       let { food } = store.getState();
       let eaten = food[id];
-
       // First, verify that food still exists.
       // Then increase player size and tell other players to remove food object
       if (eaten) {
+        store.dispatch(saveDiet(eaten, socket.id, store.getState().players[socket.id]));
+        //console.log("in eat food socket listener, number of diets: ", store.getState().players[socket.id].diet.length)
         store.dispatch(removeFood(id));
+        store.dispatch(updateVolume(socket.id, volume));
        // store.dispatch(changePlayerScale(socket.id, 0.1));
         io.sockets.in(eaten.room).emit('remove_food', id, socket.id, store.getState().players[socket.id]);
       }
@@ -137,6 +143,7 @@ const setUpSockets = io => {
         store.dispatch(changePlayerScale(id, eaten.scale));
         io.sockets.in(room).emit('remove_player', socket.id);
         store.dispatch(updatePlayer(socket.id, initPos));
+        store.dispatch(clearDiet(socket.id));
         io.sockets.in(room).emit('add_player', socket.id, initPos, true);
         socket.emit('you_lose', 'You died!');
       }
@@ -151,7 +158,24 @@ const broadcastState = (io) => {
     let { players, rooms } = store.getState();
     for (let currentRoom of rooms) {
       let roomPlayers = pickBy(players, ({ room }) => room === currentRoom);
-      io.sockets.in(currentRoom).emit('player_data', roomPlayers);
+
+      // filter out the diet arrays before broadcast
+      let roomPlayersWithoutObjects = Object.assign({},roomPlayers);
+       for (var id in roomPlayersWithoutObjects) {
+          roomPlayersWithoutObjects[id] = { 
+            x: roomPlayersWithoutObjects[id].x,
+            y: roomPlayersWithoutObjects[id].y,
+            z: roomPlayersWithoutObjects[id].z,
+            qx: roomPlayersWithoutObjects[id].qx,
+            qy: roomPlayersWithoutObjects[id].qy,
+            qz: roomPlayersWithoutObjects[id].qz,
+            qw: roomPlayersWithoutObjects[id].qw,
+            scale: roomPlayersWithoutObjects[id].scale,
+            volume: roomPlayersWithoutObjects[id].volume
+          }
+       }
+
+      io.sockets.in(currentRoom).emit('player_data', roomPlayersWithoutObjects);
     }
     spawnFood(io, store);
   }, (1000 / 60));

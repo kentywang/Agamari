@@ -7,25 +7,43 @@ const { updatePlayer } = require('./reducers/players');
 
 const { initPos } = require('./sockets');
 
+let types = ["box", "sphere"]
 let elapsedTime = Date.now(),
     id = 1;
 
 function spawnFood(io, store) {
-  if (Date.now() - elapsedTime > 50){
-    console.log('spawning food');
+  if (Date.now() - elapsedTime > 150){
+    //console.log('spawning food');
     elapsedTime = Date.now();
     let { rooms, food, players } = store.getState();
-    console.log('rooms', rooms);
+    //console.log('rooms', rooms);
       for (let currentRoom of rooms) {
-        console.log('currentRoom', currentRoom);
+      //  console.log('currentRoom', currentRoom);
         let roomPlayers = pickBy(players, ({ room }) => room === currentRoom);
         if (Object.keys(roomPlayers).length) {
-          console.log('generating food');
+        //  console.log('generating food');
           if (Object.keys(food).length < 15) {
             let x = (Math.random() * 400) - 200,
                 z = (Math.random() * 400) - 200,
-                type = 'box';
-            let data = { x, z, type, room: currentRoom };
+                type = types[~~(Math.random() * types.length)],
+                parms = [];
+                switch (type){
+                  case 'box':
+                    parms = [
+                      -~(Math.random() * 10),
+                      -~(Math.random() * 8),
+                      -~(Math.random() * 6),
+                    ];
+                    break;
+                  case 'sphere':
+                    parms = [
+                      -~(Math.random() * 4)
+                    ];
+                    break;
+                  default:
+                    break; 
+                }
+            let data = { x, z, type, parms, room: currentRoom };
             store.dispatch(receiveFood(id, data));
             io.sockets.in(currentRoom).emit('add_food', id, data);
             id++;

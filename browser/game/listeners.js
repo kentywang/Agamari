@@ -22,6 +22,7 @@ const CANNON = require('../../public/cannon.min.js');
 
 export default socket => {
     socket.on('player_data', state => {
+      //console.log(state)
       store.dispatch(receivePlayers(state));
     });
 
@@ -65,6 +66,7 @@ export default socket => {
         let player = scene.getObjectByName(playerId);
         let newQuat = new CANNON.Quaternion(-playerData.qx,-playerData.qz,-playerData.qy,playerData.qw);
 
+        // attach food to player
         if (foodObject) {
           world.remove(foodObject.cannon);
 
@@ -82,6 +84,7 @@ export default socket => {
           player.add(pivot);
 
         }
+
         store.dispatch(removeFood(id));
       });
 };

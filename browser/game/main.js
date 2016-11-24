@@ -164,7 +164,6 @@ export function animate() {
   // Set the direction of the light
   shadowLight.position.set(playerMesh.position.x + 150, playerMesh.position.y + 300, playerMesh.position.z + 150);
 
-
   // receive and process controls and camera
   if ( controls ) {
     controls.update();

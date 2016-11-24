@@ -3,6 +3,7 @@ const CANNON = require('../../public/cannon.min.js');
 const PlayerControls = require('../../public/PlayerControls');
 
 import { scene, camera, world, groundMaterial, myColors } from './main';
+import { Food } from './food'
 import socket from '../socket';
 
 
@@ -70,7 +71,12 @@ export const Player = function( id, data, isMainPlayer) {
           for (let i = 0; i < world.contacts.length; i++){
             let c = world.contacts[i];
             if ((c.bi === scope.cannonMesh && c.bj === player.cannon) || (c.bi === player.cannon && c.bj === scope.cannonMesh)) {
-              if(scope.mesh.scale.x > player.scale.x){
+
+              let playerVol = store.getState().players[socket.id].volume;
+              let enemyVol = store.getState().players[scope.id].volume;
+
+              // player must be 2 times the volume of enemy to eat it
+              if(enemyVol > playerVol /*  * 2  */){
                 socket.emit('got_eaten', scope.id);
               }
             }
@@ -78,7 +84,37 @@ export const Player = function( id, data, isMainPlayer) {
         }
 
       });
+    // add items from player's diet
+      if(data.diet){  
+        data.diet.forEach(e => {
+          let playerData = {x: e.x, y: e.y, z: e.z, qx: e.qx, qy: e.qy, qz: e.qz, qw: e.qw}
+          let newFood = new Food(null, e.food);
+          newFood.init();
+          let foodObject = newFood.mesh;
+          let player = scope.mesh;
+          //console.log(foodObject)
+          let newQuat = new CANNON.Quaternion(-playerData.qx,-playerData.qz,-playerData.qy,playerData.qw);
+
+          // attach food to player
+          world.remove(foodObject.cannon);
+
+          player.cannon.addShape(foodObject.cannon.shapes[0], newQuat.inverse().vmult(new CANNON.Vec3(foodObject.position.x - playerData.x,foodObject.position.z - playerData.z,foodObject.position.y - playerData.y)), newQuat.inverse());
+
+          foodObject.position.set( foodObject.position.x - playerData.x, foodObject.position.y - playerData.y, foodObject.position.z - playerData.z);
+
+          var pivot = new THREE.Object3D();
+          pivot.quaternion.x = playerData.qx;
+          pivot.quaternion.y = playerData.qy;
+          pivot.quaternion.z = playerData.qz;
+          pivot.quaternion.w = -playerData.qw;
+
+          pivot.add(foodObject);
+          player.add(pivot);
+        });
+
+      }
     }
+
 
     // add controls and camera
     if ( scope.isMainPlayer ) {
