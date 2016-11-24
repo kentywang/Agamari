@@ -5,15 +5,9 @@ const initialState = {};
 
 
 /*----------  ACTION TYPES  ----------*/
-const ADD_ROOM = 'ADD_ROOM';
 const SET_COLOR = 'SET_COLOR';
 
 /*----------  ACTION CREATORS  ----------*/
-module.exports.addRoom = name => ({
-  type: ADD_ROOM,
-  name
-});
-
 module.exports.addUser = color => ({
   type: SET_COLOR,
   color
@@ -26,13 +20,8 @@ module.exports.addUser = color => ({
 /*----------  REDUCER  ----------*/
 module.exports.reducer = (state = initialState, action) => {
   switch (action.type) {
-    case ADD_ROOM:
-      newState = Object.assign({}, state);
-      newState[action.name] = {};
-      return newState;
     case SET_COLOR:
-      newState = Object.assign({}, state, { color: action.color });
-      return newState;
+      return Object.assign({}, state, { color: action.color });
     default: return state;
   }
 };
