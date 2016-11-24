@@ -13,7 +13,7 @@ let elapsedTime = Date.now(),
 
 
 function spawnFood(io, store) {
-  if (Date.now() - elapsedTime > 5000){
+  if (Date.now() - elapsedTime > 2000){
     elapsedTime = Date.now();
     let rooms = Object.keys(io.sockets.adapter.rooms);
       for (let room of rooms) {
@@ -21,10 +21,10 @@ function spawnFood(io, store) {
         if (validRoomNames.indexOf(room) + 1) {
           let { food } = store.getState();
           if (food[room]) {
-              if (Object.keys(food[room]).length < 15) {
+              if (Object.keys(food[room]).length < 30) {
                 let x = (Math.random() * 400) - 200,
                     z = (Math.random() * 400) - 200,
-                    type = 'sphere';
+                    type = 'box';
                 let data = { x, z, type};
 
                 store.dispatch(receiveFood(id, data, room));

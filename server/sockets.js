@@ -7,9 +7,10 @@ const initPos = {
   x: 10,
   y: 35,
   z: 10,
-  rx: 0,
-  ry: 0,
-  rz: 0,
+  qx: 0,
+  qy: 0,
+  qz: 0,
+  qw: 1,
   scale: 1
 };
 
@@ -92,10 +93,12 @@ const setUpSockets = io => {
     socket.on('eat_food', id => {
       let { food } = store.getState();
       let room = Object.keys(socket.rooms)[0];
+      let playerData = store.getState().players[room][socket.id];
+      //console.log("PASSING DIS", playerData)
       if (food[room][id]) {
         store.dispatch(removeFood(id, room));
-        store.dispatch(changePlayerScale(socket.id, 0.1, room));
-        io.sockets.in(room).emit('remove_food', id);
+        //store.dispatch(changePlayerScale(socket.id, 0.1, room));
+        io.sockets.in(room).emit('remove_food', id, socket.id, playerData);
       }
     });
 
@@ -114,6 +117,7 @@ const setUpSockets = io => {
     });
 
     socket.on('update_position', data => {
+      //console.log("I Got", data)
       let room = Object.keys(socket.rooms)[0];
       if (data.y < 0) {
         io.sockets.in(room).emit('remove_player', socket.id);

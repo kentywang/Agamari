@@ -11,6 +11,7 @@ export const Food = function( id, data ) {
   this.mesh;
   this.cannonMesh;
   let scope = this;
+  this.eaten = false;
 
 
   if (data.type === 'sphere') {
@@ -19,6 +20,15 @@ export const Food = function( id, data ) {
     ball_material = new THREE.MeshPhongMaterial( {color: myColors['blue'], shading: THREE.FlatShading} );
     // create Cannon object
     sphereShape = new CANNON.Sphere(2);
+    scope.cannonMesh = new CANNON.Body({mass: 0, material: groundMaterial, shape: sphereShape});
+  }
+
+  if (data.type === 'box') {
+    // create THREE object
+    ball_geometry = new THREE.BoxGeometry( 12, 5, 5 );
+    ball_material = new THREE.MeshPhongMaterial( {color: myColors['blue'], shading: THREE.FlatShading} );
+    // create Cannon object
+    sphereShape = new CANNON.Box(new CANNON.Vec3(6,2.5,2.5));
     scope.cannonMesh = new CANNON.Body({mass: 0, material: groundMaterial, shape: sphereShape});
   }
 
@@ -48,8 +58,10 @@ export const Food = function( id, data ) {
     world.add(scope.cannonMesh);
 
     scope.cannonMesh.addEventListener('collide', e => {
-      world.remove(scope.cannonMesh);
-      socket.emit('eat_food', id);
+      if(!scope.eaten){
+        scope.eaten = true;
+        socket.emit('eat_food', id);
+      }
     });
   };
 

@@ -40,9 +40,10 @@ export const Player = function( id, data, isMainPlayer) {
     scope.mesh.position.x = data.x;
     scope.mesh.position.y = data.y;
     scope.mesh.position.z = data.z;
-    scope.mesh.rotation.x = data.rx;
-    scope.mesh.rotation.y = data.ry;
-    scope.mesh.rotation.z = data.rz;
+    scope.mesh.quaternion.x = data.qx;
+    scope.mesh.quaternion.y = data.qy;
+    scope.mesh.quaternion.z = data.qz;
+    scope.mesh.quaternion.w = data.qw;
 
     scope.mesh.name = id;
 
@@ -53,9 +54,9 @@ export const Player = function( id, data, isMainPlayer) {
     scope.cannonMesh.position.x = scope.mesh.position.x;
     scope.cannonMesh.position.z = scope.mesh.position.y;
     scope.cannonMesh.position.y = scope.mesh.position.z;
-    scope.cannonMesh.quaternion.x = scope.mesh.quaternion.x;
-    scope.cannonMesh.quaternion.y = scope.mesh.quaternion.y;
-    scope.cannonMesh.quaternion.z = scope.mesh.quaternion.z;
+    scope.cannonMesh.quaternion.x = -scope.mesh.quaternion.x;
+    scope.cannonMesh.quaternion.z = -scope.mesh.quaternion.y;
+    scope.cannonMesh.quaternion.y = -scope.mesh.quaternion.z;
     scope.cannonMesh.quaternion.w = scope.mesh.quaternion.w;
 
     scope.mesh.cannon = scope.cannonMesh;
@@ -84,12 +85,13 @@ export const Player = function( id, data, isMainPlayer) {
     }
   };
 
-  this.setOrientation = function( position, rotation ) {
+  this.setOrientation = function( position, quaternion ) {
     if ( scope.mesh ) {
       scope.mesh.position.copy( position );
-      scope.mesh.rotation.x = rotation.x;
-      scope.mesh.rotation.y = rotation.y;
-      scope.mesh.rotation.z = rotation.z;
+      scope.mesh.quaternion.x = quaternion.x;
+      scope.mesh.quaternion.y = quaternion.y;
+      scope.mesh.quaternion.z = quaternion.z;
+      scope.mesh.quaternion.w = quaternion.w;
     }
   };
 
@@ -99,9 +101,10 @@ export const Player = function( id, data, isMainPlayer) {
       x: scope.mesh.position.x,
       y: scope.mesh.position.y,
       z: scope.mesh.position.z,
-      rx: scope.mesh.rotation.x,
-      ry: scope.mesh.rotation.y,
-      rz: scope.mesh.rotation.z
+      qx: scope.mesh.quaternion.x,
+      qy: scope.mesh.quaternion.y,
+      qz: scope.mesh.quaternion.z,
+      qw: scope.mesh.quaternion.w
     };
   };
 };
