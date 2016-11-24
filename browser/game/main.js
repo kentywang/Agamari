@@ -14,7 +14,7 @@ let scene, camera, canvas, renderer, plane;
 let world, groundMaterial, shadowLight;
 
 
-let player;
+//let player;
 
 // our color pallet
 var myColors = {
@@ -211,12 +211,12 @@ export function animate() {
       x: mesh.position.x,
       y: mesh.position.y,
       z: mesh.position.z,
-      rx: mesh.rotation.x,
-      ry: mesh.rotation.y,
-      rz: mesh.rotation.z
+      qx: mesh.quaternion.x,
+      qy: mesh.quaternion.y,
+      qz: mesh.quaternion.z,
+      qw: mesh.quaternion.w
     };
   };
-
 
   // this dispatch happens 60 times a second, updating the local state with player's new info and emitting to server
   // let prevData = players[player.id];
@@ -240,7 +240,7 @@ function onWindowResize() {
 }
 
 
-export { scene, camera, canvas, renderer, player, plane, world, groundMaterial, myColors };
+export { scene, camera, canvas, renderer, plane, world, groundMaterial, myColors };
 
 // function botInit(){
   // const bot_geometry = new THREE.BoxGeometry(1,1,1);

@@ -43,9 +43,10 @@ export function loadEnvironment() {
         playerObject.position.x = data.x;
         playerObject.position.y = data.y;
         playerObject.position.z = data.z;
-        playerObject.rotation.x = data.rx;
-        playerObject.rotation.y = data.ry;
-        playerObject.rotation.z = data.rz;
+        playerObject.quaternion.x = data.qx;
+        playerObject.quaternion.y = data.qy;
+        playerObject.quaternion.z = data.qz;
+        playerObject.quaternion.w = data.qw;
       }
       playerObject.scale.x = playerObject.scale.y = playerObject.scale.z = data.scale;
     }

@@ -7,9 +7,10 @@ const initPos = {
   x: 10,
   y: 35,
   z: 10,
-  rx: 0,
-  ry: 0,
-  rz: 0,
+  qx: 0,
+  qy: 0,
+  qz: 0,
+  qw: 1,
   scale: 1
 };
 
@@ -106,8 +107,8 @@ const setUpSockets = io => {
       // Then increase player size and tell other players to remove food object
       if (eaten) {
         store.dispatch(removeFood(id));
-        store.dispatch(changePlayerScale(socket.id, 0.1));
-        io.sockets.in(eaten.room).emit('remove_food', id);
+       // store.dispatch(changePlayerScale(socket.id, 0.1));
+        io.sockets.in(eaten.room).emit('remove_food', id, socket.id, store.getState().players[socket.id]);
       }
     });
 
@@ -126,7 +127,7 @@ const setUpSockets = io => {
     });
 
     socket.on('got_eaten', id => {
-      console.log('this guy ate!', id);
+      //console.log('this guy ate!', id);
       let { players } = store.getState();
       let eaten = players[socket.id]
       let eater = players[id];

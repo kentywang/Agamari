@@ -11,7 +11,7 @@ let elapsedTime = Date.now(),
     id = 1;
 
 function spawnFood(io, store) {
-  if (Date.now() - elapsedTime > 5000){
+  if (Date.now() - elapsedTime > 50){
     console.log('spawning food');
     elapsedTime = Date.now();
     let { rooms, food, players } = store.getState();
@@ -24,7 +24,7 @@ function spawnFood(io, store) {
           if (Object.keys(food).length < 15) {
             let x = (Math.random() * 400) - 200,
                 z = (Math.random() * 400) - 200,
-                type = 'sphere';
+                type = 'box';
             let data = { x, z, type, room: currentRoom };
             store.dispatch(receiveFood(id, data));
             io.sockets.in(currentRoom).emit('add_food', id, data);

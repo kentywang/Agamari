@@ -11,14 +11,30 @@ export const Food = function( id, data ) {
   this.mesh;
   this.cannonMesh;
   let scope = this;
+  this.eaten = false;
 
+  var count = 0;
+  for (var prop in myColors){
+    if (Math.random() < 1/++count){
+      var color = prop;
+    }
+  }
 
   if (data.type === 'sphere') {
     // create THREE object
     ball_geometry = new THREE.TetrahedronGeometry( 2, 1 );
-    ball_material = new THREE.MeshPhongMaterial( {color: myColors['blue'], shading: THREE.FlatShading} );
+    ball_material = new THREE.MeshPhongMaterial( {color: myColors[color], shading: THREE.FlatShading} );
     // create Cannon object
     sphereShape = new CANNON.Sphere(2);
+    scope.cannonMesh = new CANNON.Body({mass: 0, material: groundMaterial, shape: sphereShape});
+  }
+
+  if (data.type === 'box') {
+    // create THREE object
+    ball_geometry = new THREE.BoxGeometry( 2, 1, 1 );
+    ball_material = new THREE.MeshPhongMaterial( {color: myColors[color], shading: THREE.FlatShading} );
+    // create Cannon object
+    sphereShape = new CANNON.Box(new CANNON.Vec3(1,0.5,0.5));
     scope.cannonMesh = new CANNON.Body({mass: 0, material: groundMaterial, shape: sphereShape});
   }
 
@@ -47,15 +63,14 @@ export const Food = function( id, data ) {
     scope.mesh.cannon = scope.cannonMesh;
     world.add(scope.cannonMesh);
 
+    // disable collisions
+    scope.cannonMesh.collisionResponse = 0; 
+
     scope.cannonMesh.addEventListener('collide', e => {
-      world.remove(scope.cannonMesh);
-
-      //remove the food
-      //also need to remove food from game state eventually
-      socket.emit('eat_food', id);
-      // scene.remove(scope.mesh);
-
-      // player.mesh.scale.x = player.mesh.scale.y = player.mesh.scale.z += 1;
+      if(!scope.eaten){
+        scope.eaten = true;
+        socket.emit('eat_food', id);
+      }
     });
   };
 
