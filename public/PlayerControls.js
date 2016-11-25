@@ -10,6 +10,8 @@ THREE.PlayerControls = function ( camera, player, cannonMesh, raycastReference )
 	this.player = player;
 	this.cannonMesh = cannonMesh;
 
+	this.cooldown = Date.now();
+
 	var keyState = {};
 	
 	var scope = this;
@@ -26,6 +28,23 @@ THREE.PlayerControls = function ( camera, player, cannonMesh, raycastReference )
 	};
 
 	this.checkKeyStates = function () {
+		if (keyState[32]) {
+	           // console.log(Date.now() - scope.cooldown)
+			if(Date.now() - scope.cooldown > 5000){
+
+		        // spacebar - dash/push
+		        var localPoint = new CANNON.Vec3(this.cannonMesh.position.x,this.cannonMesh.position.y,this.cannonMesh.position.z -2.5);
+	            //var impulse = new CANNON.Vec3(0,-7000 * (1/60),0);
+	            var vec = new THREE.Vector3();
+	            camera.getWorldDirection( vec );
+
+	            var impulse = new CANNON.Vec3(100 * vec.x * 150,100 * vec.z * 150, 40);
+	            this.cannonMesh.applyImpulse(impulse,localPoint);
+	            scope.cooldown = Date.now();
+	            //this.cannonMesh.position.y -= 2;
+			}
+	    }
+
 	    if (keyState[38] || keyState[87]) {
 
 	        // up arrow or 'w' - move forward
@@ -34,7 +53,7 @@ THREE.PlayerControls = function ( camera, player, cannonMesh, raycastReference )
             var vec = new THREE.Vector3();
             camera.getWorldDirection( vec );
 
-            var impulse = new CANNON.Vec3(vec.x * 120,vec.z * 120, 0);
+            var impulse = new CANNON.Vec3(vec.x * 150,vec.z * 150, 0);
             this.cannonMesh.applyImpulse(impulse,localPoint);
             //this.cannonMesh.position.y -= 2;
 	    }
@@ -48,7 +67,7 @@ THREE.PlayerControls = function ( camera, player, cannonMesh, raycastReference )
             var vec = new THREE.Vector3();
             camera.getWorldDirection( vec );
 
-            var impulse = new CANNON.Vec3(-vec.x * 120,-vec.z * 120, 0);
+            var impulse = new CANNON.Vec3(-vec.x * 150,-vec.z * 150, 0);
             this.cannonMesh.applyImpulse(impulse,localPoint);
             //this.cannonMesh.position.y += 2;
 	    }

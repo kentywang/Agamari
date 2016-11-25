@@ -1,7 +1,59 @@
+
+@font-face {
+    font-family: "Quicksand";
+    src: url("./Quicksand-Regular.ttf");
+}
+@font-face {
+    font-family: "Quicksand";
+    src: url("./Quicksand-Light.ttf");
+    font-weight: lighter;
+}
+
+body, html {
+    height: 100%;
+    color: #ffffff;
+    font-size: 1em;
+    font-family: "Quicksand", sans-serif;
+    
+}
+
 #canvas {
 	position: absolute;
 	width: 100%;
 	height: 100%;
-	overflow: hidden;
+	
 	background: linear-gradient(#4ECDC4, #00ABD6);
+}
+ 
+.leaderboard {
+	transform: skewX(10deg); 
+	transform: skewY(2deg); 
+	font-size: 2em;
+	z-index: 1;
+	position: fixed;
+	margin-top: 5%;
+	margin-left: 7%;
+}
+
+.abilities {
+	transform: skewX(10deg); 
+	transform: skewY(-5deg); 
+	font-size: 3em;
+	z-index: 1;
+	position: fixed;
+	bottom: 5%;
+	margin-left: 7%;
+}
+
+.score {
+	transform: skewX(-10deg); 
+	transform: skewY(5deg); 
+	position: fixed;
+    text-align: right;
+    width: 93%;
+    font-size: 3em;
+    z-index: 1;
+    bottom: 10%;
+    float: right;
+    margin-left: auto;
 }

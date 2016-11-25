@@ -44,6 +44,8 @@ export const init = () => {
 
   canvas = document.getElementById('canvas');
 
+
+
   renderer = new THREE.WebGLRenderer({alpha: true, canvas});
   renderer.setSize( window.innerWidth, window.innerHeight );
 
@@ -169,7 +171,6 @@ export const init = () => {
   // an ambient light modifies the global color of a scene and makes the shadows softer
   var ambientLight = new THREE.AmbientLight(myColors['red'], 0.5);
   scene.add(ambientLight);
-
 
   loadGame();
 

@@ -64,6 +64,10 @@ export default socket => {
     socket.on('remove_food', (id, playerId, playerData) => {
         attachFood(id, playerId, playerData);
         store.dispatch(removeFood(id));
+        
+        if (playerId == socket.id){
+          createjs.Sound.play("eatSound");
+        }
       });
 
 //     socket.on('remove_eaten_player', (id, playerId, playerData, eatenData) => {
