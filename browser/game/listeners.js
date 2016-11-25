@@ -16,8 +16,6 @@ import { init,
 import { Player } from '../game/player';
 import {Food} from '../game/food';
 
-// import { cloneDeep } from 'lodash';
-
 const THREE = require('three');
 const CANNON = require('../../public/cannon.min.js');
 
@@ -63,98 +61,111 @@ export default socket => {
       store.dispatch(receiveFood(id, data));
     });
 
-
-    socket.on('remove_eaten_player', (id, playerId, playerData, eatenData) => {
-      let playerObject = scene.getObjectByName(id);
-      if (playerObject) {
-        world.remove(playerObject.cannon);
-        attachCopyOfFood(id, playerId, playerData);
-        scene.remove(playerObject);
-      }
-      // careful where spawns are, as the game may break if player constantly falls into larger player
-
-      // still need to implement physics food attachment and other players eaten too (recursive?)
-
-      // for other players
-      // if(eatenData.diet && eatenData.diet.length){
-      //   let newQuat = new CANNON.Quaternion(-playerData.qx,-playerData.qz,-playerData.qy,playerData.qw);
-      //   let newEatenQuat = new CANNON.Quaternion(-eatenData.qx,-eatenData.qz,-eatenData.qy,eatenData.qw);
-      //   for(var i = 1; i < playerObject.cannon.shapes.length; i++){
-      //     let eatenPos = newEatenQuat.inverse().vmult(new CANNON.Vec3(eatenData.diet[i - 1].food.x - eatenData.x,eatenData.diet[i - 1].food.z - eatenData.z, eatenData.diet[i - 1].food.y - eatenData.y))
-      //     let eatenOrient = newEatenQuat.inverse();
-
-      //     scene.getObjectByName(playerId).cannon.addShape(playerObject.cannon.shapes[i], newQuat.inverse().vmult(new CANNON.Vec3(playerObject.position.x - playerData.x,playerObject.position.z - playerData.z,playerObject.position.y - playerData.y)).vadd(eatenPos), newQuat.inverse().mult(eatenOrient));
-      //   }
-      // }
-
-      // for just food
-      // if(eatenData.diet && eatenData.diet.length){
-      //   let newQuat = new CANNON.Quaternion(-playerData.qx,-playerData.qz,-playerData.qy,playerData.qw);
-      //   let newEatenQuat = new CANNON.Quaternion(-eatenData.qx,-eatenData.qz,-eatenData.qy,eatenData.qw);
-      //   for(var i = 1; i < playerObject.cannon.shapes.length; i++){
-
-      //     let eatenPos = newEatenQuat.inverse().vmult(new CANNON.Vec3(eatenData.diet[i - 1].food.x - eatenData.x,eatenData.diet[i - 1].food.z - eatenData.z, eatenData.diet[i - 1].food.y - eatenData.y))
-      //     let eatenOrient = newEatenQuat.inverse();
-
-      //     scene.getObjectByName(playerId).cannon.addShape(playerObject.cannon.shapes[i], newQuat.inverse().vmult(new CANNON.Vec3(playerObject.position.x - playerData.x,playerObject.position.z - playerData.z,playerObject.position.y - playerData.y)).vadd(eatenPos));
-      //   }
-      // }
-
-    });
-
     socket.on('remove_food', (id, playerId, playerData) => {
         attachFood(id, playerId, playerData);
         store.dispatch(removeFood(id));
       });
+
+//     socket.on('remove_eaten_player', (id, playerId, playerData, eatenData) => {
+//       let playerObject = scene.getObjectByName(id);
+//       if (playerObject) {
+//         world.remove(playerObject.cannon);
+//         attachCopyOfFood(id, playerId, playerData);
+//         scene.remove(playerObject);
+//       }
+//       // careful where spawns are, as the game may break if player constantly falls into larger player
+
+//       // still need to implement physics food attachment and other players eaten too (recursive?)
+
+//       // for other players
+//       // if(eatenData.diet && eatenData.diet.length){
+//       //   let newQuat = new CANNON.Quaternion(-playerData.qx,-playerData.qz,-playerData.qy,playerData.qw);
+//       //   let newEatenQuat = new CANNON.Quaternion(-eatenData.qx,-eatenData.qz,-eatenData.qy,eatenData.qw);
+//       //   for(var i = 1; i < playerObject.cannon.shapes.length; i++){
+//       //     let eatenPos = newEatenQuat.inverse().vmult(new CANNON.Vec3(eatenData.diet[i - 1].food.x - eatenData.x,eatenData.diet[i - 1].food.z - eatenData.z, eatenData.diet[i - 1].food.y - eatenData.y))
+//       //     let eatenOrient = newEatenQuat.inverse();
+
+//       //     scene.getObjectByName(playerId).cannon.addShape(playerObject.cannon.shapes[i], newQuat.inverse().vmult(new CANNON.Vec3(playerObject.position.x - playerData.x,playerObject.position.z - playerData.z,playerObject.position.y - playerData.y)).vadd(eatenPos), newQuat.inverse().mult(eatenOrient));
+//       //   }
+//       // }
+
+//       // for just food
+//       // if(eatenData.diet && eatenData.diet.length){
+//       //   let newQuat = new CANNON.Quaternion(-playerData.qx,-playerData.qz,-playerData.qy,playerData.qw);
+//       //   let newEatenQuat = new CANNON.Quaternion(-eatenData.qx,-eatenData.qz,-eatenData.qy,eatenData.qw);
+//       //   for(var i = 1; i < playerObject.cannon.shapes.length; i++){
+
+//       //     let eatenPos = newEatenQuat.inverse().vmult(new CANNON.Vec3(eatenData.diet[i - 1].food.x - eatenData.x,eatenData.diet[i - 1].food.z - eatenData.z, eatenData.diet[i - 1].food.y - eatenData.y))
+//       //     let eatenOrient = newEatenQuat.inverse();
+
+//       //     scene.getObjectByName(playerId).cannon.addShape(playerObject.cannon.shapes[i], newQuat.inverse().vmult(new CANNON.Vec3(playerObject.position.x - playerData.x,playerObject.position.z - playerData.z,playerObject.position.y - playerData.y)).vadd(eatenPos));
+//       //   }
+//       // }
+
+//     });
+
 };
 
 function attachFood(id, playerId, playerData){
   let foodObject = scene.getObjectByName(id);
   let player = scene.getObjectByName(playerId);
   let newQuat = new CANNON.Quaternion(-playerData.qx,-playerData.qz,-playerData.qy,playerData.qw);
+  let threeQuat = new THREE.Quaternion(playerData.qx,playerData.qy,playerData.qz,playerData.qw);
 
   // attach food to player
   if (foodObject) {
     world.remove(foodObject.cannon);
 
-    player.cannon.addShape(foodObject.cannon.shapes[0], newQuat.inverse().vmult(new CANNON.Vec3(foodObject.position.x - playerData.x,foodObject.position.z - playerData.z,foodObject.position.y - playerData.y)), newQuat.inverse());
+    player.cannon.addShape(foodObject.cannon.shapes[0], newQuat.inverse().vmult(new CANNON.Vec3((foodObject.position.x - playerData.x) * 0.6,(foodObject.position.z - playerData.z) * 0.6,(foodObject.position.y - playerData.y) * 0.6)), newQuat.inverse());
 
-    foodObject.position.set( foodObject.position.x - playerData.x, foodObject.position.y - playerData.y, foodObject.position.z - playerData.z);
+    let invQuat = threeQuat.inverse();
+    let vec = new THREE.Vector3((foodObject.position.x - playerData.x) * 0.6, (foodObject.position.y - playerData.y) * 0.6, (foodObject.position.z - playerData.z) * 0.6);
+    let vecRot = vec.applyQuaternion(invQuat);
 
-    var pivot = new THREE.Object3D();
-    pivot.quaternion.x = playerData.qx;
-    pivot.quaternion.y = playerData.qy;
-    pivot.quaternion.z = playerData.qz;
-    pivot.quaternion.w = -playerData.qw;
+    foodObject.position.set(vecRot.x, vecRot.y, vecRot.z);
+    foodObject.quaternion.set(invQuat.x, invQuat.y, invQuat.z, invQuat.w);
 
-    pivot.add(foodObject);
-    player.add(pivot);
 
+    // var pivot = new THREE.Object3D();
+    // pivot.quaternion.x = playerData.qx;
+    // pivot.quaternion.y = playerData.qy;
+    // pivot.quaternion.z = playerData.qz;
+    // pivot.quaternion.w = -playerData.qw;
+
+    // pivot.add(foodObject);
+    player.add(foodObject);
+
+     if(player.cannon.shapes.length > 200){
+       player.cannon.shapes.splice(1,1);
+       player.cannon.shapeOffsets.splice(1,1);
+       player.cannon.shapeOrientations.splice(1,1);
+       player.children.splice(0,1);
+     }
   }
 }
 
-function attachCopyOfFood(id, playerId, playerData){
-  let realFoodObject = scene.getObjectByName(id);
-  let foodObject = realFoodObject.clone();
-  foodObject.name = undefined;
-  let player = scene.getObjectByName(playerId);
-  let newQuat = new CANNON.Quaternion(-playerData.qx,-playerData.qz,-playerData.qy,playerData.qw);
+// function attachCopyOfFood(id, playerId, playerData){
+//   let realFoodObject = scene.getObjectByName(id);
+//   let foodObject = realFoodObject.clone();
+//   foodObject.name = undefined;
+//   let player = scene.getObjectByName(playerId);
+//   let newQuat = new CANNON.Quaternion(-playerData.qx,-playerData.qz,-playerData.qy,playerData.qw);
 
-  // attach food to player
-  if (foodObject) {
-    player.cannon.addShape(realFoodObject.cannon.shapes[0], newQuat.inverse().vmult(new CANNON.Vec3(foodObject.position.x - playerData.x,foodObject.position.z - playerData.z,foodObject.position.y - playerData.y)), newQuat.inverse());
+//   // attach food to player
+//   if (foodObject) {
+//     player.cannon.addShape(realFoodObject.cannon.shapes[0], newQuat.inverse().vmult(new CANNON.Vec3(foodObject.position.x - playerData.x,foodObject.position.z - playerData.z,foodObject.position.y - playerData.y)), newQuat.inverse());
 
-    foodObject.position.set( foodObject.position.x - playerData.x, foodObject.position.y - playerData.y, foodObject.position.z - playerData.z);
+//     foodObject.position.set( foodObject.position.x - playerData.x, foodObject.position.y - playerData.y, foodObject.position.z - playerData.z);
 
-    var pivot = new THREE.Object3D();
-    pivot.quaternion.x = playerData.qx;
-    pivot.quaternion.y = playerData.qy;
-    pivot.quaternion.z = playerData.qz;
-    pivot.quaternion.w = -playerData.qw;
+//     var pivot = new THREE.Object3D();
+//     pivot.quaternion.x = playerData.qx;
+//     pivot.quaternion.y = playerData.qy;
+//     pivot.quaternion.z = playerData.qz;
+//     pivot.quaternion.w = -playerData.qw;
 
-    //scene.add(foodObject)
-    pivot.add(foodObject);
-    player.add(pivot);
+//     //scene.add(foodObject)
+//     pivot.add(foodObject);
+//     player.add(pivot);
 
-  }
-}
+//   }
+// }
