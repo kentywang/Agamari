@@ -50,6 +50,7 @@ export default socket => {
       let playerObject = scene.getObjectByName(id);
       if (playerObject) {
         world.remove(playerObject.cannon);
+        scene.remove(playerObject.sprite);
         scene.remove(playerObject);
       }
     });
@@ -67,6 +68,7 @@ export default socket => {
         
         if (playerId == socket.id){
           createjs.Sound.play("eatSound");
+          //console.log(scene.getObjectByName(playerId).cannon.mass)
         }
       });
 

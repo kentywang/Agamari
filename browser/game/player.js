@@ -16,6 +16,7 @@ export const Player = function( id, data, isMainPlayer) {
   this.cannonMesh;
   var scope = this;
   this.eaten = Date.now();
+  //this.sprite;
 
 
   // create THREE ball
@@ -23,10 +24,10 @@ export const Player = function( id, data, isMainPlayer) {
   var ball_material = new THREE.MeshPhongMaterial( {color: myColors['grey'], shading: THREE.FlatShading} );
 
 
-  // create Cannon box
+  // create Cannon ball
   var sphereShape = new CANNON.Sphere(10);
   if (this.isMainPlayer){
-    scope.cannonMesh = new CANNON.Body({mass: 50, material: groundMaterial, shape: sphereShape});
+    scope.cannonMesh = new CANNON.Body({mass: 42, material: groundMaterial, shape: sphereShape});
     scope.cannonMesh.linearDamping = scope.cannonMesh.angularDamping = 0.4;
   } else {
     scope.cannonMesh = new CANNON.Body({mass: 0, shape: sphereShape});
@@ -34,6 +35,7 @@ export const Player = function( id, data, isMainPlayer) {
 
 
   this.init = function() {
+
     // let playerData = store.getState().gameState.players[scope.id];
 
     // mesh the ball geom and mat
@@ -50,6 +52,8 @@ export const Player = function( id, data, isMainPlayer) {
 
     scope.mesh.name = id;
 
+    scope.mesh.nickname = data.nickname;
+
     scene.add( scope.mesh );
 
 
@@ -65,6 +69,22 @@ export const Player = function( id, data, isMainPlayer) {
     scope.mesh.cannon = scope.cannonMesh;
     world.add(scope.cannonMesh);
 
+
+    // show name on player if not self
+    if(!scope.isMainPlayer){
+      //console.log("add sprite")
+      var name = data.nickname;
+      if(name.length > 12){
+        name = name.slice(0,11) + '...' ;
+      }
+
+      var sprite = makeTextSprite(name, 50);
+      sprite.scale.set(1.5 * 25,1.5 * 12.5,1.5 * .25);
+      scope.mesh.sprite = sprite;
+      scene.add(sprite); // might run into issues with children
+    }
+
+    // collision handler
     if (!scope.isMainPlayer){
       scope.cannonMesh.addEventListener('collide', e => {
         let player = scene.getObjectByName(socket.id);
@@ -103,9 +123,9 @@ export const Player = function( id, data, isMainPlayer) {
           // attach food to player
           world.remove(foodObject.cannon);
 
-          player.cannon.addShape(foodObject.cannon.shapes[0], newQuat.inverse().vmult(new CANNON.Vec3(foodObject.position.x - playerData.x,foodObject.position.z - playerData.z,foodObject.position.y - playerData.y)), newQuat.inverse());
+          player.cannon.addShape(foodObject.cannon.shapes[0], newQuat.inverse().vmult(new CANNON.Vec3((foodObject.position.x - playerData.x) * 0.6, (foodObject.position.z - playerData.z) * 0.6, (foodObject.position.y - playerData.y) * 0.6)), newQuat.inverse());
 
-          foodObject.position.set( foodObject.position.x - playerData.x, foodObject.position.y - playerData.y, foodObject.position.z - playerData.z);
+          foodObject.position.set((foodObject.position.x - playerData.x) * 0.6, (foodObject.position.y - playerData.y) * 0.6, (foodObject.position.z - playerData.z) * 0.6);
 
           var pivot = new THREE.Object3D();
           pivot.quaternion.x = playerData.qx;
@@ -150,5 +170,34 @@ export const Player = function( id, data, isMainPlayer) {
     };
   };
 };
+
+function makeTextSprite(message, fontsize) {
+  var ctx, texture, sprite, spriteMaterial, 
+      canvas = document.createElement('canvas');
+  ctx = canvas.getContext('2d');
+
+  var metrics = ctx.measureText(message);
+  var textWidth = metrics.width;
+
+  //canvas.width = textWidth;
+  //canvas.height = fontsize;
+
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+
+  ctx.font = "Bold " + fontsize/2 + "px Quicksand";        
+  ctx.fillStyle = "rgba(255,255,255,1)";
+  ctx.fillText(message, canvas.width/2, fontsize/2);
+
+
+  texture = new THREE.Texture(canvas);
+  texture.minFilter = THREE.LinearFilter; // NearestFilter;
+  texture.needsUpdate = true;
+
+  spriteMaterial = new THREE.SpriteMaterial({map : texture});
+  sprite = new THREE.Sprite(spriteMaterial);
+  //sprite.scale.set(textWidth / fontsize, 1, 1);
+  return sprite;   
+}
 
 export { controls };

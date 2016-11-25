@@ -47,8 +47,8 @@ export const init = () => {
 
 
   renderer = new THREE.WebGLRenderer({alpha: true, canvas});
-  renderer.setSize( window.innerWidth, window.innerHeight );
-
+  renderer.setPixelRatio( window.devicePixelRatio );
+  renderer.setSize( window.innerWidth/2, window.innerHeight/2, false );
   // camera
   //This is the object that follows the ball and keeps its z/y rotation
   //It casts rays outwards to detect objects for the player
@@ -267,7 +267,8 @@ function onWindowResize() {
   camera.aspect = window.innerWidth / window.innerHeight;
   camera.updateProjectionMatrix();
 
-  renderer.setSize( window.innerWidth, window.innerHeight );
+  renderer.setPixelRatio( window.devicePixelRatio );
+  renderer.setSize( window.innerWidth/2, window.innerHeight/2, false )
 }
 
 

@@ -8,6 +8,11 @@
     src: url("./Quicksand-Light.ttf");
     font-weight: lighter;
 }
+@font-face {
+    font-family: "Quicksand";
+    src: url("./Quicksand-Bold.ttf");
+    font-weight: bold;
+}
 
 body, html {
     height: 100%;
@@ -27,8 +32,8 @@ body, html {
  
 .leaderboard {
 	transform: skewX(10deg); 
-	transform: skewY(2deg); 
-	font-size: 2em;
+	transform: skewY(2deg);
+	font-size: 1.5em;
 	z-index: 1;
 	position: fixed;
 	margin-top: 5%;
