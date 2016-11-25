@@ -36,9 +36,8 @@ export function loadEnvironment() {
 
   // set location and rotation for other players (I should probably use player.setOrientation instead)
   forOwn(players, (data, id) => {
-    // Kenty: added '&& scene.getobj' to if statement below to get around undefined error
     let playerObject = scene.getObjectByName(id);
-    if (playerObject) {
+    if (playerObject && playerObject.cannon) {
        if (id !== socket.id) {
         playerObject.position.x = data.x;
         playerObject.position.y = data.y;

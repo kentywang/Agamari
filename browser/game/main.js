@@ -171,6 +171,7 @@ export function animate() {
 
   // sync THREE mesh with Cannon mesh
   // Cannon's y & z are swapped from THREE, and w is flipped
+if(cannonMesh){
   playerMesh.position.x = cannonMesh.position.x;
   playerMesh.position.z = cannonMesh.position.y;
   playerMesh.position.y = cannonMesh.position.z;
@@ -178,6 +179,8 @@ export function animate() {
   playerMesh.quaternion.z = -cannonMesh.quaternion.y;
   playerMesh.quaternion.y = -cannonMesh.quaternion.z;
   playerMesh.quaternion.w = cannonMesh.quaternion.w;
+  
+}
 
 
  let { players } = store.getState();
@@ -186,7 +189,7 @@ export function animate() {
   // for all other players
   forOwn(players, (currentPlayer, id) => {
     let playerObject = scene.getObjectByName(id);
-    if (currentPlayer !== socket.id && playerObject) {
+    if (currentPlayer !== socket.id && playerObject && playerObject.cannon) {
       playerObject.cannon.position.x = playerObject.position.x;
       playerObject.cannon.position.z = playerObject.position.y;
       playerObject.cannon.position.y = playerObject.position.z;

@@ -11,9 +11,9 @@ const UPDATE_PLAYER = 'UPDATE_PLAYER';
 const CHANGE_PLAYER_SCALE = 'CHANGE_PLAYER_SCALE';
 const REMOVE_PLAYER = 'REMOVE_PLAYER';
 const UPDATE_VOLUME = 'UPDATE_VOLUME';
-const SAVE_DIET = 'SAVE_DIET';
+const ADD_FOOD_TO_DIET = 'ADD_FOOD_TO_DIET';
+const ADD_PLAYER_TO_DIET = 'ADD_PLAYER_TO_DIET';
 const CLEAR_DIET = 'CLEAR_DIET';
-
 
 /*----------  ACTION CREATORS  ----------*/
 
@@ -56,8 +56,15 @@ module.exports.updateVolume = (id, volume) => ({
   volume
 });
 
-module.exports.saveDiet = (food, id, data) => ({
-  type: SAVE_DIET,
+module.exports.addFoodToDiet = (food, id, data) => ({
+  type: ADD_FOOD_TO_DIET,
+  food,
+  id,
+  data
+});
+
+module.exports.addPlayerToDiet = (food, id, data) => ({
+  type: ADD_PLAYER_TO_DIET,
   food,
   id,
   data
@@ -101,14 +108,21 @@ const immutable = (state = initialState, action) => {
       newState[action.id] = Object.assign({}, state[action.id]);
       newState[action.id].volume = ~~action.volume; // this is math.floor of volume
       return newState;
-    case SAVE_DIET:
+    case ADD_FOOD_TO_DIET:
       newState = Object.assign({}, state);
       newState[action.id] = Object.assign({}, state[action.id]);
         if(!newState[action.id].diet){ 
-          newState[action.id].diet = []; // this probably could be in a separate subreducer
+          newState[action.id].diet = [];
         } 
-
       newState[action.id].diet.push({food: action.food, x: action.data.x, y: action.data.y, z: action.data.z, qx: action.data.qx, qy: action.data.qy, qz: action.data.qz, qw: action.data.qw, scale: action.data.scale}); // when I do playerData: action.data, I get max call stack. Why?
+      return newState;
+    case ADD_PLAYER_TO_DIET:
+      newState = Object.assign({}, state);
+      newState[action.id] = Object.assign({}, state[action.id]);
+        if(!newState[action.id].diet){ 
+          newState[action.id].diet = [];
+        } 
+      newState[action.id].diet.push({eatenPlayer: action.food, x: action.data.x, y: action.data.y, z: action.data.z, qx: action.data.qx, qy: action.data.qy, qz: action.data.qz, qw: action.data.qw, scale: action.data.scale}); // when I do playerData: action.data, I get max call stack. Why?
       return newState;
     case CLEAR_DIET:
       newState = Object.assign({}, state);
@@ -142,7 +156,7 @@ const mutable = (state = initialState, action) => {
     case UPDATE_VOLUME:
       state[action.id].volume = ~~action.volume;
       return state;
-// no save_diet case mutable implemented yet
+// no ADD_FOOD_TO_DIET, nor ADD_PLAYER_To_DIET cases mutable implemented yet
     case CLEAR_DIET:
       state[action.id].diet = [];
       return state;
