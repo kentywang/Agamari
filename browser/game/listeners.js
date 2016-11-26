@@ -1,9 +1,8 @@
 import store from '../store';
+import { attachFood } from './utils';
 
 import { closeConsole, setError } from '../reducers/controlPanel';
-
 import { receivePlayers } from '../reducers/players';
-
 import { removeFood,
          receiveFood,
          receiveMultipleFood } from '../reducers/food';
@@ -12,53 +11,56 @@ import { init,
          animate,
          scene,
          world } from '../game/main';
-
 import { Player } from '../game/player';
 import {Food} from '../game/food';
 
-const THREE = require('three');
-const CANNON = require('../../public/cannon.min.js');
-
 
 export default socket => {
+    // Receive current positions for all players and update game state
+    // Happens before start and on server broadcast interval
     socket.on('player_data', state => {
-      //console.log(state)
       store.dispatch(receivePlayers(state));
     });
 
+    // Receive current positions for all food. Happens before start.
     socket.on('food_data', state => {
       store.dispatch(receiveMultipleFood(state));
     });
 
+    // Set app error state on start fail
     socket.on('start_fail', err => {
       store.dispatch(setError(err));
     });
 
+    // Run init once player/food data has been received
     socket.on('start_game', () => {
       init();
       animate();
       store.dispatch(closeConsole());
     });
 
+    // Create player object when new player joins or on respawn
     socket.on('add_player', (id, initialData) => {
       let isMainPlayer = id === socket.id;
       let player = new Player(id, initialData, isMainPlayer);
       player.init();
     });
 
+    // Remove player object when player leaves or dies
     socket.on('remove_player', (id, eaterId) => {
       let playerObject = scene.getObjectByName(id);
       if (playerObject) {
         world.remove(playerObject.cannon);
         scene.remove(playerObject.sprite);
         scene.remove(playerObject);
+        let { children } = playerObject.children[0];
+        for (let child of children) scene.remove(child);
+        playerObject.dispose();
+        if (eaterId === socket.id) createjs.Sound.play('eatSound');
       }
-
-      if (eaterId == socket.id){
-          createjs.Sound.play("eatSound");
-        }
     });
 
+    // Create food object and add data to state on broadcast interval
     socket.on('add_food', (id, data) => {
       id = id.toString();
       let food = new Food(id, data);
@@ -66,12 +68,13 @@ export default socket => {
       store.dispatch(receiveFood(id, data));
     });
 
+    // Remove food data from state and add to player diet. Add food object to player
     socket.on('remove_food', (id, playerId, playerData) => {
         attachFood(id, playerId, playerData);
         store.dispatch(removeFood(id));
-        
-        if (playerId == socket.id){
-          createjs.Sound.play("eatSound");
+
+        if (playerId === socket.id){
+          createjs.Sound.play('eatSound');
           //console.log(scene.getObjectByName(playerId).cannon.mass)
         }
       });
@@ -116,37 +119,7 @@ export default socket => {
 
 };
 
-function attachFood(id, playerId, playerData){
-  let foodObject = scene.getObjectByName(id);
-  let player = scene.getObjectByName(playerId);
-  let newQuat = new CANNON.Quaternion(-playerData.qx,-playerData.qz,-playerData.qy,playerData.qw);
-  let threeQuat = new THREE.Quaternion(playerData.qx,playerData.qy,playerData.qz,playerData.qw);
 
-  // attach food to player
-  if (foodObject) {
-    world.remove(foodObject.cannon);
-
-    player.cannon.addShape(foodObject.cannon.shapes[0], newQuat.inverse().vmult(new CANNON.Vec3((foodObject.position.x - playerData.x) * .8,(foodObject.position.z - playerData.z) * .8,(foodObject.position.y - playerData.y) * .8)), newQuat.inverse());
-
-    let invQuat = threeQuat.inverse();
-    let vec = new THREE.Vector3((foodObject.position.x - playerData.x) * .8, (foodObject.position.y - playerData.y) * .8, (foodObject.position.z - playerData.z) * .8);
-    let vecRot = vec.applyQuaternion(invQuat);
-
-    foodObject.position.set(vecRot.x, vecRot.y, vecRot.z);
-    foodObject.quaternion.set(invQuat.x, invQuat.y, invQuat.z, invQuat.w);
-
-    // add to pivot obj of player
-    player.children[0].add(foodObject);
-
-    // throw out older food
-    if(player.cannon.shapes.length > 200){
-       player.cannon.shapes.splice(1,1);
-       player.cannon.shapeOffsets.splice(1,1);
-       player.cannon.shapeOrientations.splice(1,1);
-       player.children[0].children.splice(0,1);
-     }
-  }
-}
 
 // function attachCopyOfFood(id, playerId, playerData){
 //   let realFoodObject = scene.getObjectByName(id);
