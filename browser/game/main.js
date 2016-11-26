@@ -27,7 +27,7 @@ export const init = () => {
   camera = new THREE.PerspectiveCamera(65,
                                        window.innerWidth / window.innerHeight,
                                        1,
-                                       1000);
+                                       10000);
 
   canvas = document.getElementById('canvas');
 
@@ -45,8 +45,8 @@ export const init = () => {
   scene.add(raycastReference);
 
   //Attach the camera to lock behind the ball
-  raycastReference.add(camera);
-
+ // raycastReference.add(camera);
+scene.add(camera)
   //setupCollisions(raycastReference);
 
 
@@ -211,7 +211,7 @@ function onWindowResize() {
 
 function createLevel(){
  // planet creation
- var planet_geometry = new THREE.SphereGeometry( 400, 8, 8 );
+ var planet_geometry = new THREE.TetrahedronGeometry( 400, 3 );
  var planet_material = new THREE.MeshPhongMaterial( { color: myColors['pink'], shading: THREE.FlatShading});
  var planet = new THREE.Mesh( planet_geometry, planet_material );
 
