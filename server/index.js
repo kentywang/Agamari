@@ -1,12 +1,13 @@
 'use strict';
 const PORT = process.env.PORT || 8000;
 
-const express = require('express'),
-      path = require('path'),
-      chalk = require('chalk'),
-      http = require('http');
+const express = require('express');
+const path = require('path');
+const chalk = require('chalk');
+const http = require('http');
 const store = require('./store');
-const { setUpSockets, broadcastState } = require('./sockets');
+const setUpListeners = require('./game/listeners');
+const { broadcastState } = require('./game/engine');
 
 // Create server and app
 const server = http.createServer();
@@ -15,7 +16,8 @@ server.on('request', app);
 
 // Sockets
 const io = require('socket.io')(server);
-setUpSockets(io);
+// setUpSockets(io);
+io.on('connection', socket => { setUpListeners(io, socket); });
 broadcastState(io);
 
 // Middleware and routers

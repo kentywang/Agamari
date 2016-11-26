@@ -1,47 +1,53 @@
-import { forOwn } from 'lodash';
 const THREE = require('three');
 const CANNON = require('../../public/cannon.min.js');
 
+import { forOwn } from 'lodash';
+import { getMeshData, setCannonPosition, setMeshPosition } from './utils';
+import { myColors, fixedTimeStep, maxSubSteps } from './config';
 import store from '../store';
 import socket from '../socket';
 
 import { loadGame, loadEnvironment } from './game';
 import {controls, Player} from './player';
-import {Food} from './food';
-
+import { Food } from './food';
 
 let scene, camera, canvas, renderer, plane;
 let world, groundMaterial, shadowLight;
-
-
-//let player;
-
-// our color pallet
-var myColors = {
-  grey: '#556270',
-  green: '#C7F464',
-  blue: '#4ECDC4',
-  pink: '#FF6B6B',
-  red: '#C44D58'
-};
-
+let geometry, material, groundShape, groundBody, hemisphereLight, ambientLight;
 // variables for physics
-var time;
-var lastTime;
-var fixedTimeStep = 1.0 / 60.0; // seconds
-var maxSubSteps = 3;
-
+let time, lastTime;
+// camera
+let raycastReference, raycastHeight;
 
 export const init = () => {
+  let { players, food } = store.getState();
   // initialize THREE scene, camera, renderer
   scene = new THREE.Scene();
 
-  camera = new THREE.PerspectiveCamera( 60, window.innerWidth / window.innerHeight, 1, 500 );
+  camera = new THREE.PerspectiveCamera(65,
+                                       window.innerWidth / window.innerHeight,
+                                       1,
+                                       1000);
 
   canvas = document.getElementById('canvas');
 
   renderer = new THREE.WebGLRenderer({alpha: true, canvas});
-  renderer.setSize( window.innerWidth, window.innerHeight );
+  renderer.setPixelRatio( window.devicePixelRatio );
+  renderer.setSize(window.innerWidth / 2,
+                   window.innerHeight / 2,
+                   false);
+
+  //This is the object that follows the ball and keeps its z/y rotation
+  //It casts rays outwards to detect objects for the player
+  raycastReference = new THREE.Object3D();
+  raycastHeight = 1;
+  raycastReference.position.y = raycastHeight;
+  scene.add(raycastReference);
+
+  //Attach the camera to lock behind the ball
+  raycastReference.add(camera);
+
+  //setupCollisions(raycastReference);
 
 
   // shading
@@ -60,7 +66,6 @@ export const init = () => {
 
 
   // initialize all existing players in room
-  let { players, food } = store.getState();
   let newPlayer, newFood;
 
   forOwn(players, (data, id) => {
@@ -78,21 +83,21 @@ export const init = () => {
 
   // Adjust friction between ball & ground
   groundMaterial = new CANNON.Material('groundMaterial');
-  var ground_ground_cm = new CANNON.ContactMaterial(groundMaterial, groundMaterial, {
-      friction: .5,
+  var groundGroundCm = new CANNON.ContactMaterial(groundMaterial, groundMaterial, {
+      friction: 0.5,
       restitution: 0.2,
       contactEquationStiffness: 1e8,
       contactEquationRelaxation: 3,
       frictionEquationStiffness: 1e8,
       frictionEquationRegularizationTime: 3,
   });
-  world.addContactMaterial(ground_ground_cm);
+  world.addContactMaterial(groundGroundCm);
 
 
   // create THREE plane
-  var box_geometry = new THREE.BoxGeometry( 400, 5, 400 );
-  var box_material = new THREE.MeshPhongMaterial( { color: myColors['blue'], shading: THREE.FlatShading});
-  plane = new THREE.Mesh( box_geometry, box_material );
+  geometry = new THREE.BoxGeometry( 800, 5, 800 );
+  material = new THREE.MeshPhongMaterial( { color: myColors['blue'], shading: THREE.FlatShading});
+  plane = new THREE.Mesh( geometry, material );
 
   plane.receiveShadow = true;
 
@@ -100,8 +105,8 @@ export const init = () => {
 
 
   // create Cannon plane
-  var groundShape = new CANNON.Box(new CANNON.Vec3(200, 200, 2.5));
-  var groundBody = new CANNON.Body({ mass: 0, material: groundMaterial, shape: groundShape });
+  groundShape = new CANNON.Box(new CANNON.Vec3(400, 400, 2.5));
+  groundBody = new CANNON.Body({ mass: 0, material: groundMaterial, shape: groundShape });
 
   world.add(groundBody);
 
@@ -109,9 +114,6 @@ export const init = () => {
   // add some fog
   scene.fog = new THREE.Fog(myColors['blue'], 50, 950);
 
-
-  // add lighting
-  var hemisphereLight;
 
   // A hemiplane light is a gradient colored light;
   // the first parameter is the sky color, the second parameter is the ground color,
@@ -144,12 +146,10 @@ export const init = () => {
   scene.add(shadowLight);
 
   // an ambient light modifies the global color of a scene and makes the shadows softer
-  var ambientLight = new THREE.AmbientLight(myColors['red'], 0.5);
+  ambientLight = new THREE.AmbientLight(myColors['red'], 0.5);
   scene.add(ambientLight);
 
-
   loadGame();
-
 
   //botInit();
 
@@ -160,69 +160,40 @@ export const init = () => {
 export function animate() {
   requestAnimationFrame( animate );
   let playerMesh = scene.getObjectByName(socket.id);
-  let cannonMesh = playerMesh.cannon;
-  // Set the direction of the light
-  shadowLight.position.set(playerMesh.position.x + 150, playerMesh.position.y + 300, playerMesh.position.z + 150);
+  if (playerMesh) {
+    //Updates the raycast reference so that it follows the position of the player
+    raycastReference.position.set(playerMesh.position.x, raycastHeight, playerMesh.position.z);
 
-  // receive and process controls and camera
-  if ( controls ) {
-    controls.update();
-  }
+    // Set the direction of the light
+    shadowLight.position.set(playerMesh.position.x + 150, playerMesh.position.y + 300, playerMesh.position.z + 150);
 
-  // sync THREE mesh with Cannon mesh
-  // Cannon's y & z are swapped from THREE, and w is flipped
-if(cannonMesh){
-  playerMesh.position.x = cannonMesh.position.x;
-  playerMesh.position.z = cannonMesh.position.y;
-  playerMesh.position.y = cannonMesh.position.z;
-  playerMesh.quaternion.x = -cannonMesh.quaternion.x;
-  playerMesh.quaternion.z = -cannonMesh.quaternion.y;
-  playerMesh.quaternion.y = -cannonMesh.quaternion.z;
-  playerMesh.quaternion.w = cannonMesh.quaternion.w;
-  
-}
+    // receive and process controls and camera
+    if ( controls ) controls.update();
+
+    // sync THREE mesh with Cannon mesh
+    // Cannon's y & z are swapped from THREE, and w is flipped
+  if (playerMesh.cannon) setMeshPosition(playerMesh);
+
+   let { players } = store.getState();
 
 
- let { players } = store.getState();
+    // for all other players
+    forOwn(players, (currentPlayer, id) => {
+      let currentMesh = scene.getObjectByName(id);
+      if (currentPlayer !== socket.id && currentMesh) setCannonPosition(currentMesh);
+    });
 
-
-  // for all other players
-  forOwn(players, (currentPlayer, id) => {
-    let playerObject = scene.getObjectByName(id);
-    if (currentPlayer !== socket.id && playerObject && playerObject.cannon) {
-      playerObject.cannon.position.x = playerObject.position.x;
-      playerObject.cannon.position.z = playerObject.position.y;
-      playerObject.cannon.position.y = playerObject.position.z;
-      playerObject.cannon.quaternion.x = -playerObject.quaternion.x;
-      playerObject.cannon.quaternion.z = -playerObject.quaternion.y;
-      playerObject.cannon.quaternion.y = -playerObject.quaternion.z;
-      playerObject.cannon.quaternion.w = playerObject.quaternion.w;
+    // run physics
+    time = Date.now();
+    if (lastTime !== undefined) {
+       let dt = (time - lastTime) / 1000;
+       world.step(fixedTimeStep, dt, maxSubSteps);
     }
-  });
-
-  // run physics
-  time = Date.now();
-  if (lastTime !== undefined) {
-     var dt = (time - lastTime) / 1000;
-     world.step(fixedTimeStep, dt, maxSubSteps);
+    lastTime = time;
   }
-  lastTime = time;
 
-  const getMeshData = mesh => {
-    return {
-      x: mesh.position.x,
-      y: mesh.position.y,
-      z: mesh.position.z,
-      qx: mesh.quaternion.x,
-      qy: mesh.quaternion.y,
-      qz: mesh.quaternion.z,
-      qw: mesh.quaternion.w
-    };
-  };
-
-  // this dispatch happens 60 times a second, updating the local state with player's new info and emitting to server
-  // let prevData = players[player.id];
-  // let currData = player.getPlayerData();
+  // this dispatch happens 60 times a second,
+  // updating the local state with player's new info and emitting to server
   socket.emit('update_position', getMeshData(playerMesh));
 
   loadEnvironment();
@@ -238,18 +209,19 @@ function onWindowResize() {
   camera.aspect = window.innerWidth / window.innerHeight;
   camera.updateProjectionMatrix();
 
-  renderer.setSize( window.innerWidth, window.innerHeight );
+  renderer.setPixelRatio( window.devicePixelRatio );
+  renderer.setSize(window.innerWidth / 2,
+                   window.innerHeight / 2,
+                   false);
 }
 
 
-export { scene, camera, canvas, renderer, plane, world, groundMaterial, myColors };
+export { scene, camera, canvas, renderer, plane, world, groundMaterial, myColors, raycastReference };
 
 // function botInit(){
   // const bot_geometry = new THREE.BoxGeometry(1,1,1);
   // const bot_material = new THREE.MeshBasicMaterial( {color: 0x7777ff, wireframe: false} );
   // const bot = new THREE.Mesh( bot_geometry, bot_material );
-
-
 
   // bot.position.x = 1;
   // bot.position.y = 0;

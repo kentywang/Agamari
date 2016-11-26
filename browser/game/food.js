@@ -1,119 +1,95 @@
 import { scene, world, groundMaterial, myColors } from './main';
 import socket from '../socket';
+import store from '../store';
 const THREE = require('three');
 const CANNON = require('../../public/cannon.min.js');
 
 
-let controls, ball_geometry, ball_material, sphereShape;
+// let controls, ball_geometry, ball_material, sphereShape;
+let count, color, geometry, material, shape, mesh, player, controls;
 
-export const Food = function( id, data ) {
-  this.data = data;
-  this.mesh;
-  this.cannonMesh;
-  let scope = this;
-  this.eaten = false;
+export class Food {
+  constructor(id, data) {
+    this.id = id;
+    this.initialData = data;
+    this.eaten = false;
+    this.mesh;
 
-  var count = 0;
-  for (var prop in myColors){
-    if (Math.random() < 1/++count){
-      var color = prop;
+    this.init = this.init.bind(this);
+  }
+
+  init() {
+    // Pick a random color
+    count = 0;
+    for (var prop in myColors){
+      if (Math.random() < 1 / ++count){
+        color = prop;
+      }
     }
-  }
 
-  if (data.type === 'sphere') {
-    // create THREE object
-    ball_geometry = new THREE.TetrahedronGeometry( data.parms[0], 1 );
-    ball_material = new THREE.MeshPhongMaterial( {color: myColors[color], shading: THREE.FlatShading} );
-    // create Cannon object
-    sphereShape = new CANNON.Sphere(data.parms[0]);
-    scope.cannonMesh = new CANNON.Body({mass: 0, material: groundMaterial, shape: sphereShape});
-  }
+    // Pick a random shape of random dimensions and create mesh/cannon mesh
+    let { type, parms, x, z } = this.initialData;
+    switch (type) {
+      case 'box':
+        geometry = new THREE.BoxGeometry( parms[0], parms[1], parms[2] );
+        material = new THREE.MeshPhongMaterial( {color: myColors[color], shading: THREE.FlatShading} );
+        shape = new CANNON.Box(new CANNON.Vec3(parms[0] / 2, parms[1] / 2, parms[2] / 2));
+        break;
+      case 'sphere':
+      default:
+        geometry = new THREE.TetrahedronGeometry( parms[0], 1 );
+        material = new THREE.MeshPhongMaterial( {color: myColors[color], shading: THREE.FlatShading} );
+        shape = new CANNON.Sphere(parms[0]);
+    }
 
-  if (data.type === 'box') {
-    // create THREE object
-    ball_geometry = new THREE.BoxGeometry( data.parms[0], data.parms[1], data.parms[2] );
-    ball_material = new THREE.MeshPhongMaterial( {color: myColors[color], shading: THREE.FlatShading} );
-    // create Cannon object
-    sphereShape = new CANNON.Box(new CANNON.Vec3(data.parms[0]/2, data.parms[1]/2, data.parms[2]/2));
-    scope.cannonMesh = new CANNON.Body({mass: 0, material: groundMaterial, shape: sphereShape});
-  }
+    mesh = new THREE.Mesh( geometry, material );
+    mesh.name = this.id;
+    mesh.castShadow = true;
+    mesh.position.x = x;
+    mesh.position.y = 12;
+    mesh.position.z = z;
+    mesh.cannon = new CANNON.Body({ shape, mass: 0, material: groundMaterial });
 
+    mesh.cannon.position.x = mesh.position.x;
+    mesh.cannon.position.z = mesh.position.y;
+    mesh.cannon.position.y = mesh.position.z;
+    mesh.cannon.quaternion.x = mesh.quaternion.x;
+    mesh.cannon.quaternion.y = mesh.quaternion.y;
+    mesh.cannon.quaternion.z = mesh.quaternion.z;
+    mesh.cannon.quaternion.w = mesh.quaternion.w;
 
-  this.init = function() {
-    // mesh the ball geom and mat
-    scope.mesh = new THREE.Mesh( ball_geometry, ball_material );
-    scope.mesh.name = id;
-    scope.mesh.castShadow = true;
+    scene.add(mesh);
+    world.add(mesh.cannon);
 
-    scope.mesh.position.x = this.data.x;
-    scope.mesh.position.y = 12;
-    scope.mesh.position.z = this.data.z;
+    this.mesh = mesh;
 
-    scene.add( scope.mesh );
-
-
-    // add Cannon box
-    scope.cannonMesh.position.x = scope.mesh.position.x;
-    scope.cannonMesh.position.z = scope.mesh.position.y;
-    scope.cannonMesh.position.y = scope.mesh.position.z;
-    scope.cannonMesh.quaternion.x = scope.mesh.quaternion.x;
-    scope.cannonMesh.quaternion.y = scope.mesh.quaternion.y;
-    scope.cannonMesh.quaternion.z = scope.mesh.quaternion.z;
-    scope.cannonMesh.quaternion.w = scope.mesh.quaternion.w;
-    scope.mesh.cannon = scope.cannonMesh;
-    world.add(scope.cannonMesh);
-    //console.log(world.bodies.length)
-
-    // disable collisions
-    scope.cannonMesh.collisionResponse = 0; 
-
-    scope.cannonMesh.addEventListener('collide', e => {
-      //console.log("crash")
-      if(!scope.eaten){
-        let player = scene.getObjectByName(socket.id);
+    this.mesh.cannon.collisionResponse = 0;
+    this.mesh.cannon.addEventListener('collide', e => {
+      player = scene.getObjectByName(socket.id);
+      if (!this.eaten) {
         if (player) {
-          for (let i = 0; i < world.contacts.length; i++){
-            let c = world.contacts[i];
-            if ((c.bi === scope.cannonMesh && c.bj === player.cannon) || (c.bi === player.cannon && c.bj === scope.cannonMesh)) {
-              let playerVol = store.getState().players[socket.id].volume;
-              let foodVol = scope.mesh.cannon.shapes[0].volume();
+          for (let contact of world.contacts) {
+            let foodHits = contact.bi === this.mesh.cannon;
+            let playerIsHit = contact.bj === player.cannon;
+            let playerHits = contact.bi === player.cannon;
+            let foodIsHit = contact.bj === this.mesh.cannon;
+            if (foodHits && playerIsHit || playerHits && foodIsHit) {
+                  let playerVol = store.getState().players[socket.id].volume;
+                  let foodVol = this.mesh.cannon.shapes[0].volume();
 
-             //console.log("vol", foodVol, scope.mesh.cannon.shapes[0].halfExtents || scope.mesh.cannon.shapes[0].radius)
-              // player must be 10 times the volume of food to eat it
-              if(playerVol > foodVol * 10){
-                // pass new volume so that server can update its store if/when food eaten goes thru
-                var volume = foodVol + player.cannon.shapes.reduce((sum, next) => (sum + next.volume()), 0);
-
-                scope.eaten = true;
-                socket.emit('eat_food', id, volume);
-              }
+                  // player must be 12 times the volume of food to eat it, and can't be more than 288 the volume
+                  if (playerVol > foodVol * 12 && playerVol < foodVol * 288) {
+                    // pass new volume so that server can update its store if/when food eaten goes thru
+                    this.eaten = true;
+                    socket.emit('eat_food', this.id, foodVol + playerVol);
+                  }
             }
           }
         }
       }
     });
-  };
 
-  // this.setOrientation = function( position, rotation ) {
-  //  if ( scope.mesh ) {
-  //    scope.mesh.position.copy( position );
-  //    scope.mesh.rotation.x = rotation.x;
-  //    scope.mesh.rotation.y = rotation.y;
-  //    scope.mesh.rotation.z = rotation.z;
-  //  }
-  // };
-
-  // // Kenty: I added this method to get a player's positional data
-  // this.getPlayerData = function() {
-  //  return {
-  //      x: scope.mesh.position.x,
-  //      y: scope.mesh.position.y,
-  //      z: scope.mesh.position.z,
-  //      rx: scope.mesh.rotation.x,
-  //      ry: scope.mesh.rotation.y,
-  //      rz: scope.mesh.rotation.z
-  //  };
-  // };
-};
+  }
+}
 
 export {controls};

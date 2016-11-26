@@ -1,17 +1,13 @@
 
-const reducerMode = 'immutable';
-const validRoomNames = ['room1', 'room2'];
-const { pickBy, filter } = require('lodash');
-const { receiveFood } = require('./reducers/food');
-const { updatePlayer } = require('./reducers/players');
+const { pickBy } = require('lodash');
+const { receiveFood } = require('../reducers/food');
+const store = require('../store');
 
-const { initPos } = require('./sockets');
-
-let types = ["box", "sphere"]
+let types = ['box', 'sphere'];
 let elapsedTime = Date.now(),
     id = 1;
 
-function spawnFood(io, store) {
+const spawnFood = io => {
   if (Date.now() - elapsedTime > 100){
     //console.log('spawning food');
     elapsedTime = Date.now();
@@ -36,18 +32,17 @@ function spawnFood(io, store) {
                 ];
                 break;
               case 'sphere':
+              default:
                 foodSize = [
                   1 + (Math.random() * 3)
                 ];
                 break;
-              default:
-                break; 
             }
 
             // scale food to random player
             let randomPlayerId = Object.keys(roomPlayers)[~~(Math.random() * Object.keys(roomPlayers).length)];
             let playerToFeed = roomPlayers[randomPlayerId];
-            let parms = foodSize.map(e => -~(e * playerToFeed.scale)); 
+            let parms = foodSize.map(e => -~(e * playerToFeed.scale));
             //console.log(parms)
 
             let data = { x, z, type, parms, room: currentRoom };
@@ -58,7 +53,19 @@ function spawnFood(io, store) {
         }
       }
     }
-}
+};
+
+const broadcastState = (io) => {
+  setInterval(() => {
+    // On set interval, emit all player positions to all players in each room
+    let { players, rooms } = store.getState();
+    for (let currentRoom of rooms) {
+      let roomPlayers = pickBy(players, ({ room }) => room === currentRoom);
+      io.sockets.in(currentRoom).emit('player_data', roomPlayers);
+    }
+    spawnFood(io, store);
+  }, (1000 / 60));
+};
 
 // function respawn(io, store, socket, room){
 //   console.log("in respawn")
@@ -68,4 +75,4 @@ function spawnFood(io, store) {
 //     socket.emit('you_lose', 'You died!');
 // }
 
-module.exports = { spawnFood, validRoomNames, reducerMode };
+module.exports = { broadcastState, spawnFood };

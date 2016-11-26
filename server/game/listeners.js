@@ -1,4 +1,3 @@
-const { spawnFood } = require('./gameEngine');
 const { forOwn, pickBy } = require('lodash');
 let Promise = require('bluebird');
 
@@ -15,18 +14,21 @@ const initPos = {
   volume: 4200 // this would change depending on what we choose for starting ball size
 };
 
-const { receivePlayer, removePlayer } = require('./reducers/players');
-const { User } = require('./db');
-const store = require('./store');
+const { User } = require('../db');
+const store = require('../store');
 
 
-const { removeFood } = require('./reducers/food');
-const { updatePlayer, updateVolume, changePlayerScale, addFoodToDiet, addPlayerToDiet, clearDiet } = require('./reducers/players');
+const { receivePlayer, removePlayer } = require('../reducers/players');
+const { removeFood } = require('../reducers/food');
+const { updatePlayer,
+        updateVolume,
+        changePlayerScale,
+        addFoodToDiet,
+        clearDiet } = require('../reducers/players');
 
 
-const setUpSockets = io => {
-  io.on('connection', socket => {
-    Promise.promisifyAll(socket);
+const setUpListeners = (io, socket) => {
+  Promise.promisifyAll(socket);
 
     console.log('A new client has connected');
     console.log('socket id: ', socket.id);
@@ -36,7 +38,7 @@ const setUpSockets = io => {
       User.create({ nickname, guest: true })
         .then(({id, nickname}) => {
           // Create new player with db info, initial position and room
-          let player = Object.assign(initPos, {id, nickname, room: 'room1'});
+          let player = Object.assign({}, initPos, {id, nickname, room: 'room1'});
 
           // Log player out of all current rooms (async, stored in array of promises)
           let leavePromises = [];
@@ -52,14 +54,13 @@ const setUpSockets = io => {
 
              let { players, food } = store.getState();
              console.log('adding player to game', players);
-             console.log(leavePromises)
+             console.log(leavePromises);
           Promise.all(leavePromises)
             .then(() => {
-              // Find all players in room and tell new player ot add to game state
+              // Find all players in room and tell new player to add to game state
                 console.log('current player', player);
               let roomPlayers = pickBy(players, (player) => {
-
-                return player.room === 'room1'
+                return player.room === 'room1';
               })
               //console.log('roomPlayers', roomPlayers)
               // let roomPlayers = players.filter(({ room }) => room === 'room1');
@@ -68,7 +69,7 @@ const setUpSockets = io => {
             })
             .then(() => {
               // Find all food in room and tell new player to add to game state
-              let roomFood = pickBy(food, ({ room }) => room === 'room1')
+              let roomFood = pickBy(food, ({ room }) => room === 'room1');
               // let roomFood = food.filter(({ room }) => room === 'room1');
               socket.emitAsync('food_data', roomFood);
             })
@@ -77,7 +78,7 @@ const setUpSockets = io => {
         })
         .catch(err => {
           console.error(err);
-          socket.emit('start_fail', err)
+          socket.emit('start_fail', err);
         });
     });
 
@@ -85,17 +86,17 @@ const setUpSockets = io => {
     socket.on('update_position', data => {
       let player = store.getState().players[socket.id];
       if (player) {
-        if (data.y >= 0) {
+        if (data.y >= 5) {
           // If player's y coordinate is greater than or equal to zero,
           // update game state with current position
           store.dispatch(updatePlayer(socket.id, data));
-        } else if (data.y < 0) {
+        } else if (data.y < -5) {
           // If y coordinate is below zero, tell players to remove player object.
           // For now, we are automatically respawning player
           io.sockets.in(player.room).emit('remove_player', socket.id);
           store.dispatch(updatePlayer(socket.id, initPos));
           store.dispatch(clearDiet(socket.id));
-          io.sockets.in(player.room).emit('add_player', socket.id, initPos, true);
+          io.sockets.in(player.room).emit('add_player', socket.id, Object.assign({}, initPos, {nickname: player.nickname}), true);
           socket.emit('you_lose', 'You fell off the board!');
         }
       }
@@ -106,6 +107,7 @@ const setUpSockets = io => {
      // console.log("sss")
       let { food } = store.getState();
       let eaten = food[id];
+      let player = store.getState().players[socket.id];
       // First, verify that food still exists.
       // Then increase player size and tell other players to remove food object
       if (eaten) {
@@ -113,7 +115,7 @@ const setUpSockets = io => {
         //console.log("in eat food socket listener, number of diets: ", store.getState().players[socket.id].diet.length)
         store.dispatch(removeFood(id));
         store.dispatch(updateVolume(socket.id, volume));
-       // store.dispatch(changePlayerScale(socket.id, 0.1));
+        store.dispatch(changePlayerScale(socket.id, (volume - player.volume) / player.volume));
         io.sockets.in(eaten.room).emit('remove_food', id, socket.id, store.getState().players[socket.id]);
       }
     });
@@ -135,54 +137,23 @@ const setUpSockets = io => {
     socket.on('got_eaten', (id, volume) => {
       //console.log('this guy ate!', id);
       let { players } = store.getState();
-      let eaten = players[socket.id]
+      let eaten = players[socket.id];
       let eater = players[id];
 
       if (eaten && eater) {
         let { room } = eaten;
-        //store.dispatch(changePlayerScale(id, eaten.scale));
-        store.dispatch(addPlayerToDiet(eaten, id, store.getState().players[id]));
+        io.sockets.in(room).emit('remove_player', socket.id, id);
+        //store.dispatch(addPlayerToDiet(eaten, id, store.getState().players[id]));
         //console.log(store.getState().players[id].diet);
-        io.sockets.in(room).emit('remove_eaten_player', socket.id, id, store.getState().players[id], store.getState().players[socket.id]);
+        store.dispatch(changePlayerScale(id, (volume - eater.volume) / eater.volume));
+        // io.sockets.in(room).emit('remove_eaten_player', socket.id, id, store.getState().players[id], store.getState().players[socket.id]);
         store.dispatch(updateVolume(id, volume));
         store.dispatch(updatePlayer(socket.id, initPos));
         store.dispatch(clearDiet(socket.id));
-        io.sockets.in(room).emit('add_player', socket.id, initPos, true);
+        io.sockets.in(room).emit('add_player', socket.id, Object.assign({}, initPos, {nickname: eaten.nickname}), true);
         socket.emit('you_lose', 'You died!');
       }
     });
+}
 
-  });
-};
-
-const broadcastState = (io) => {
-  setInterval(() => {
-    // On set interval, emit all player positions to all players in each room
-    let { players, rooms } = store.getState();
-    for (let currentRoom of rooms) {
-      let roomPlayers = pickBy(players, ({ room }) => room === currentRoom);
-
-      // filter out the diet arrays before broadcast
-      let roomPlayersWithoutObjects = Object.assign({},roomPlayers);
-       for (var id in roomPlayersWithoutObjects) {
-          roomPlayersWithoutObjects[id] = { 
-            x: roomPlayersWithoutObjects[id].x,
-            y: roomPlayersWithoutObjects[id].y,
-            z: roomPlayersWithoutObjects[id].z,
-            qx: roomPlayersWithoutObjects[id].qx,
-            qy: roomPlayersWithoutObjects[id].qy,
-            qz: roomPlayersWithoutObjects[id].qz,
-            qw: roomPlayersWithoutObjects[id].qw,
-            scale: roomPlayersWithoutObjects[id].scale,
-            volume: roomPlayersWithoutObjects[id].volume
-          }
-       }
-
-      io.sockets.in(currentRoom).emit('player_data', roomPlayersWithoutObjects);
-    }
-    spawnFood(io, store);
-  }, (1000 / 60));
-};
-
-
-module.exports = { setUpSockets, broadcastState, initPos };
+module.exports = setUpListeners;
