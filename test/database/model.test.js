@@ -12,7 +12,8 @@ describe('The `User` model', function () {
   let user;
   beforeEach(function(){
     user = User.build({
-      email: 'a@gmail.com',
+      email: 'nemo@gmail.com',
+      password:"test",
       admin: true,
       username: 'nemo1',
       guest:false,
@@ -33,7 +34,7 @@ describe('The `User` model', function () {
 
       return user.save()
       .then(function (savedUser) {
-        expect(savedUser.email).to.equal('a@gmail.com');
+        expect(savedUser.email).to.equal('nemo@gmail.com');
         expect(savedUser.admin).to.equal(true);
         expect(savedUser.username).to.equal('nemo1');
         expect(savedUser.nickname).to.equal('nemo2');
@@ -57,6 +58,49 @@ describe('The `User` model', function () {
 
 
   });
+
+
+  describe('options definition', function(){
+    
+    user = User.build({
+      email: 'nemo@gmail.com',
+      password:"test",
+      admin: true,
+      username: 'nemo1',
+      guest:false,
+      nickname: 'nemo2'
+   });
+
+        describe('`authenticate` instance method', function(){
+
+           // it('succeeds with a valid username and password', () =>
+          // request(app)
+          //   .post('/api/auth/local/login')
+          //   .send(alice)
+          //   .expect(302)
+          //   .expect('Set-Cookie', /session=.*/)
+          //   .expect('Location', '/')
+          // )
+
+          // it('fails with an invalid username and password', () =>
+          // request(app)
+          //   .post('/api/auth/local/login')
+          //   .send({username: alice.username, password: 'wrong'})
+          //   .expect(401)
+          // )      
+        
+
+
+
+        });
+
+        describe('`setEmailAndPassword` hooks', function(){
+
+          
+         
+
+        });
+  });  
 
 });
 
