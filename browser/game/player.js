@@ -18,7 +18,6 @@ export const Player = function( id, data, isMainPlayer) {
   this.eaten = Date.now();
   //this.sprite;
 
-
   // create THREE ball
   var ball_geometry = new THREE.TetrahedronGeometry( 10, 2 );
   var ball_material = new THREE.MeshPhongMaterial( {color: myColors['grey'], shading: THREE.FlatShading} );
@@ -56,6 +55,10 @@ export const Player = function( id, data, isMainPlayer) {
 
     scene.add( scope.mesh );
 
+    // add pivot to attach food to
+    var pivot = new THREE.Group();
+    this.mesh.add(pivot);
+
 
     // add Cannon box
     scope.cannonMesh.position.x = scope.mesh.position.x;
@@ -79,9 +82,9 @@ export const Player = function( id, data, isMainPlayer) {
       }
 
       var sprite = makeTextSprite(name, 50);
-      sprite.scale.set(1.5 * 25,1.5 * 12.5,1.5 * .25);
       scope.mesh.sprite = sprite;
       scene.add(sprite); // might run into issues with children
+
     }
 
     // collision handler
@@ -97,11 +100,11 @@ export const Player = function( id, data, isMainPlayer) {
               let playerVol = store.getState().players[socket.id].volume;
               let enemyVol = store.getState().players[scope.id].volume;
 
-              // player must be 2 times the volume of enemy to eat it
-              // if(enemyVol > playerVol /*  * 2  */){
-              //   scope.eaten = Date.now();
-              //   socket.emit('got_eaten', scope.id, enemyVol + playerVol);
-              // }
+              //player must be 12 times the volume of enemy to eat it
+              if(enemyVol > playerVol * 12 ){
+                scope.eaten = Date.now();
+                socket.emit('got_eaten', scope.id, enemyVol + playerVol);
+              }
             }
           }
         }
@@ -119,22 +122,22 @@ export const Player = function( id, data, isMainPlayer) {
           let player = scope.mesh;
           //console.log(foodObject)
           let newQuat = new CANNON.Quaternion(-playerData.qx,-playerData.qz,-playerData.qy,playerData.qw);
+          let threeQuat = new THREE.Quaternion(playerData.qx,playerData.qy,playerData.qz,playerData.qw);
 
           // attach food to player
           world.remove(foodObject.cannon);
 
-          player.cannon.addShape(foodObject.cannon.shapes[0], newQuat.inverse().vmult(new CANNON.Vec3((foodObject.position.x - playerData.x) * 0.6, (foodObject.position.z - playerData.z) * 0.6, (foodObject.position.y - playerData.y) * 0.6)), newQuat.inverse());
+          player.cannon.addShape(foodObject.cannon.shapes[0], newQuat.inverse().vmult(new CANNON.Vec3((foodObject.position.x - playerData.x) * .8, (foodObject.position.z - playerData.z) * .8, (foodObject.position.y - playerData.y) * .8)), newQuat.inverse());
 
-          foodObject.position.set((foodObject.position.x - playerData.x) * 0.6, (foodObject.position.y - playerData.y) * 0.6, (foodObject.position.z - playerData.z) * 0.6);
+          let invQuat = threeQuat.inverse();
+          let vec = new THREE.Vector3((foodObject.position.x - playerData.x) * .8, (foodObject.position.y - playerData.y) * .8, (foodObject.position.z - playerData.z) * .8);
+          let vecRot = vec.applyQuaternion(invQuat);
 
-          var pivot = new THREE.Object3D();
-          pivot.quaternion.x = playerData.qx;
-          pivot.quaternion.y = playerData.qy;
-          pivot.quaternion.z = playerData.qz;
-          pivot.quaternion.w = -playerData.qw;
+          foodObject.position.set(vecRot.x, vecRot.y, vecRot.z);
+          foodObject.quaternion.set(invQuat.x, invQuat.y, invQuat.z, invQuat.w);
 
-          pivot.add(foodObject);
-          player.add(pivot);
+          // add to pivot obj of player
+          player.children[0].add(foodObject);
         });
 
       }
@@ -143,7 +146,7 @@ export const Player = function( id, data, isMainPlayer) {
 
     // add controls and camera
     if ( scope.isMainPlayer ) {
-      controls = new THREE.PlayerControls( camera, scope.mesh, scope.cannonMesh, raycastReference );
+      controls = new THREE.PlayerControls( camera, scope.mesh, scope.cannonMesh, raycastReference , scope.id );
     }
   };
 

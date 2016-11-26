@@ -26,23 +26,30 @@ function spawnFood(io, store) {
             let x = (Math.random() * 400) - 200,
                 z = (Math.random() * 400) - 200,
                 type = types[~~(Math.random() * types.length)],
-                parms = [];
-                switch (type){
-                  case 'box':
-                    parms = [
-                      -~(Math.random() * 10),
-                      -~(Math.random() * 6),
-                      -~(Math.random() * 4),
-                    ];
-                    break;
-                  case 'sphere':
-                    parms = [
-                      -~(Math.random() * 3)
-                    ];
-                    break;
-                  default:
-                    break; 
-                }
+                foodSize = [];
+            switch (type){
+              case 'box':
+                foodSize = [
+                  1 + (Math.random() * 9),
+                  1 + (Math.random() * 5),
+                  1 + (Math.random() * 3),
+                ];
+                break;
+              case 'sphere':
+                foodSize = [
+                  1 + (Math.random() * 3)
+                ];
+                break;
+              default:
+                break; 
+            }
+
+            // scale food to random player
+            let randomPlayerId = Object.keys(roomPlayers)[~~(Math.random() * Object.keys(roomPlayers).length)];
+            let playerToFeed = roomPlayers[randomPlayerId];
+            let parms = foodSize.map(e => -~(e * playerToFeed.scale)); 
+            //console.log(parms)
+
             let data = { x, z, type, parms, room: currentRoom };
             store.dispatch(receiveFood(id, data));
             io.sockets.in(currentRoom).emit('add_food', id, data);
