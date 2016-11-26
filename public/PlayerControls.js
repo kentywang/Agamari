@@ -55,7 +55,7 @@ this.camera.oldPosition = this.camera.position.clone();
 		   // this.camera.position.y = curCamHeight * scope.scale;
 		   // this.camera.position.x = 0;
 		   // this.camera.rotation.x = -0.6; // scale this with height to planet
-		this.camera.position.copy(playerPosition);
+		this.camera.position.copy(this.playerPosition);
 
 
 
