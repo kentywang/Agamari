@@ -31,17 +31,40 @@ var lastTime;
 var fixedTimeStep = 1.0 / 60.0; // seconds
 var maxSubSteps = 3;
 
+// camera
+var curCamZoom = 50;
+var raycastReference;
+var raycastHeight;
 
 export const init = () => {
   // initialize THREE scene, camera, renderer
   scene = new THREE.Scene();
 
-  camera = new THREE.PerspectiveCamera( 60, window.innerWidth / window.innerHeight, 1, 500 );
+  camera = new THREE.PerspectiveCamera( 65, window.innerWidth / window.innerHeight, 1, 500 );
 
   canvas = document.getElementById('canvas');
 
   renderer = new THREE.WebGLRenderer({alpha: true, canvas});
   renderer.setSize( window.innerWidth, window.innerHeight );
+
+  // camera
+  //This is the object that follows the ball and keeps its z/y rotation
+  //It casts rays outwards to detect objects for the player
+  raycastReference = new THREE.Object3D();
+  raycastHeight = 1;
+  raycastReference.position.y = raycastHeight;
+  scene.add(raycastReference);
+  
+  //Attach the camera to lock behind the ball
+  raycastReference.add(camera);
+  //Current zoom of the camera behind the ball
+  camera.position.z = curCamZoom;
+  camera.position.y += 40;
+  camera.rotation.x -= 0.5;
+  
+  //setupCollisions(raycastReference);
+  
+
 
 
   // shading
@@ -90,7 +113,7 @@ export const init = () => {
 
 
   // create THREE plane
-  var box_geometry = new THREE.BoxGeometry( 400, 5, 400 );
+  var box_geometry = new THREE.BoxGeometry( 800, 5, 800 );
   var box_material = new THREE.MeshPhongMaterial( { color: myColors['blue'], shading: THREE.FlatShading});
   plane = new THREE.Mesh( box_geometry, box_material );
 
@@ -100,7 +123,7 @@ export const init = () => {
 
 
   // create Cannon plane
-  var groundShape = new CANNON.Box(new CANNON.Vec3(200, 200, 2.5));
+  var groundShape = new CANNON.Box(new CANNON.Vec3(400, 400, 2.5));
   var groundBody = new CANNON.Body({ mass: 0, material: groundMaterial, shape: groundShape });
 
   world.add(groundBody);
@@ -161,6 +184,11 @@ export function animate() {
   requestAnimationFrame( animate );
   let playerMesh = scene.getObjectByName(socket.id);
   let cannonMesh = playerMesh.cannon;
+
+  // camera
+  //Updates the raycast reference so that it follows the position of the player
+  raycastReference.position.set(playerMesh.position.x, raycastHeight, playerMesh.position.z);
+
   // Set the direction of the light
   shadowLight.position.set(playerMesh.position.x + 150, playerMesh.position.y + 300, playerMesh.position.z + 150);
 
@@ -242,7 +270,7 @@ function onWindowResize() {
 }
 
 
-export { scene, camera, canvas, renderer, plane, world, groundMaterial, myColors };
+export { scene, camera, canvas, renderer, plane, world, groundMaterial, myColors, raycastReference };
 
 // function botInit(){
   // const bot_geometry = new THREE.BoxGeometry(1,1,1);

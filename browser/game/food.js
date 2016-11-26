@@ -82,7 +82,7 @@ export const Food = function( id, data ) {
               // player must be 10 times the volume of food to eat it
               if(playerVol > foodVol * 10){
                 // pass new volume so that server can update its store if/when food eaten goes thru
-                var volume = foodVol + player.cannon.shapes.reduce((sum, next) => (sum + next.volume()), 0);
+                var volume = foodVol + store.getState().players[socket.id].volume;
 
                 scope.eaten = true;
                 socket.emit('eat_food', id, volume);

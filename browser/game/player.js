@@ -2,7 +2,7 @@ const THREE = require('three');
 const CANNON = require('../../public/cannon.min.js');
 const PlayerControls = require('../../public/PlayerControls');
 
-import { scene, camera, world, groundMaterial, myColors } from './main';
+import { scene, camera, world, groundMaterial, myColors, raycastReference } from './main';
 import { Food } from './food'
 import socket from '../socket';
 
@@ -78,10 +78,10 @@ export const Player = function( id, data, isMainPlayer) {
               let enemyVol = store.getState().players[scope.id].volume;
 
               // player must be 2 times the volume of enemy to eat it
-              if(enemyVol > playerVol /*  * 2  */){
-                scope.eaten = Date.now();
-                socket.emit('got_eaten', scope.id, enemyVol + playerVol);
-              }
+              // if(enemyVol > playerVol /*  * 2  */){
+              //   scope.eaten = Date.now();
+              //   socket.emit('got_eaten', scope.id, enemyVol + playerVol);
+              // }
             }
           }
         }
@@ -123,7 +123,7 @@ export const Player = function( id, data, isMainPlayer) {
 
     // add controls and camera
     if ( scope.isMainPlayer ) {
-      controls = new THREE.PlayerControls( camera, scope.mesh, scope.cannonMesh );
+      controls = new THREE.PlayerControls( camera, scope.mesh, scope.cannonMesh, raycastReference );
     }
   };
 
