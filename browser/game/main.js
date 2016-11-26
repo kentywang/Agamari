@@ -32,7 +32,6 @@ var fixedTimeStep = 1.0 / 60.0; // seconds
 var maxSubSteps = 3;
 
 // camera
-var curCamZoom = 50;
 var raycastReference;
 var raycastHeight;
 
@@ -40,7 +39,7 @@ export const init = () => {
   // initialize THREE scene, camera, renderer
   scene = new THREE.Scene();
 
-  camera = new THREE.PerspectiveCamera( 65, window.innerWidth / window.innerHeight, 1, 500 );
+  camera = new THREE.PerspectiveCamera( 65, window.innerWidth / window.innerHeight, 1, 1000 );
 
   canvas = document.getElementById('canvas');
 
@@ -59,10 +58,6 @@ export const init = () => {
   
   //Attach the camera to lock behind the ball
   raycastReference.add(camera);
-  //Current zoom of the camera behind the ball
-  camera.position.z = curCamZoom;
-  camera.position.y += 40;
-  camera.rotation.x -= 0.5;
   
   //setupCollisions(raycastReference);
   

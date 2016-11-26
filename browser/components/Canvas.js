@@ -77,6 +77,9 @@ class Canvas extends Component {
 						</div>
 					</div>
 				</div>
+				<div style={{fontFamily: "Quicksand", fontWeight: "bold", display: "none"}}>
+					Keep this div in to preload fonts for canvas.
+				</div>
 				<div>
 					<canvas id="canvas"></canvas>
 				</div>

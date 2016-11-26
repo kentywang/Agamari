@@ -41,7 +41,7 @@ class ControlPanel extends Component {
           </div>
         </div> :
         <div>
-          {player && <p>{`Welcome ${player.nickname}`}</p>}
+          {player && <p>{`Welcome ${nickname}`}</p>}
           <button className="btn" onClick={open}>Open</button>
         </div>}
         </div>

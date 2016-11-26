@@ -106,6 +106,7 @@ const setUpSockets = io => {
      // console.log("sss")
       let { food } = store.getState();
       let eaten = food[id];
+      let player = store.getState().players[socket.id];
       // First, verify that food still exists.
       // Then increase player size and tell other players to remove food object
       if (eaten) {
@@ -113,7 +114,7 @@ const setUpSockets = io => {
         //console.log("in eat food socket listener, number of diets: ", store.getState().players[socket.id].diet.length)
         store.dispatch(removeFood(id));
         store.dispatch(updateVolume(socket.id, volume));
-       // store.dispatch(changePlayerScale(socket.id, 0.1));
+        store.dispatch(changePlayerScale(socket.id, (volume-player.volume)/player.volume));
         io.sockets.in(eaten.room).emit('remove_food', id, socket.id, store.getState().players[socket.id]);
       }
     });
@@ -140,10 +141,11 @@ const setUpSockets = io => {
 
       if (eaten && eater) {
         let { room } = eaten;
-        //store.dispatch(changePlayerScale(id, eaten.scale));
-        store.dispatch(addPlayerToDiet(eaten, id, store.getState().players[id]));
+        io.sockets.in(room).emit('remove_player', socket.id, id);
+        //store.dispatch(addPlayerToDiet(eaten, id, store.getState().players[id]));
         //console.log(store.getState().players[id].diet);
-        io.sockets.in(room).emit('remove_eaten_player', socket.id, id, store.getState().players[id], store.getState().players[socket.id]);
+        store.dispatch(changePlayerScale(id, (volume-eater.volume)/eater.volume));
+        // io.sockets.in(room).emit('remove_eaten_player', socket.id, id, store.getState().players[id], store.getState().players[socket.id]);
         store.dispatch(updateVolume(id, volume));
         store.dispatch(updatePlayer(socket.id, initPos));
         store.dispatch(clearDiet(socket.id));

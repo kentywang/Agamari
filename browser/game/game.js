@@ -3,7 +3,7 @@ const THREE = require('three');
 import store from '../store';
 import socket from '../socket';
 
-import { scene, plane, playerID, myColors } from './main';
+import { scene, camera, plane, playerID, myColors } from './main';
 import { Player } from './player';
 import { forOwn } from 'lodash';
 
@@ -48,13 +48,27 @@ export function loadEnvironment() {
         playerObject.quaternion.w = data.qw;
 
         playerObject.sprite.position.x = playerObject.position.x;
-        playerObject.sprite.position.y = playerObject.position.y + 12;
+        playerObject.sprite.position.y = playerObject.position.y + (data.scale * 5);
         playerObject.sprite.position.z = playerObject.position.z;
       }
       if (id === socket.id){
         playerObject.cannon.mass = data.volume * .01;
       }
+      // scale name text
+      if(playerObject.sprite){
+        playerObject.sprite.scale.set(data.scale * 50, data.scale * 25, data.scale * .5);
+      }
+
+      // grow ball while preserving food size
       playerObject.scale.x = playerObject.scale.y = playerObject.scale.z = data.scale;
+      playerObject.children[0].scale.x = playerObject.children[0].scale.y = playerObject.children[0].scale.z = 1/data.scale;
+
+      // grow just ball physics body
+      playerObject.cannon.shapes[0].radius = data.scale * 10;
+
+      // camera sees more further out, less closer
+      camera.far += (data.scale * .3);  
+      //camera.near += (data.scale * .01);  
     }
 
   });

@@ -3,15 +3,15 @@ import store from '../browser/store';
 const THREE = require('three');
 const CANNON = require('./cannon.min.js');
 
-THREE.PlayerControls = function ( camera, player, cannonMesh, raycastReference ) {
+THREE.PlayerControls = function ( camera, player, cannonMesh, raycastReference , id) {
 	this.domElement = document;
 
 	this.camera = camera;
 	this.player = player;
 	this.cannonMesh = cannonMesh;
-
+	this.id = id;
 	this.cooldown = Date.now();
-
+	this.scale;
 	var keyState = {};
 	
 	var scope = this;
@@ -19,26 +19,37 @@ THREE.PlayerControls = function ( camera, player, cannonMesh, raycastReference )
 	var vector = new THREE.Vector3( 0, 0, - 1 );
 	vector.applyQuaternion( camera.quaternion );
 
+	var curCamZoom = 50;
+	var curCamHeight = 40;
 
 	this.update = function() { 
+		
+		scope.scale = store.getState().players[scope.id].scale;
+
 		this.checkKeyStates();
 
+		  //Current zoom of the camera behind the ball
+		  this.camera.position.z = curCamZoom * scope.scale;
+		  this.camera.position.y = curCamHeight * scope.scale;
+		  this.camera.rotation.x = -0.5;
 		// this.camera.position.set(this.player.position.x ,this.player.position.y + 120, this.player.position.z + 70);
   // 		this.camera.lookAt(this.player.position);
+
 	};
 
 	this.checkKeyStates = function () {
+
 		if (keyState[32]) {
 	           // console.log(Date.now() - scope.cooldown)
 			if(Date.now() - scope.cooldown > 5000){
 
 		        // spacebar - dash/push
-		        var localPoint = new CANNON.Vec3(this.cannonMesh.position.x,this.cannonMesh.position.y,this.cannonMesh.position.z -2.5);
+		        var localPoint = new CANNON.Vec3(this.cannonMesh.position.x,this.cannonMesh.position.y,this.cannonMesh.position.z);
 	            //var impulse = new CANNON.Vec3(0,-7000 * (1/60),0);
 	            var vec = new THREE.Vector3();
 	            camera.getWorldDirection( vec );
 
-	            var impulse = new CANNON.Vec3(200 * vec.x * 120,200 * vec.z * 120, 20);
+	            var impulse = new CANNON.Vec3(Math.pow(scope.scale, 2.8) * 50 * vec.x * 80, Math.pow(scope.scale, 2.8) * 50 * vec.z * 80, 0);
 	            this.cannonMesh.applyImpulse(impulse,localPoint);
 	            scope.cooldown = Date.now();
 	            //this.cannonMesh.position.y -= 2;
@@ -53,7 +64,7 @@ THREE.PlayerControls = function ( camera, player, cannonMesh, raycastReference )
             var vec = new THREE.Vector3();
             camera.getWorldDirection( vec );
 
-            var impulse = new CANNON.Vec3(vec.x * 120,vec.z * 120, 0);
+            var impulse = new CANNON.Vec3(Math.pow(scope.scale, 2.8) * vec.x * 80, Math.pow(scope.scale, 2.8) * vec.z * 80, 0);
             this.cannonMesh.applyImpulse(impulse,localPoint);
             //this.cannonMesh.position.y -= 2;
 	    }
@@ -67,7 +78,7 @@ THREE.PlayerControls = function ( camera, player, cannonMesh, raycastReference )
             var vec = new THREE.Vector3();
             camera.getWorldDirection( vec );
 
-            var impulse = new CANNON.Vec3(-vec.x * 120,-vec.z * 120, 0);
+            var impulse = new CANNON.Vec3(Math.pow(scope.scale, 2.8) * -vec.x * 80, Math.pow(scope.scale, 2.8) * -vec.z * 80, 0);
             this.cannonMesh.applyImpulse(impulse,localPoint);
             //this.cannonMesh.position.y += 2;
 	    }
@@ -80,7 +91,7 @@ THREE.PlayerControls = function ( camera, player, cannonMesh, raycastReference )
             var vec = new THREE.Vector3();
             camera.getWorldDirection( vec );
 
-            var impulse = new CANNON.Vec3(vec.z * 80,-vec.x * 80, 0);
+            var impulse = new CANNON.Vec3(Math.pow(scope.scale, 2.8) * vec.z * 40, Math.pow(scope.scale, 2.8) * -vec.x * 40, 0);
             this.cannonMesh.applyImpulse(impulse,localPoint);
             //this.cannonMesh.position.x -= 2;
             raycastReference.rotation.y += .02;
@@ -94,7 +105,7 @@ THREE.PlayerControls = function ( camera, player, cannonMesh, raycastReference )
 			var vec = new THREE.Vector3();
             camera.getWorldDirection( vec );
 
-            var impulse = new CANNON.Vec3(-vec.z * 80,vec.x * 80, 0);
+            var impulse = new CANNON.Vec3(Math.pow(scope.scale, 2.8) * -vec.z * 40, Math.pow(scope.scale, 2.8) * vec.x * 40, 0);
             this.cannonMesh.applyImpulse(impulse,localPoint);
 			//this.cannonMesh.position.x += 2;
 			raycastReference.rotation.y -= .02;
