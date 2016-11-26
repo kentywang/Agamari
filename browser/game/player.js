@@ -101,7 +101,7 @@ export const Player = function( id, data, isMainPlayer) {
               let enemyVol = store.getState().players[scope.id].volume;
 
               //player must be 12 times the volume of enemy to eat it
-              if(enemyVol > playerVol /*  * 12  */){
+              if(enemyVol > playerVol * 12 ){
                 scope.eaten = Date.now();
                 socket.emit('got_eaten', scope.id, enemyVol + playerVol);
               }
