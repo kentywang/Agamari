@@ -3,7 +3,7 @@ const THREE = require('three');
 import store from '../store';
 import socket from '../socket';
 
-import { scene, camera, plane, playerID, myColors } from './main';
+import { scene, camera, playerID, myColors } from './main';
 import { Player } from './player';
 import { forOwn } from 'lodash';
 
@@ -32,7 +32,7 @@ export function loadEnvironment() {
   let { players } = store.getState();
 
   // Kenty: added if statement below to get around undefined plane error
-  if (plane) plane.material.color = new THREE.Color(myColors[color]);
+  // if (plane) plane.material.color = new THREE.Color(myColors[color]);
 
   // set location and rotation for other players (I should probably use player.setOrientation instead)
   forOwn(players, (data, id) => {

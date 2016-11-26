@@ -46,7 +46,7 @@ export const Food = function( id, data ) {
     scope.mesh.castShadow = true;
 
     scope.mesh.position.x = this.data.x;
-    scope.mesh.position.y = 12;
+    scope.mesh.position.y = 10 + data.parms[0] * 2;
     scope.mesh.position.z = this.data.z;
 
     scene.add( scope.mesh );
@@ -79,8 +79,8 @@ export const Food = function( id, data ) {
               let foodVol = scope.mesh.cannon.shapes[0].volume();
 
              //console.log("vol", foodVol, scope.mesh.cannon.shapes[0].halfExtents || scope.mesh.cannon.shapes[0].radius)
-              // player must be 12 times the volume of food to eat it, and can't be more than 288 the volume
-              if(playerVol > foodVol * 12 && playerVol < foodVol * 288){
+              // player must be 12 times the volume of food to eat it, and can't be more than 144 the volume
+              if(playerVol > foodVol * 12 && playerVol < foodVol * 144){
                 // pass new volume so that server can update its store if/when food eaten goes thru
                 var volume = foodVol + store.getState().players[socket.id].volume;
 
