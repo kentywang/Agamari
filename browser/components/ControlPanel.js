@@ -24,7 +24,7 @@ class ControlPanel extends Component {
     let player = socket && players[socket.id];
 
     return (
-      <div style={{position: 'absolute', zIndex: 1}}>
+      <div style={{position: 'absolute', zIndex: 1, 'marginLeft': '64%'}}>
       {isOpen ?
         <div className="card blue-grey darken-1">
           <div className="card-content white-text">

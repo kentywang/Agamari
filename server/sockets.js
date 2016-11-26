@@ -36,7 +36,7 @@ const setUpSockets = io => {
       User.create({ nickname, guest: true })
         .then(({id, nickname}) => {
           // Create new player with db info, initial position and room
-          let player = Object.assign(initPos, {id, nickname, room: 'room1'});
+          let player = Object.assign({}, initPos, {id, nickname, room: 'room1'});
 
           // Log player out of all current rooms (async, stored in array of promises)
           let leavePromises = [];
@@ -55,7 +55,7 @@ const setUpSockets = io => {
              console.log(leavePromises)
           Promise.all(leavePromises)
             .then(() => {
-              // Find all players in room and tell new player ot add to game state
+              // Find all players in room and tell new player to add to game state
                 console.log('current player', player);
               let roomPlayers = pickBy(players, (player) => {
 
@@ -85,17 +85,17 @@ const setUpSockets = io => {
     socket.on('update_position', data => {
       let player = store.getState().players[socket.id];
       if (player) {
-        if (data.y >= 0) {
+        if (data.y >= 5) {
           // If player's y coordinate is greater than or equal to zero,
           // update game state with current position
           store.dispatch(updatePlayer(socket.id, data));
-        } else if (data.y < 0) {
+        } else if (data.y < -5) {
           // If y coordinate is below zero, tell players to remove player object.
           // For now, we are automatically respawning player
           io.sockets.in(player.room).emit('remove_player', socket.id);
           store.dispatch(updatePlayer(socket.id, initPos));
           store.dispatch(clearDiet(socket.id));
-          io.sockets.in(player.room).emit('add_player', socket.id, initPos, true);
+          io.sockets.in(player.room).emit('add_player', socket.id, Object.assign({}, initPos, {nickname: player.nickname}), true);
           socket.emit('you_lose', 'You fell off the board!');
         }
       }
@@ -147,7 +147,7 @@ const setUpSockets = io => {
         store.dispatch(updateVolume(id, volume));
         store.dispatch(updatePlayer(socket.id, initPos));
         store.dispatch(clearDiet(socket.id));
-        io.sockets.in(room).emit('add_player', socket.id, initPos, true);
+        io.sockets.in(room).emit('add_player', socket.id, Object.assign({}, initPos, {nickname: eaten.nickname}), true);
         socket.emit('you_lose', 'You died!');
       }
     });
@@ -177,7 +177,6 @@ const broadcastState = (io) => {
             volume: roomPlayersWithoutObjects[id].volume
           }
        }
-
       io.sockets.in(currentRoom).emit('player_data', roomPlayersWithoutObjects);
     }
     spawnFood(io, store);

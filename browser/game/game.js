@@ -46,6 +46,13 @@ export function loadEnvironment() {
         playerObject.quaternion.y = data.qy;
         playerObject.quaternion.z = data.qz;
         playerObject.quaternion.w = data.qw;
+
+        playerObject.sprite.position.x = playerObject.position.x;
+        playerObject.sprite.position.y = playerObject.position.y + 12;
+        playerObject.sprite.position.z = playerObject.position.z;
+      }
+      if (id === socket.id){
+        playerObject.cannon.mass = data.volume * .01;
       }
       playerObject.scale.x = playerObject.scale.y = playerObject.scale.z = data.scale;
     }
@@ -54,9 +61,9 @@ export function loadEnvironment() {
   //makeFood();
 }
 
-function initMainPlayer() {
-  player = new Player( playerID, true);
-  player.init();
-}
+// function initMainPlayer() {
+//   player = new Player( playerID, true);
+//   player.init();
+// }
 
 export { loadGame, player };

@@ -44,9 +44,11 @@ export const init = () => {
 
   canvas = document.getElementById('canvas');
 
-  renderer = new THREE.WebGLRenderer({alpha: true, canvas});
-  renderer.setSize( window.innerWidth, window.innerHeight );
 
+
+  renderer = new THREE.WebGLRenderer({alpha: true, canvas});
+  renderer.setPixelRatio( window.devicePixelRatio );
+  renderer.setSize( window.innerWidth/2, window.innerHeight/2, false );
   // camera
   //This is the object that follows the ball and keeps its z/y rotation
   //It casts rays outwards to detect objects for the player
@@ -170,7 +172,6 @@ export const init = () => {
   var ambientLight = new THREE.AmbientLight(myColors['red'], 0.5);
   scene.add(ambientLight);
 
-
   loadGame();
 
 
@@ -266,7 +267,8 @@ function onWindowResize() {
   camera.aspect = window.innerWidth / window.innerHeight;
   camera.updateProjectionMatrix();
 
-  renderer.setSize( window.innerWidth, window.innerHeight );
+  renderer.setPixelRatio( window.devicePixelRatio );
+  renderer.setSize( window.innerWidth/2, window.innerHeight/2, false )
 }
 
 
