@@ -55,12 +55,12 @@ export const init = () => {
   raycastHeight = 1;
   raycastReference.position.y = raycastHeight;
   scene.add(raycastReference);
-  
+
   //Attach the camera to lock behind the ball
   raycastReference.add(camera);
-  
+
   //setupCollisions(raycastReference);
-  
+
 
 
 
@@ -179,78 +179,79 @@ export const init = () => {
 export function animate() {
   requestAnimationFrame( animate );
   let playerMesh = scene.getObjectByName(socket.id);
-  let cannonMesh = playerMesh.cannon;
+  if (playerMesh) {
+    let cannonMesh = playerMesh.cannon;
 
-  // camera
-  //Updates the raycast reference so that it follows the position of the player
-  raycastReference.position.set(playerMesh.position.x, raycastHeight, playerMesh.position.z);
+    // camera
+    //Updates the raycast reference so that it follows the position of the player
+    raycastReference.position.set(playerMesh.position.x, raycastHeight, playerMesh.position.z);
 
-  // Set the direction of the light
-  shadowLight.position.set(playerMesh.position.x + 150, playerMesh.position.y + 300, playerMesh.position.z + 150);
+    // Set the direction of the light
+    shadowLight.position.set(playerMesh.position.x + 150, playerMesh.position.y + 300, playerMesh.position.z + 150);
 
-  // receive and process controls and camera
-  if ( controls ) {
-    controls.update();
-  }
-
-  // sync THREE mesh with Cannon mesh
-  // Cannon's y & z are swapped from THREE, and w is flipped
-if(cannonMesh){
-  playerMesh.position.x = cannonMesh.position.x;
-  playerMesh.position.z = cannonMesh.position.y;
-  playerMesh.position.y = cannonMesh.position.z;
-  playerMesh.quaternion.x = -cannonMesh.quaternion.x;
-  playerMesh.quaternion.z = -cannonMesh.quaternion.y;
-  playerMesh.quaternion.y = -cannonMesh.quaternion.z;
-  playerMesh.quaternion.w = cannonMesh.quaternion.w;
-  
-}
-
-
- let { players } = store.getState();
-
-
-  // for all other players
-  forOwn(players, (currentPlayer, id) => {
-    let playerObject = scene.getObjectByName(id);
-    if (currentPlayer !== socket.id && playerObject && playerObject.cannon) {
-      playerObject.cannon.position.x = playerObject.position.x;
-      playerObject.cannon.position.z = playerObject.position.y;
-      playerObject.cannon.position.y = playerObject.position.z;
-      playerObject.cannon.quaternion.x = -playerObject.quaternion.x;
-      playerObject.cannon.quaternion.z = -playerObject.quaternion.y;
-      playerObject.cannon.quaternion.y = -playerObject.quaternion.z;
-      playerObject.cannon.quaternion.w = playerObject.quaternion.w;
+    // receive and process controls and camera
+    if ( controls ) {
+      controls.update();
     }
-  });
 
-  // run physics
-  time = Date.now();
-  if (lastTime !== undefined) {
-     var dt = (time - lastTime) / 1000;
-     world.step(fixedTimeStep, dt, maxSubSteps);
-  }
-  lastTime = time;
+    // sync THREE mesh with Cannon mesh
+    // Cannon's y & z are swapped from THREE, and w is flipped
+    if (cannonMesh){
+      playerMesh.position.x = cannonMesh.position.x;
+      playerMesh.position.z = cannonMesh.position.y;
+      playerMesh.position.y = cannonMesh.position.z;
+      playerMesh.quaternion.x = -cannonMesh.quaternion.x;
+      playerMesh.quaternion.z = -cannonMesh.quaternion.y;
+      playerMesh.quaternion.y = -cannonMesh.quaternion.z;
+      playerMesh.quaternion.w = cannonMesh.quaternion.w;
+    }
 
-  const getMeshData = mesh => {
-    return {
-      x: mesh.position.x,
-      y: mesh.position.y,
-      z: mesh.position.z,
-      qx: mesh.quaternion.x,
-      qy: mesh.quaternion.y,
-      qz: mesh.quaternion.z,
-      qw: mesh.quaternion.w
+
+    let { players } = store.getState();
+
+
+    // for all other players
+    forOwn(players, (currentPlayer, id) => {
+      let playerObject = scene.getObjectByName(id);
+      if (currentPlayer !== socket.id && playerObject && playerObject.cannon) {
+        playerObject.cannon.position.x = playerObject.position.x;
+        playerObject.cannon.position.z = playerObject.position.y;
+        playerObject.cannon.position.y = playerObject.position.z;
+        playerObject.cannon.quaternion.x = -playerObject.quaternion.x;
+        playerObject.cannon.quaternion.z = -playerObject.quaternion.y;
+        playerObject.cannon.quaternion.y = -playerObject.quaternion.z;
+        playerObject.cannon.quaternion.w = playerObject.quaternion.w;
+      }
+    });
+
+    // run physics
+    time = Date.now();
+    if (lastTime !== undefined) {
+       var dt = (time - lastTime) / 1000;
+       world.step(fixedTimeStep, dt, maxSubSteps);
+    }
+    lastTime = time;
+
+    const getMeshData = mesh => {
+      return {
+        x: mesh.position.x,
+        y: mesh.position.y,
+        z: mesh.position.z,
+        qx: mesh.quaternion.x,
+        qy: mesh.quaternion.y,
+        qz: mesh.quaternion.z,
+        qw: mesh.quaternion.w
+      };
     };
-  };
 
-  // this dispatch happens 60 times a second, updating the local state with player's new info and emitting to server
-  // let prevData = players[player.id];
-  // let currData = player.getPlayerData();
-  socket.emit('update_position', getMeshData(playerMesh));
+    // this dispatch happens 60 times a second, updating the local state with player's new info and emitting to server
+    // let prevData = players[player.id];
+    // let currData = player.getPlayerData();
+    socket.emit('update_position', getMeshData(playerMesh));
 
-  loadEnvironment();
-  render();
+    loadEnvironment();
+    render();
+  }
 }
 
 function render() {
