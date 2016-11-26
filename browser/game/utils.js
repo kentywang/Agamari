@@ -1,4 +1,9 @@
 const THREE = require('three');
+const CANNON = require('../../public/cannon.min.js');
+import { init,
+         animate,
+         scene,
+         world } from '../game/main';
 
 export const makeTextSprite = (message, fontsize) => {
   let ctx, texture, sprite, spriteMaterial,
@@ -23,4 +28,48 @@ export const makeTextSprite = (message, fontsize) => {
   spriteMaterial = new THREE.SpriteMaterial({ map: texture });
   sprite = new THREE.Sprite(spriteMaterial);
   return sprite;
+};
+
+export const attachFood = (id, playerId, playerData) => {
+  let foodObject = scene.getObjectByName(id);
+  let player = scene.getObjectByName(playerId);
+  let newQuat = new CANNON.Quaternion(-playerData.qx,
+                                      -playerData.qz,
+                                      -playerData.qy,
+                                      playerData.qw);
+  let threeQuat = new THREE.Quaternion(playerData.qx,
+                                       playerData.qy,
+                                       playerData.qz,
+                                       playerData.qw);
+
+  // attach food to player
+  if (foodObject) {
+    world.remove(foodObject.cannon);
+
+    let vec1 = new CANNON.Vec3((foodObject.position.x - playerData.x) * 0.8,
+                               (foodObject.position.z - playerData.z) * 0.8,
+                               (foodObject.position.y - playerData.y) * 0.8);
+    let vmult = newQuat.inverse().vmult(vec1);
+    player.cannon.addShape(foodObject.cannon.shapes[0], vmult, newQuat.inverse());
+
+    let invQuat = threeQuat.inverse();
+    let vec2 = new THREE.Vector3((foodObject.position.x - playerData.x) * 0.8,
+                                (foodObject.position.y - playerData.y) * 0.8,
+                                (foodObject.position.z - playerData.z) * 0.8);
+    let vecRot = vec2.applyQuaternion(invQuat);
+
+    foodObject.position.set(vecRot.x, vecRot.y, vecRot.z);
+    foodObject.quaternion.set(invQuat.x, invQuat.y, invQuat.z, invQuat.w);
+
+    // add to pivot obj of player
+    player.children[0].add(foodObject);
+
+    // throw out older food
+    if (player.cannon.shapes.length > 200) {
+       player.cannon.shapes.splice(1, 1);
+       player.cannon.shapeOffsets.splice(1, 1);
+       player.cannon.shapeOrientations.splice(1, 1);
+       player.children[0].children.splice(0, 1);
+     }
+  }
 };
