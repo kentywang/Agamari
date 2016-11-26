@@ -31,12 +31,15 @@ export class Player {
     let { isMainPlayer, id, initialData, lastEaten } = this;
 
     geometry = new THREE.TetrahedronGeometry( 10, 2 );
-    material = new THREE.MeshPhongMaterial({ color: myColors['grey'], shading: THREE.FlatShading });
+    material = new THREE.MeshPhongMaterial({ color: myColors['grey'],
+                                             shading: THREE.FlatShading });
     shape = new CANNON.Sphere(10);
 
     mesh = new THREE.Mesh( geometry, material );
     if (isMainPlayer) {
-      mesh.cannon = new CANNON.Body({ shape, mass: 42, material: groundMaterial });
+      mesh.cannon = new CANNON.Body({ shape,
+                                      mass: 42,
+                                      material: groundMaterial });
       mesh.cannon.linearDamping = mesh.cannon.angularDamping = 0.4;
     } else {
       mesh.cannon = new CANNON.Body({ shape, mass: 0 });
@@ -125,7 +128,6 @@ export class Player {
           newFood.init();
           let foodObject = newFood.mesh;
           let player = this.mesh;
-          //console.log(foodObject)
           let newQuat = new CANNON.Quaternion(-playerData.qx,
                                               -playerData.qz,
                                               -playerData.qy,
@@ -137,14 +139,18 @@ export class Player {
 
           // attach food to player
           world.remove(foodObject.cannon);
+          let vec1 = new CANNON.Vec3((foodObject.position.x - playerData.x) * 0.8,
+                                     (foodObject.position.z - playerData.z) * 0.8,
+                                     (foodObject.position.y - playerData.y) * 0.8);
 
-          player.cannon.addShape(foodObject.cannon.shapes[0], newQuat.inverse().vmult(new CANNON.Vec3((foodObject.position.x - playerData.x) * 0.8, (foodObject.position.z - playerData.z) * 0.8, (foodObject.position.y - playerData.y) * 0.8)), newQuat.inverse());
+          let vmult = newQuat.inverse().vmult(vec1);
+          player.cannon.addShape(foodObject.cannon.shapes[0], vmult, newQuat.inverse());
 
           let invQuat = threeQuat.inverse();
-          let vec = new THREE.Vector3((foodObject.position.x - playerData.x) * 0.8,
+          let vec2 = new THREE.Vector3((foodObject.position.x - playerData.x) * 0.8,
                                       (foodObject.position.y - playerData.y) * 0.8,
                                       (foodObject.position.z - playerData.z) * 0.8);
-          let vecRot = vec.applyQuaternion(invQuat);
+          let vecRot = vec2.applyQuaternion(invQuat);
 
           foodObject.position.set(vecRot.x, vecRot.y, vecRot.z);
           foodObject.quaternion.set(invQuat.x, invQuat.y, invQuat.z, invQuat.w);
@@ -157,7 +163,11 @@ export class Player {
 
     // add controls and camera
     if ( isMainPlayer ) {
-      controls = new THREE.PlayerControls( camera, this.mesh, this.mesh.cannon, raycastReference, id );
+      controls = new THREE.PlayerControls( camera,
+                                           this.mesh,
+                                           this.mesh.cannon,
+                                           raycastReference,
+                                           id );
     }
   }
 
