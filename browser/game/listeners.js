@@ -53,10 +53,11 @@ export default socket => {
         world.remove(playerObject.cannon);
         scene.remove(playerObject.sprite);
         scene.remove(playerObject);
+        let { children } = playerObject.children[0];
+        for (let child of children) scene.remove(child);
+        playerObject.dispose();
+        if (eaterId === socket.id) createjs.Sound.play('eatSound');
       }
-      if (eaterId === socket.id){
-          createjs.Sound.play('eatSound');
-        }
     });
 
     // Create food object and add data to state on broadcast interval
