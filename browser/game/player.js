@@ -2,135 +2,148 @@ const THREE = require('three');
 const CANNON = require('../../public/cannon.min.js');
 const PlayerControls = require('../../public/PlayerControls');
 
-import { scene, camera, world, groundMaterial, myColors, raycastReference } from './main';
-import { Food } from './food'
+import { makeTextSprite } from './utils';
+import { scene,
+         camera,
+         world,
+         groundMaterial,
+         myColors,
+         raycastReference } from './main';
+import { Food } from './food';
 import socket from '../socket';
+import store from '../store';
+
+let geometry, material, shape, mesh, pivot, name, sprite, controls;
 
 
-let controls;
+export class Player {
+  constructor(id, data, isMainPlayer) {
+    this.id = id;
+    this.initialData = data;
+    this.isMainPlayer = isMainPlayer;
+    this.mesh;
+    this.lastEaten;
 
-export const Player = function( id, data, isMainPlayer) {
-  this.id = id;
-  this.isMainPlayer = isMainPlayer;
-  this.mesh;
-  this.cannonMesh;
-  var scope = this;
-  this.eaten = Date.now();
-  //this.sprite;
-
-  // create THREE ball
-  var ball_geometry = new THREE.TetrahedronGeometry( 10, 2 );
-  var ball_material = new THREE.MeshPhongMaterial( {color: myColors['grey'], shading: THREE.FlatShading} );
-
-
-  // create Cannon ball
-  var sphereShape = new CANNON.Sphere(10);
-  if (this.isMainPlayer){
-    scope.cannonMesh = new CANNON.Body({mass: 42, material: groundMaterial, shape: sphereShape});
-    scope.cannonMesh.linearDamping = scope.cannonMesh.angularDamping = 0.4;
-  } else {
-    scope.cannonMesh = new CANNON.Body({mass: 0, shape: sphereShape});
+    this.init = this.init.bind(this);
   }
 
+  init() {
+    let { isMainPlayer, id, initialData, lastEaten } = this;
 
-  this.init = function() {
+    geometry = new THREE.TetrahedronGeometry( 10, 2 );
+    material = new THREE.MeshPhongMaterial({ color: myColors['grey'], shading: THREE.FlatShading });
+    shape = new CANNON.Sphere(10);
 
-    // let playerData = store.getState().gameState.players[scope.id];
-
-    // mesh the ball geom and mat
-    scope.mesh = new THREE.Mesh( ball_geometry, ball_material );
-    scope.mesh.castShadow = true;
-
-    scope.mesh.position.x = data.x;
-    scope.mesh.position.y = data.y;
-    scope.mesh.position.z = data.z;
-    scope.mesh.quaternion.x = data.qx;
-    scope.mesh.quaternion.y = data.qy;
-    scope.mesh.quaternion.z = data.qz;
-    scope.mesh.quaternion.w = data.qw;
-
-    scope.mesh.name = id;
-
-    scope.mesh.nickname = data.nickname;
-
-    scene.add( scope.mesh );
-
-    // add pivot to attach food to
-    var pivot = new THREE.Group();
-    this.mesh.add(pivot);
-
-
-    // add Cannon box
-    scope.cannonMesh.position.x = scope.mesh.position.x;
-    scope.cannonMesh.position.z = scope.mesh.position.y;
-    scope.cannonMesh.position.y = scope.mesh.position.z;
-    scope.cannonMesh.quaternion.x = -scope.mesh.quaternion.x;
-    scope.cannonMesh.quaternion.z = -scope.mesh.quaternion.y;
-    scope.cannonMesh.quaternion.y = -scope.mesh.quaternion.z;
-    scope.cannonMesh.quaternion.w = scope.mesh.quaternion.w;
-
-    scope.mesh.cannon = scope.cannonMesh;
-    world.add(scope.cannonMesh);
-
-
-    // show name on player if not self
-    if(!scope.isMainPlayer){
-      //console.log("add sprite")
-      var name = data.nickname;
-      if(name.length > 12){
-        name = name.slice(0,11) + '...' ;
-      }
-
-      var sprite = makeTextSprite(name, 50);
-      scope.mesh.sprite = sprite;
-      scene.add(sprite); // might run into issues with children
-
+    mesh = new THREE.Mesh( geometry, material );
+    if (isMainPlayer) {
+      mesh.cannon = new CANNON.Body({ shape, mass: 42, material: groundMaterial });
+      mesh.cannon.linearDamping = mesh.cannon.angularDamping = 0.4;
+    } else {
+      mesh.cannon = new CANNON.Body({ shape, mass: 0 });
     }
 
+    mesh.castShadow = true;
+
+    mesh.position.x = initialData.x;
+    mesh.position.y = initialData.y;
+    mesh.position.z = initialData.z;
+    mesh.quaternion.x = initialData.qx;
+    mesh.quaternion.y = initialData.qy;
+    mesh.quaternion.z = initialData.qz;
+    mesh.quaternion.w = initialData.qw;
+
+    mesh.name = id;
+    mesh.nickname = initialData.nickname;
+
+
+    // add pivot to attach food to
+    pivot = new THREE.Group();
+    mesh.add(pivot);
+
+    // add Cannon box
+    mesh.cannon.position.x = mesh.position.x;
+    mesh.cannon.position.z = mesh.position.y;
+    mesh.cannon.position.y = mesh.position.z;
+    mesh.cannon.quaternion.x = -mesh.quaternion.x;
+    mesh.cannon.quaternion.z = -mesh.quaternion.y;
+    mesh.cannon.quaternion.y = -mesh.quaternion.z;
+    mesh.cannon.quaternion.w = mesh.quaternion.w;
+
+    scene.add( mesh );
+    world.add(mesh.cannon);
+
+    // show name on player if not self
+    if (!isMainPlayer) {
+      let { nickname } = initialData;
+      name = nickname.length > 12 ? nickname.slice(0, 11) + '...' : nickname;
+      sprite = makeTextSprite(name, 50);
+      mesh.sprite = sprite;
+      scene.add(sprite); // might run into issues with children
+    }
+
+    this.mesh = mesh;
+
     // collision handler
-    if (!scope.isMainPlayer){
-      scope.cannonMesh.addEventListener('collide', e => {
+    if (!isMainPlayer) {
+      this.mesh.cannon.addEventListener('collide', e => {
+        let { players } = store.getState();
         let player = scene.getObjectByName(socket.id);
         // cooldown timer for being eaten
-        if (player && (Date.now() - scope.eaten) > 3000) {
-          for (let i = 0; i < world.contacts.length; i++){
-            let c = world.contacts[i];
-            if ((c.bi === scope.cannonMesh && c.bj === player.cannon) || (c.bi === player.cannon && c.bj === scope.cannonMesh)) {
-
-              let playerVol = store.getState().players[socket.id].volume;
-              let enemyVol = store.getState().players[scope.id].volume;
+        if (player && (!lastEaten || (Date.now() - lastEaten) > 3000)) {
+          for (let contact of world.contacts){
+            let thisHits = contact.bi === this.mesh.cannon,
+                mainIsHit = contact.bj === player.cannon,
+                mainHits = contact.bi === player.cannon,
+                thisIsHit = contact.bj === this.mesh.cannon;
+            if (thisHits && mainIsHit || mainHits && thisIsHit) {
+              let mainVol = players[socket.id].volume;
+              let thisVol = players[this.id].volume;
 
               //player must be 12 times the volume of enemy to eat it
-              if(enemyVol > playerVol * 12 ){
-                scope.eaten = Date.now();
-                socket.emit('got_eaten', scope.id, enemyVol + playerVol);
+              if (thisVol > mainVol * 12 ){
+                this.lastEaten = Date.now();
+                socket.emit('got_eaten', id, thisVol + mainVol);
               }
             }
           }
         }
-
       });
 
-      // must add cases for players, and players on players
-    // add items from player's diet
-      if(data.diet){  
-        data.diet.forEach(e => {
-          let playerData = {x: e.x, y: e.y, z: e.z, qx: e.qx, qy: e.qy, qz: e.qz, qw: e.qw}
+      if (initialData.diet) {
+          initialData.diet.forEach(e => {
+          let playerData = {
+            x: e.x,
+            y: e.y,
+            z: e.z,
+            qx: e.qx,
+            qy: e.qy,
+            qz: e.qz,
+            qw: e.qw
+          };
+
           let newFood = new Food(null, e.food);
           newFood.init();
           let foodObject = newFood.mesh;
-          let player = scope.mesh;
+          let player = this.mesh;
           //console.log(foodObject)
-          let newQuat = new CANNON.Quaternion(-playerData.qx,-playerData.qz,-playerData.qy,playerData.qw);
-          let threeQuat = new THREE.Quaternion(playerData.qx,playerData.qy,playerData.qz,playerData.qw);
+          let newQuat = new CANNON.Quaternion(-playerData.qx,
+                                              -playerData.qz,
+                                              -playerData.qy,
+                                              playerData.qw);
+          let threeQuat = new THREE.Quaternion(playerData.qx,
+                                               playerData.qy,
+                                               playerData.qz,
+                                               playerData.qw);
 
           // attach food to player
           world.remove(foodObject.cannon);
 
-          player.cannon.addShape(foodObject.cannon.shapes[0], newQuat.inverse().vmult(new CANNON.Vec3((foodObject.position.x - playerData.x) * .8, (foodObject.position.z - playerData.z) * .8, (foodObject.position.y - playerData.y) * .8)), newQuat.inverse());
+          player.cannon.addShape(foodObject.cannon.shapes[0], newQuat.inverse().vmult(new CANNON.Vec3((foodObject.position.x - playerData.x) * 0.8, (foodObject.position.z - playerData.z) * 0.8, (foodObject.position.y - playerData.y) * 0.8)), newQuat.inverse());
 
           let invQuat = threeQuat.inverse();
-          let vec = new THREE.Vector3((foodObject.position.x - playerData.x) * .8, (foodObject.position.y - playerData.y) * .8, (foodObject.position.z - playerData.z) * .8);
+          let vec = new THREE.Vector3((foodObject.position.x - playerData.x) * 0.8,
+                                      (foodObject.position.y - playerData.y) * 0.8,
+                                      (foodObject.position.z - playerData.z) * 0.8);
           let vecRot = vec.applyQuaternion(invQuat);
 
           foodObject.position.set(vecRot.x, vecRot.y, vecRot.z);
@@ -139,68 +152,36 @@ export const Player = function( id, data, isMainPlayer) {
           // add to pivot obj of player
           player.children[0].add(foodObject);
         });
-
       }
     }
 
-
     // add controls and camera
-    if ( scope.isMainPlayer ) {
-      controls = new THREE.PlayerControls( camera, scope.mesh, scope.cannonMesh, raycastReference , scope.id );
+    if ( isMainPlayer ) {
+      controls = new THREE.PlayerControls( camera, this.mesh, this.mesh.cannon, raycastReference, id );
     }
-  };
+  }
 
-  this.setOrientation = function( position, quaternion ) {
-    if ( scope.mesh ) {
-      scope.mesh.position.copy( position );
-      scope.mesh.quaternion.x = quaternion.x;
-      scope.mesh.quaternion.y = quaternion.y;
-      scope.mesh.quaternion.z = quaternion.z;
-      scope.mesh.quaternion.w = quaternion.w;
+  setOrientation(position, quaternion) {
+    if (this.mesh) {
+      this.mesh.position.copy( position );
+      this.mesh.quaternion.x = quaternion.x;
+      this.mesh.quaternion.y = quaternion.y;
+      this.mesh.quaternion.z = quaternion.z;
+      this.mesh.quaternion.w = quaternion.w;
     }
-  };
+  }
 
-  // Kenty: I added this method to get a player's positional data
-  this.getPlayerData = function() {
+  getPlayerData() {
     return {
-      x: scope.mesh.position.x,
-      y: scope.mesh.position.y,
-      z: scope.mesh.position.z,
-      qx: scope.mesh.quaternion.x,
-      qy: scope.mesh.quaternion.y,
-      qz: scope.mesh.quaternion.z,
-      qw: scope.mesh.quaternion.w
+      x: this.mesh.position.x,
+      y: this.mesh.position.y,
+      z: this.mesh.position.z,
+      qx: this.mesh.quaternion.x,
+      qy: this.mesh.quaternion.y,
+      qz: this.mesh.quaternion.z,
+      qw: this.mesh.quaternion.w
     };
-  };
-};
-
-function makeTextSprite(message, fontsize) {
-  var ctx, texture, sprite, spriteMaterial, 
-      canvas = document.createElement('canvas');
-  ctx = canvas.getContext('2d');
-
-  var metrics = ctx.measureText(message);
-  var textWidth = metrics.width;
-
-  //canvas.width = textWidth;
-  //canvas.height = fontsize;
-
-  ctx.textAlign = "center";
-  ctx.textBaseline = "middle";
-
-  ctx.font = "Bold " + fontsize/2 + "px Quicksand";        
-  ctx.fillStyle = "rgba(255,255,255,1)";
-  ctx.fillText(message, canvas.width/2, fontsize/2);
-
-
-  texture = new THREE.Texture(canvas);
-  texture.minFilter = THREE.LinearFilter; // NearestFilter;
-  texture.needsUpdate = true;
-
-  spriteMaterial = new THREE.SpriteMaterial({map : texture});
-  sprite = new THREE.Sprite(spriteMaterial);
-  //sprite.scale.set(textWidth / fontsize, 1, 1);
-  return sprite;   
+  }
 }
 
 export { controls };
