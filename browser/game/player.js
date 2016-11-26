@@ -181,7 +181,7 @@ export class Player {
     }
   }
 
-  getPlayerData() {
+  get meshData() {
     return {
       x: this.mesh.position.x,
       y: this.mesh.position.y,

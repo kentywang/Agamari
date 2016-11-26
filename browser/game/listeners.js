@@ -1,6 +1,3 @@
-const THREE = require('three');
-const CANNON = require('../../public/cannon.min.js');
-
 import store from '../store';
 import { attachFood } from './utils';
 
@@ -16,7 +13,6 @@ import { init,
          world } from '../game/main';
 import { Player } from '../game/player';
 import {Food} from '../game/food';
-
 
 
 export default socket => {

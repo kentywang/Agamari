@@ -1,9 +1,39 @@
 const THREE = require('three');
 const CANNON = require('../../public/cannon.min.js');
-import { init,
-         animate,
-         scene,
+import { scene,
          world } from '../game/main';
+
+export const setCannonPosition = mesh => {
+  mesh.cannon.position.x = mesh.position.x;
+  mesh.cannon.position.z = mesh.position.y;
+  mesh.cannon.position.y = mesh.position.z;
+  mesh.cannon.quaternion.x = -mesh.quaternion.x;
+  mesh.cannon.quaternion.z = -mesh.quaternion.y;
+  mesh.cannon.quaternion.y = -mesh.quaternion.z;
+  mesh.cannon.quaternion.w = mesh.quaternion.w;
+};
+
+export const setMeshPosition = mesh => {
+    mesh.position.x = mesh.cannon.position.x;
+    mesh.position.z = mesh.cannon.position.y;
+    mesh.position.y = mesh.cannon.position.z;
+    mesh.quaternion.x = -mesh.cannon.quaternion.x;
+    mesh.quaternion.z = -mesh.cannon.quaternion.y;
+    mesh.quaternion.y = -mesh.cannon.quaternion.z;
+    mesh.quaternion.w = mesh.cannon.quaternion.w;
+};
+
+export const getMeshData = mesh => {
+      return {
+        x: mesh.position.x,
+        y: mesh.position.y,
+        z: mesh.position.z,
+        qx: mesh.quaternion.x,
+        qy: mesh.quaternion.y,
+        qz: mesh.quaternion.z,
+        qw: mesh.quaternion.w
+      };
+    };
 
 export const makeTextSprite = (message, fontsize) => {
   let ctx, texture, sprite, spriteMaterial,
