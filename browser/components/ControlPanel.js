@@ -38,9 +38,11 @@ class ControlPanel extends Component {
             <button className="btn"onClick={() => signInAsGuest(nickname, socket)}>
               Start Game As Guest</button>
             <button className="btn" onClick={close}>Close Window</button>
-        
-              <a href="https://docs.google.com/forms/d/e/1FAIpQLSfLkwQ0mgV_25F7YGt4mF2XgKx3Ub3EWP8qG8Ro0ZgnXqE7sg/formResponse">Report Bug</a>
-         
+
+             <a title="error" href="https://docs.google.com/forms/d/e/1FAIpQLSfLkwQ0mgV_25F7YGt4mF2XgKx3Ub3EWP8qG8Ro0ZgnXqE7sg/formResponse" className="error-btn circle-btn btn material-icons">
+             <i className="material-icons">priority_high
+             </i>
+             </a>            
           </div>
         </div> :
         <div>
