@@ -8,6 +8,7 @@ class App extends Component {
   render() {
     return (
       <div>
+          <div style={{fontFamily: "Quicksand", fontWeight: "bold", position: "absolute"}}>.</div>
           <ControlPanel />
           <Canvas />
       </div>
