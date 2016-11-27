@@ -1,9 +1,9 @@
-import store from '../browser/store';
+import store from '../store';
 
 
-import { scene } from '../browser/game/main';
+import { scene } from './main';
 const THREE = require('three');
-const CANNON = require('./cannon.min.js');
+const CANNON = require('../../public/cannon.min.js');
 
 THREE.PlayerControls = function ( camera, player, cannonMesh, raycastReference , id) {
 	this.domElement = document;
@@ -23,11 +23,11 @@ THREE.PlayerControls = function ( camera, player, cannonMesh, raycastReference ,
 	var curCamHeight = 40;
 
 	// helpful dev tool, yo
-	var geometry = new THREE.BoxGeometry( 30,3,2 );
-    var material = new THREE.MeshPhongMaterial({ 
-                                             shading: THREE.FlatShading });
-    this.ssmesh = new THREE.Mesh( geometry, material );
-    scene.add(this.ssmesh)
+	// var geometry = new THREE.BoxGeometry( 30,3,2 );
+ //    var material = new THREE.MeshPhongMaterial({ 
+ //                                             shading: THREE.FlatShading });
+ //    this.devTestMesh = new THREE.Mesh( geometry, material );
+ //    scene.add(this.devTestMesh)
 
  	this.playerRotation = new THREE.Quaternion();
 	
@@ -38,6 +38,7 @@ THREE.PlayerControls = function ( camera, player, cannonMesh, raycastReference ,
 	this.update = function() { 
 
 		scope.scale = store.getState().players[scope.id].scale;
+
 		this.checkKeyStates();
 
 	    var playerPosition = new THREE.Vector3(this.player.position.x, this.player.position.y, this.player.position.z);
@@ -72,7 +73,7 @@ THREE.PlayerControls = function ( camera, player, cannonMesh, raycastReference ,
 	    cameraPlace.makeTranslation ( 0, curCamHeight * scope.scale, curCamZoom * scope.scale ) 
 	  
 	    var cameraRot = new THREE.Matrix4();
-	    cameraRot.makeRotationX(-0.3 - (playerPosition.length()/1000));// scale this with height to planet! Curr 40000 becaus that is the planet size
+	    cameraRot.makeRotationX(0.1 - (playerPosition.length()/1000));// scale this with height to planet!
 
 
 	    var oneTwo = new THREE.Matrix4();
@@ -93,13 +94,13 @@ THREE.PlayerControls = function ( camera, player, cannonMesh, raycastReference ,
 	// get unit (directional) vector for position
     var norm = playerPositionCannon.normalize();
 
-   	var localTopPoint = new CANNON.Vec3(0,0,430);
+   	var localTopPoint = new CANNON.Vec3(0,0,1200);
    	var topVec = new CANNON.Vec3(0,0,1);
    	var quaternionOnPlanet = new CANNON.Quaternion();
     quaternionOnPlanet.setFromVectors(topVec, playerPositionCannon);
     var newPosition = quaternionOnPlanet.vmult(new CANNON.Vec3(0,0,norm).vadd(new CANNON.Vec3(0,0, scope.scale * 10)));
 
-	this.ssmesh.position.set(newPosition.x, newPosition.z, newPosition.y)
+	// this.devTestMesh.position.set(newPosition.x, newPosition.z, newPosition.y)
 
 	// find direction on planenormal by crossing the cross cross prods of localUp and camera dir
 	var camVec = new THREE.Vector3();
@@ -139,7 +140,7 @@ THREE.PlayerControls = function ( camera, player, cannonMesh, raycastReference ,
 
 		        // spacebar - dash/push
 
-	            this.cannonMesh.applyImpulse(new CANNON.Vec3(-cross2.x * 15000 * Math.pow(scope.scale, 3), -cross2.z * 15000 * Math.pow(scope.scale, 3), -cross2.y * 15000 * Math.pow(scope.scale, 3)), newPosition);
+	            this.cannonMesh.applyImpulse(new CANNON.Vec3(-cross2.x * 15000 /*Math.pow(scope.scale, 1 + (scope.scale * 1))*/, -cross2.z * 15000 /*Math.pow(scope.scale, 1 + (scope.scale * 1))*/, -cross2.y * 15000 /*Math.pow(scope.scale, 1 + (scope.scale * 1))*/), newPosition);
 	            scope.cooldown = Date.now();
 	            //this.cannonMesh.position.y -= 2;
 			}
@@ -148,30 +149,27 @@ THREE.PlayerControls = function ( camera, player, cannonMesh, raycastReference ,
 	    if (keyState[38] || keyState[87]) {
 
 	        // up arrow or 'w' - move forward
-          this.cannonMesh.applyImpulse(new CANNON.Vec3(-cross2.x * 150 * Math.pow(scope.scale, 3), -cross2.z * 150 * Math.pow(scope.scale, 3), -cross2.y * 150 * Math.pow(scope.scale, 3)) ,newPosition);
+          this.cannonMesh.applyImpulse(new CANNON.Vec3(-cross2.x * 300 /*Math.pow(scope.scale, 1 + (scope.scale * 1))*/, -cross2.z * 300 /*Math.pow(scope.scale, 1 + (scope.scale * 1))*/, -cross2.y * 300 /*Math.pow(scope.scale, 1 + (scope.scale * 1))*/) ,newPosition);
 	    }
 
 	    if (keyState[40] || keyState[83]) {
 
 	        // down arrow or 's' - move backward
-          this.cannonMesh.applyImpulse(new CANNON.Vec3(cross2.x * 150 * Math.pow(scope.scale, 3), cross2.z * 150 * Math.pow(scope.scale, 3), cross2.y * 150 * Math.pow(scope.scale, 3)) ,newPosition);
+          this.cannonMesh.applyImpulse(new CANNON.Vec3(cross2.x * 300 /*Math.pow(scope.scale, 1 + (scope.scale * 1))*/, cross2.z * 300 /*Math.pow(scope.scale, 1 + (scope.scale * 1))*/, cross2.y * 300 /*Math.pow(scope.scale, 1 + (scope.scale * 1))*/) ,newPosition);
 	    
 	    }
 
 	    if (keyState[37] || keyState[65]) {
 
 	        // left arrow or 'a' - rotate left
-	        this.cannonMesh.applyImpulse(new CANNON.Vec3(cross1.x * 150 * Math.pow(scope.scale, 3), cross1.z * 150 * Math.pow(scope.scale, 3), cross1.y * 150 * Math.pow(scope.scale, 3)) ,newPosition);
-	        
-
-            //raycastReference.rotation.y += .2;
+	        this.cannonMesh.applyImpulse(new CANNON.Vec3(cross1.x * 300 /*Math.pow(scope.scale, 1 + (scope.scale * 1))*/, cross1.z * 300 /*Math.pow(scope.scale, 1 + (scope.scale * 1))*/, cross1.y * 300 /*Math.pow(scope.scale, 1 + (scope.scale * 1))*/) ,newPosition);
 	    }
 
 	    if (keyState[39] || keyState[68]) {
 
 	        // right arrow or 'd' - rotate right
-            this.cannonMesh.applyImpulse(new CANNON.Vec3(-cross1.x * 150 * Math.pow(scope.scale, 3),-cross1.z * 150 * Math.pow(scope.scale, 3),-cross1.y * 150 * Math.pow(scope.scale, 3)), newPosition);
-			//raycastReference.rotation.y -= .2;
+            this.cannonMesh.applyImpulse(new CANNON.Vec3(-cross1.x * 300 /*Math.pow(scope.scale, 1 + (scope.scale * 1))*/,-cross1.z * 300 /*Math.pow(scope.scale, 1 + (scope.scale * 1))*/,-cross1.y * 300 /*Math.pow(scope.scale, 1 + (scope.scale * 1))*/), newPosition);
+
 	    }
 	};
 

@@ -44,14 +44,13 @@ export function loadEnvironment() {
         playerObject.quaternion.z = qz;
         playerObject.quaternion.w = qw;
 
-        playerObject.sprite.position.x = playerObject.position.x;
-        playerObject.sprite.position.y = playerObject.position.y + (scale * 10);
-        playerObject.sprite.position.z = playerObject.position.z;
+        playerObject.sprite.position.copy(playerObject.position);
+        playerObject.sprite.position.add(playerObject.sprite.position.clone().normalize().multiplyScalar(scale * 15))
       }
 
-      if (id === socket.id){
-        playerObject.cannon.mass = volume * 0.01;
-      }
+      // if (id === socket.id){
+      //   playerObject.cannon.mass = volume * 0.01;
+      // }
 
       // scale name text
       if (playerObject.sprite){

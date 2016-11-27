@@ -211,7 +211,7 @@ function onWindowResize() {
 
 function createLevel(){
  // planet creation
- var planet_geometry = new THREE.TetrahedronGeometry( 400, 3 );
+ var planet_geometry = new THREE.TetrahedronGeometry( 800, 3 );
  var planet_material = new THREE.MeshPhongMaterial( { color: myColors['pink'], shading: THREE.FlatShading});
  var planet = new THREE.Mesh( planet_geometry, planet_material );
 
@@ -239,35 +239,18 @@ function createLevel(){
 
   var topPlane = new THREE.Group();
 
- // topPlane.add( plane );
+ topPlane.add( plane );
   topPlane.add( plane2 );
   topPlane.add( plane3 );
   topPlane.add( plane4 );
 
+topPlane.position.set(0,1500,0);
   scene.add(topPlane);
 
   // create Cannon planet
-  var planetShape = new CANNON.Sphere(400);
+  var planetShape = new CANNON.Sphere(800);
   var planetBody = new CANNON.Body({ mass: 0, material:groundMaterial, shape: planetShape });
   world.add(planetBody);
-
-  // create Cannon plane
-  var groundShape = new CANNON.Box(new CANNON.Vec3(100, 500, 2.5));
-  var groundShape2 = new CANNON.Box(new CANNON.Vec3(300, 100, 2.5));
-  var groundBody = new CANNON.Body({ mass: 0, material:groundMaterial, shape: groundShape });
-  var groundBody2 = new CANNON.Body({ mass: 0, material:groundMaterial, shape: groundShape });
-  var groundBody3 = new CANNON.Body({ mass: 0, material:groundMaterial, shape: groundShape2 });
-  var groundBody4 = new CANNON.Body({ mass: 0, material:groundMaterial, shape: groundShape2 });
-
-  groundBody.position.set(0,0,450);
-  groundBody2.position.set(800,0,450);
-  groundBody3.position.set(400,400,450);
-  groundBody4.position.set(400,-400,450);
-
- // world.add(groundBody);
-  world.add(groundBody2);
-  world.add(groundBody3);
-  world.add(groundBody4);
 }
 
 export { scene, camera, canvas, renderer, world, groundMaterial, myColors, raycastReference };

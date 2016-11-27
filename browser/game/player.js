@@ -1,6 +1,6 @@
 const THREE = require('three');
 const CANNON = require('../../public/cannon.min.js');
-const PlayerControls = require('../../public/PlayerControls');
+const PlayerControls = require('./PlayerControls');
 
 import { makeTextSprite } from './utils';
 import { scene,
@@ -88,7 +88,7 @@ export class Player {
       // Now apply force on moon
       // Fore is pointing in the moon-planet direction
       moon_to_planet.normalize();
-      moon_to_planet = moon_to_planet.scale(600000 * this.mass/Math.pow(distance,2))
+      moon_to_planet = moon_to_planet.scale(6000000 * this.mass/Math.pow(distance,2))
       world.gravity.set(moon_to_planet.x, moon_to_planet.y, moon_to_planet.z); // changing gravity seems to apply friction, whereas just applying force doesn't
       // moon_to_planet.mult(100000000*this.mass/Math.pow(distance,2),this.force);
     }
