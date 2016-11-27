@@ -1,4 +1,5 @@
 const Promise = require('bluebird');
+const axios = require('axios');
 const passport = require('passport');
 
 const initPos = {
@@ -32,28 +33,11 @@ const setUpListeners = (io, socket) => {
     console.log('A new client has connected');
     console.log('socket id: ', socket.id);
 
-    socket.on('authentication', ({email, password}) => {
-      console.log('authenticating', email, password);
-      User.findOne({ where: { email }})
-      .then(user => {
-        if (user) {
-          user.authenticate(password)
-            .then(ok => {
-              if (!ok) {
-                socket.emit('authentication_failed');
-              } else {
-                // Create new player with db info, initial position and room
-                console.log(socket.handshake.headers.cookie);
-                startGame(io, socket, user);
-              }
-            });
-        } else {
-          socket.emit('authentication_failed');
-        }
-      })
-      .catch(() => {
-        socket.emit('authentication_failed');
-      });
+    socket.on('start', () => {
+      console.log('user!', socket.request.user);
+      if (socket.request.user && socket.request.user.logged_in) {
+        startGame(io, socket, socket.request.user);
+      }
     });
 
     // Player requests to start game as guest

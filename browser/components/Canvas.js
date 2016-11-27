@@ -21,14 +21,14 @@ class Canvas extends Component {
 			this.state.leaderboard = [];
 			var myNick = scene.getObjectByName(socket.id).nickname;
 			if (myNick.length > 15){
-				myNick = myNick.slice(0,14) + "..."; 
-			} 
+				myNick = myNick.slice(0,14) + "...";
+			}
 
 			for(let id in this.props.players){
 				var nick = scene.getObjectByName(id).nickname;
 				if (nick.length > 15){
-					nick = nick.slice(0,14) + "..."; 
-				} 
+					nick = nick.slice(0,14) + "...";
+				}
 				this.state.leaderboard.push({nick, vol: this.props.players[id].volume});
 			}
 			// sort leaders

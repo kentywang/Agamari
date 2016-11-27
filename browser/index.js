@@ -5,7 +5,7 @@ import store from './store';
 import App from './components/App';
 import { initializeSocket } from './socket';
 
-initializeSocket();
+// initializeSocket();
 
 ReactDOM.render(
 	<Provider store={store}>

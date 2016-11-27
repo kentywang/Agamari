@@ -1,3 +1,5 @@
+import socket from '../socket';
+import { openConsole } from './controlPanel';
 /*----------  INITIAL STATE  ----------*/
 const initialState = null;
 
@@ -17,31 +19,49 @@ export const setSocketId = id => ({
   id
 });
 
-export const logout = () => ({
+export const clearAuth = () => ({
   type: LOGOUT
 });
 
 /*----------  THUNK CREATORS  ----------*/
-export const loginGuest = (socket, nickname) => dispatch => {
 
-};
 
 import axios from 'axios';
 
-export const whoami = () => dispatch =>
+
+export const whoami = socketId => dispatch =>
     axios.get('/auth/whoami')
       .then(response => {
         const user = response.data;
         if (!Object.keys(user).length) {
           return dispatch(authenticated(null));
         }
-        dispatch(authenticated(user));
-      });
+        dispatch(authenticated(Object.assign(user, { socketId })));
+      })
+      .catch(console.error);
 
 export const login = (email, password) => dispatch =>
     axios.post('/auth/login', { email, password })
-      .then(() => dispatch(whoami()));
+      .then(() => dispatch(whoami(socket.id)))
+      .then(() => socket.emit('start'))
+      .catch(console.error);
 
+export const loginAsGuest = nickname => dispatch =>
+    axios.post('/auth/login/guest', { nickname })
+      .then(() => dispatch(whoami(socket.id)))
+      .then(() => {
+        console.log('emitting start!')
+        socket.emit('start')
+      })
+      .catch(console.error);
+
+export const logout = () => dispatch =>
+    axios.get('/auth/logout')
+      .then(() => {
+        dispatch(clearAuth());
+        dispatch(openConsole());
+      })
+      .catch(console.error);
 
 /*----------  REDUCER  ----------*/
 export default (state = initialState, action) => {

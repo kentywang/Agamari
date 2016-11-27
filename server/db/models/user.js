@@ -30,6 +30,7 @@ const User = db.define('user', {
   },
   guest: {
     type: Sequelize.BOOLEAN,
+    defaultValue: false
   }
 },
 {
@@ -44,6 +45,11 @@ const User = db.define('user', {
           (err, result) =>
             err ? reject(err) : resolve(result))
         );
+    }
+  },
+  classMethods: {
+    nextId() {
+      return db.query('select last_value from users_id_seq').then(res => res[0][0].last_value);
     }
   }
 });

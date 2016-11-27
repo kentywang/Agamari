@@ -215,6 +215,16 @@ function onWindowResize() {
                    false);
 }
 
+export const resetScene = () => {
+  scene = null;
+  camera = null;
+  canvas = null;
+  renderer = null;
+  plane = null;
+  world = null;
+  groundMaterial = null;
+  raycastReference = null;
+}
 
 export { scene, camera, canvas, renderer, plane, world, groundMaterial, myColors, raycastReference };
 
