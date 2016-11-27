@@ -4,7 +4,7 @@ let Promise = require('bluebird');
 
 const initPos = {
   x: 0,
-  y: 400,
+  y: 450,
   z: 0,
   qx: 0,
   qy: 0,

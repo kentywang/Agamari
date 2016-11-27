@@ -95,7 +95,7 @@ export const attachFood = (id, playerId, playerData) => {
     player.children[0].add(foodObject);
 
     // throw out older food
-    if (player.cannon.shapes.length > 200) {
+    if (player.cannon.shapes.length > 100) {
        player.cannon.shapes.splice(1, 1);
        player.cannon.shapeOffsets.splice(1, 1);
        player.cannon.shapeOrientations.splice(1, 1);

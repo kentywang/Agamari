@@ -84,8 +84,8 @@ scene.add(camera)
   // Adjust friction between ball & ground
   groundMaterial = new CANNON.Material('groundMaterial');
   var groundGroundCm = new CANNON.ContactMaterial(groundMaterial, groundMaterial, {
-      friction: 0.9,
-      restitution: 0.0,
+      friction: 0.5,
+      restitution: 0.2,
       contactEquationStiffness: 1e8,
       contactEquationRelaxation: 3,
       frictionEquationStiffness: 1e8,
@@ -239,7 +239,7 @@ function createLevel(){
 
   var topPlane = new THREE.Group();
 
-  //topPlane.add( plane );
+ // topPlane.add( plane );
   topPlane.add( plane2 );
   topPlane.add( plane3 );
   topPlane.add( plane4 );
@@ -248,16 +248,16 @@ function createLevel(){
 
   // create Cannon planet
   var planetShape = new CANNON.Sphere(400);
-  var planetBody = new CANNON.Body({ mass: 0, material: groundMaterial, shape: planetShape });
+  var planetBody = new CANNON.Body({ mass: 0, material:groundMaterial, shape: planetShape });
   world.add(planetBody);
 
   // create Cannon plane
   var groundShape = new CANNON.Box(new CANNON.Vec3(100, 500, 2.5));
   var groundShape2 = new CANNON.Box(new CANNON.Vec3(300, 100, 2.5));
-  var groundBody = new CANNON.Body({ mass: 0, material: groundMaterial, shape: groundShape });
-  var groundBody2 = new CANNON.Body({ mass: 0, material: groundMaterial, shape: groundShape });
-  var groundBody3 = new CANNON.Body({ mass: 0, material: groundMaterial, shape: groundShape2 });
-  var groundBody4 = new CANNON.Body({ mass: 0, material: groundMaterial, shape: groundShape2 });
+  var groundBody = new CANNON.Body({ mass: 0, material:groundMaterial, shape: groundShape });
+  var groundBody2 = new CANNON.Body({ mass: 0, material:groundMaterial, shape: groundShape });
+  var groundBody3 = new CANNON.Body({ mass: 0, material:groundMaterial, shape: groundShape2 });
+  var groundBody4 = new CANNON.Body({ mass: 0, material:groundMaterial, shape: groundShape2 });
 
   groundBody.position.set(0,0,450);
   groundBody2.position.set(800,0,450);

@@ -87,8 +87,10 @@ export class Player {
       var distance = moon_to_planet.norm();
       // Now apply force on moon
       // Fore is pointing in the moon-planet direction
-      moon_to_planet.normalize()
-      moon_to_planet.mult(100000000*this.mass/Math.pow(distance,2),this.force);
+      moon_to_planet.normalize();
+      moon_to_planet = moon_to_planet.scale(600000 * this.mass/Math.pow(distance,2))
+      world.gravity.set(moon_to_planet.x, moon_to_planet.y, moon_to_planet.z); // changing gravity seems to apply friction, whereas just applying force doesn't
+      // moon_to_planet.mult(100000000*this.mass/Math.pow(distance,2),this.force);
     }
 
     // show name on player if not self

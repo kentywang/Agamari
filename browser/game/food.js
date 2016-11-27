@@ -77,7 +77,7 @@ export class Food {
                   let playerVol = store.getState().players[socket.id].volume;
                   let foodVol = this.mesh.cannon.shapes[0].volume();
 
-                  // player must be 12 times the volume of food to eat it, and can't be more than 288 the volume
+                  // player must be 12 times the volume of food to eat it, and can't be more than 144 the volume
                   if (playerVol > foodVol * 12 && playerVol < foodVol * 144) {
                     // pass new volume so that server can update its store if/when food eaten goes thru
                     this.eaten = true;

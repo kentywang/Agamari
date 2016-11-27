@@ -7,239 +7,139 @@ const CANNON = require('./cannon.min.js');
 
 THREE.PlayerControls = function ( camera, player, cannonMesh, raycastReference , id) {
 	this.domElement = document;
-
 	this.camera = camera;
 	this.player = player;
 	this.cannonMesh = cannonMesh;
 	this.id = id;
 	this.cooldown = Date.now();
 	this.scale;
-	this.raycastReference = raycastReference;
+
 	var keyState = {};
 	
 	var scope = this;
 
-	var vector = new THREE.Vector3( 0, 0, - 1 );
-	vector.applyQuaternion( camera.quaternion );
 
 	var curCamZoom = 50;
 	var curCamHeight = 40;
 
+	// helpful dev tool, yo
 	var geometry = new THREE.BoxGeometry( 30,3,2 );
     var material = new THREE.MeshPhongMaterial({ 
                                              shading: THREE.FlatShading });
     this.ssmesh = new THREE.Mesh( geometry, material );
     scene.add(this.ssmesh)
-this.playerRotation = new THREE.Quaternion();
-	this.camera.oldPosition = new THREE.Vector3(0,10000,0);
 
-
-var cameraReferenceOrientation = new THREE.Quaternion();
-var poleDir = new THREE.Vector3(1,0,0);
+ 	this.playerRotation = new THREE.Quaternion();
+	
+	var cameraReferenceOrientation = new THREE.Quaternion();
+	var poleDir = new THREE.Vector3(1,0,0);
 
 
 	this.update = function() { 
 
-
-
-
-		
 		scope.scale = store.getState().players[scope.id].scale;
-
-
 		this.checkKeyStates();
 
+	    var playerPosition = new THREE.Vector3(this.player.position.x, this.player.position.y, this.player.position.z);
 
+			var cameraReferenceOrientation = new THREE.Quaternion();
+			var cameraPosition = this.player.position.clone();
+			var poleDirection = new THREE.Vector3(1,0,0)
 
-this.camera.oldPosition = this.camera.position.clone();
+		    var localUp = cameraPosition.clone().normalize();
 
-     var playerPosition = new THREE.Vector3(this.player.position.x, this.player.position.y, this.player.position.z);
-
-     //this.camera.position.copy(playerPosition);
-	// this.camera.position.x = this.player.position.x
-	// this.camera.position.y = this.player.position.y
-	// this.camera.position.z = this.player.position.z + 50;
-
-
-// transform = transform of position? * transform of local orientation;
-
-
-
-
-
-
-	var cameraReferenceOrientation = new THREE.Quaternion();
-	var cameraPosition = this.player.position.clone();
-	var poleDirection = new THREE.Vector3(1,0,0)
-
-    var localUp = cameraPosition.clone().normalize();
-
-
- // no orientation for now, change cameraReforient if necessary
-//var referenceForward = new THREE.Vector3(0, 0, 1);
-var referenceForward = new THREE.Vector3(0, 0, 1);
-referenceForward.applyQuaternion(cameraReferenceOrientation);
-console.log(referenceForward)
-// var newAxisAngle = new.THREE Quaternion();
-var correctionAngle = Math.atan2(referenceForward.x, referenceForward.z)
-var cameraPoru = new THREE.Vector3(0,-1,0);
-cameraReferenceOrientation.setFromAxisAngle(cameraPoru,correctionAngle);
-//console.log("correction angle", correctionAngle)
-
-poleDir.applyAxisAngle(localUp,correctionAngle).normalize(); 
-//probably need to incorporate cross product bewteen pole and local up into calc
-		 // var localUp = new THREE.Vector3();
-		 // localUp = playerPosition.clone().normalize();
-
-		//var poleDir = new THREE.Vector3(1,0,0);// moved up
-
+		 // no orientation for now, change cameraReforient if necessary
+		var referenceForward = new THREE.Vector3(0, 0, 1);
+		referenceForward.applyQuaternion(cameraReferenceOrientation);
+		var correctionAngle = Math.atan2(referenceForward.x, referenceForward.z)
+		var cameraPoru = new THREE.Vector3(0,-1,0);
+		cameraReferenceOrientation.setFromAxisAngle(cameraPoru,correctionAngle);
+		poleDir.applyAxisAngle(localUp,correctionAngle).normalize(); 
+		
 		var cross = new THREE.Vector3();
 		cross.crossVectors(poleDir,localUp);	
-		// cross.multiplyScalar(100);
 		
-		// this.camera.position.add(cross);
-var dot = localUp.dot(poleDir);
-//console.log(dot)
-poleDir.subVectors(poleDir , localUp.clone().multiplyScalar(dot));
+		var dot = localUp.dot(poleDir);
+		poleDir.subVectors(poleDir , localUp.clone().multiplyScalar(dot));
+
+	    var noClue = new THREE.Matrix4();
+	    noClue.set(	poleDir.x,localUp.x,cross.x,cameraPosition.x,
+	    			poleDir.y,localUp.y,cross.y,cameraPosition.y,
+	    			poleDir.z,localUp.z,cross.z,cameraPosition.z,
+	    			0,0,0,1);
+
+	    var cameraPlace = new THREE.Matrix4();
+	    cameraPlace.makeTranslation ( 0, curCamHeight * scope.scale, curCamZoom * scope.scale ) 
+	  
+	    var cameraRot = new THREE.Matrix4();
+	    cameraRot.makeRotationX(-0.3 - (playerPosition.length()/1000));// scale this with height to planet! Curr 40000 becaus that is the planet size
 
 
+	    var oneTwo = new THREE.Matrix4();
+	    oneTwo.multiplyMatrices(noClue , cameraPlace);
 
+		var oneTwoThree = new THREE.Matrix4();
+	    oneTwoThree.multiplyMatrices(oneTwo, cameraRot);
 
-// console.log(poleDir);
-
-
-
-
-    var noClue = new THREE.Matrix4();
-    noClue.set(	poleDir.x,localUp.x,cross.x,cameraPosition.x,
-    			poleDir.y,localUp.y,cross.y,cameraPosition.y,
-    			poleDir.z,localUp.z,cross.z,cameraPosition.z,
-    			0,0,0,1);
-
-    var cameraPlace = new THREE.Matrix4();
-    cameraPlace.makeTranslation ( 0, curCamHeight * scope.scale, curCamZoom * scope.scale ) 
-    // cameraPlace.makeRotationFromQuaternion(cameraReferenceOrientation);
-    //console.log cameraPlace)
-
-    var cameraRot = new THREE.Matrix4();
-    cameraRot.makeRotationX(-0.6);
-
-    var oneTwo = new THREE.Matrix4();
-    oneTwo.multiplyMatrices(noClue , cameraPlace);
-
-	var oneTwoThree = new THREE.Matrix4();
-    oneTwoThree.multiplyMatrices(oneTwo, cameraRot);
-
-
-    //this.camera.applyMatrix(oneTwo);
-   // console.log(this.camera.position)
-
-	 this.camera.matrixAutoUpdate = false;
-	this.camera.matrix = oneTwoThree;
-
-
-		//  this.camera.rotation.x = -0.6; // scale this with height to planet
-
-
-
-
-
-
-//this.camera.quaternion.setFromRotationMatrix( m1 );
-
-
-
-
-    //this.camera.position.set(0,0,0)
-    //this.camera.updateMatrix();
-
-
-//this.camera.updateMatrix();
-	// this.camera.matrix.setPosition(0,-100,0);
-
-   // this.camera.updateMatrixWorld( true );
-
-
-
-
-
+	 	this.camera.matrixAutoUpdate = false;
+		this.camera.matrix = oneTwoThree;
 	};
 
 	this.checkKeyStates = function () {
 
-		// get quaternion and position to apply impulse
-	var playerPosition = new CANNON.Vec3(scope.cannonMesh.position.x, scope.cannonMesh.position.y, scope.cannonMesh.position.z);
-
-
+	// get quaternion and position to apply impulse
+	var playerPositionCannon = new CANNON.Vec3(scope.cannonMesh.position.x, scope.cannonMesh.position.y, scope.cannonMesh.position.z);
 
 	// get unit (directional) vector for position
-    var norm = playerPosition.normalize();
+    var norm = playerPositionCannon.normalize();
 
-    // scale the vector's length to size of ball
-   	// var playerNormalToPlanet = playerPosition.scale(scope.scale * 10);
-
-   	// find top point on ball by inverse multiplying position vector with quaternion
-   	// var reverseRot = scope.cannonMesh.quaternion.inverse();
    	var localTopPoint = new CANNON.Vec3(0,0,430);
-
-
-   	// scale by size of ball
-   	// var topPoint = reverseRot.vmult(localTopPoint).scale(scope.scale * 10);
-
-   	// topPoint = topPoint.vadd(playerPosition);
-   	//topPoint = playerPosition;
    	var topVec = new CANNON.Vec3(0,0,1);
-
    	var quaternionOnPlanet = new CANNON.Quaternion();
-    quaternionOnPlanet.setFromVectors(topVec, playerPosition);
-
+    quaternionOnPlanet.setFromVectors(topVec, playerPositionCannon);
     var newPosition = quaternionOnPlanet.vmult(new CANNON.Vec3(0,0,norm).vadd(new CANNON.Vec3(0,0, scope.scale * 10)));
 
-		this.ssmesh.position.set(newPosition.x, newPosition.z, newPosition.y)
+	this.ssmesh.position.set(newPosition.x, newPosition.z, newPosition.y)
+
+	// find direction on planenormal by crossing the cross cross prods of localUp and camera dir
+	var camVec = new THREE.Vector3();
+    camera.getWorldDirection( camVec );
+    camVec.normalize();
+
+    // apply downward force to keep ball rolling
+    var downforce = new THREE.Vector3(0,-1,0);
+    var dfQuat = new THREE.Quaternion()
+    camera.getWorldQuaternion( dfQuat );
+    downforce.applyQuaternion(dfQuat);
+
+    camVec.add(downforce.divideScalar(2));
+    camVec.normalize()
+
+	var playerPosition = new THREE.Vector3(this.player.position.x, this.player.position.y, this.player.position.z);
+	playerPosition.normalize();
+
+	// lateral directional vector
+	var cross1 = new THREE.Vector3();
+	cross1.crossVectors(playerPosition, camVec);
+	//cross1.multiplyScalar(10);
+	//cross1.addScalar(20 + Math.pow(this.scale, 3));
 
 
-	      var vec = new THREE.Vector3();
-            camera.getWorldDirection( vec );
-            //console.log(vec, camera.position)
-            var quat = new THREE.Quaternion();
-            raycastReference.getWorldQuaternion(quat);
-        
-            var quatInv = new THREE.Quaternion();
-            quat.copy(quatInv);
-            quatInv.inverse();
+	// front/back vector
+	var cross2 = new THREE.Vector3();
+	cross2.crossVectors(playerPosition, cross1);
+	//cross2.multiplyScalar(10);
+	//cross2.addScalar(20 + Math.pow(this.scale, 3));
 
-            quat.copy(this.ssmesh.quaternion)
-            //rotate vector to horizontal plane 
 
-            var horizontalPlaneVec = vec.applyQuaternion(quatInv);
-            //console.log("quat", quat.x, quatInv.x, quat.x)
-            //console.log("three", vec.x, vec.y, vec.z, horizontalPlaneVec.x, horizontalPlaneVec.y, horizontalPlaneVec.z)
-            //remove 3rd dimension
-            horizontalPlaneVec.set(horizontalPlaneVec.x,0, horizontalPlaneVec.z);
-
-            // save lateral vectors
-            var latVec = new THREE.Vector3(horizontalPlaneVec.z,0,-horizontalPlaneVec.x );
-
-            // rerotate back to original location
-            var tangentVec = horizontalPlaneVec.applyQuaternion(quat);
-            var tangentLatVec = latVec.applyQuaternion(quat);
-
-            //tangentVec.normalize();
-
-            tangentVec.multiplyScalar(200);
-            tangentLatVec.multiplyScalar(200);
-
-            //convert to Cannon
-            var tangentVecCannon = new CANNON.Vec3(tangentVec.x, tangentVec.z, tangentVec.y);
-            var tangentLatVecCannon = new CANNON.Vec3(tangentLatVec.x, tangentLatVec.z, tangentLatVec.y);
 
 		if (keyState[32]) {
-	           // console.log(Date.now() - scope.cooldown)
+
 			if(Date.now() - scope.cooldown > 5000){
 
 		        // spacebar - dash/push
 
-	            this.cannonMesh.applyImpulse(new CANNON.Vec3(vec.x,vec.z,vec.y),newPosition);
+	            this.cannonMesh.applyImpulse(new CANNON.Vec3(-cross2.x * 15000 * Math.pow(scope.scale, 3), -cross2.z * 15000 * Math.pow(scope.scale, 3), -cross2.y * 15000 * Math.pow(scope.scale, 3)), newPosition);
 	            scope.cooldown = Date.now();
 	            //this.cannonMesh.position.y -= 2;
 			}
@@ -248,40 +148,30 @@ poleDir.subVectors(poleDir , localUp.clone().multiplyScalar(dot));
 	    if (keyState[38] || keyState[87]) {
 
 	        // up arrow or 'w' - move forward
-	     //   console.log(tangentVecCannon.x, tangentVecCannon.y, tangentVecCannon.z)
-	     var vec = new THREE.Vector3();
-            camera.getWorldDirection( vec );
-          this.cannonMesh.applyImpulse(new CANNON.Vec3(vec.x * 70,vec.z * 70,vec.y* 70),newPosition);
+          this.cannonMesh.applyImpulse(new CANNON.Vec3(-cross2.x * 150 * Math.pow(scope.scale, 3), -cross2.z * 150 * Math.pow(scope.scale, 3), -cross2.y * 150 * Math.pow(scope.scale, 3)) ,newPosition);
 	    }
 
 	    if (keyState[40] || keyState[83]) {
 
 	        // down arrow or 's' - move backward
-	       tangentVecCannon.negate();
-	       	      //  console.log(tangentVecCannon.x, tangentVecCannon.y, tangentVecCannon.z)
-	 		 var vec = new THREE.Vector3();
-            camera.getWorldDirection( vec );
-          this.cannonMesh.applyImpulse(new CANNON.Vec3(vec.x * 70,vec.z * 70,vec.y* 70).negate(),newPosition);
+          this.cannonMesh.applyImpulse(new CANNON.Vec3(cross2.x * 150 * Math.pow(scope.scale, 3), cross2.z * 150 * Math.pow(scope.scale, 3), cross2.y * 150 * Math.pow(scope.scale, 3)) ,newPosition);
 	    
 	    }
 
 	    if (keyState[37] || keyState[65]) {
 
 	        // left arrow or 'a' - rotate left
-				      //  console.log(tangentLatVecCannon.x, tangentLatVecCannon.y, tangentLatVecCannon.z)
+	        this.cannonMesh.applyImpulse(new CANNON.Vec3(cross1.x * 150 * Math.pow(scope.scale, 3), cross1.z * 150 * Math.pow(scope.scale, 3), cross1.y * 150 * Math.pow(scope.scale, 3)) ,newPosition);
+	        
 
-            this.cannonMesh.applyImpulse(tangentLatVecCannon,newPosition);
-
-            raycastReference.rotation.y += .2;
+            //raycastReference.rotation.y += .2;
 	    }
 
 	    if (keyState[39] || keyState[68]) {
 
 	        // right arrow or 'd' - rotate right
-	 		tangentLatVecCannon.negate();
-	        //console.log(tangentLatVecCannon.x, tangentLatVecCannon.y, tangentLatVecCannon.z)
-            this.cannonMesh.applyImpulse(tangentLatVecCannon,newPosition);
-			raycastReference.rotation.y -= .2;
+            this.cannonMesh.applyImpulse(new CANNON.Vec3(-cross1.x * 150 * Math.pow(scope.scale, 3),-cross1.z * 150 * Math.pow(scope.scale, 3),-cross1.y * 150 * Math.pow(scope.scale, 3)), newPosition);
+			//raycastReference.rotation.y -= .2;
 	    }
 	};
 
