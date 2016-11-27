@@ -60,7 +60,7 @@ this.camera.oldPosition = this.camera.position.clone();
 	// this.camera.position.z = this.player.position.z + 50;
 
 
-// transform = transform of 4 vectors * quat
+// transform = transform of position? * transform of local orientation;
 
 	var cameraReferenceOrientation = new THREE.Quaternion();
 	var cameraPosition = this.player.position.clone();
@@ -70,18 +70,39 @@ this.camera.oldPosition = this.camera.position.clone();
 
 
     var noClue = new THREE.Matrix4();
+    noClue.set(	1,0,0,cameraPosition.x,
+    			0,1,0,cameraPosition.y,
+    			0,0,1,cameraPosition.z,
+    			0,0,0,1)
    // noClue.makeTranslation(poleDirection.x,poleDirection.y,poleDirection.z);
     //noClue.makeTranslation(localUp.x,localUp.y,localUp.z);
     // 	var cross = poleDirection.cross(localUp);
     // // noClue.makeTranslation(cross.x,cross.y,cross.z);
-    noClue.makeTranslation(cameraPosition.x,cameraPosition.y,cameraPosition.z)
+    //noClue.makeTranslation(cameraPosition.x,cameraPosition.y,cameraPosition.z)
+    console.log(noClue)
     //  noClue.makeTranslation(cameraPosition.x,cameraPosition.y,cameraPosition.z)
+    var bitBetter = new THREE.Matrix4();
+    bitBetter.makeRotationFromQuaternion(this.playerRotation);
 
-    this.camera.applyMatrix(noClue);
+    var oneTwo = new THREE.Matrix4();
+    oneTwo.multiplyMatrices(noClue,bitBetter);
+
+
+    this.camera.applyMatrix(oneTwo);
     console.log(this.camera.position)
 
 	 this.camera.matrixAutoUpdate = false;
 	this.camera.matrix = noClue;
+
+
+
+
+
+
+//this.camera.quaternion.setFromRotationMatrix( m1 );
+
+
+
 
     //this.camera.position.set(0,0,0)
     //this.camera.updateMatrix();
