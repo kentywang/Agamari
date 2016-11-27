@@ -88,11 +88,11 @@ this.camera.oldPosition = this.camera.position.clone();
     oneTwo.multiplyMatrices(noClue,bitBetter);
 
 
-    this.camera.applyMatrix(oneTwo);
+    //this.camera.applyMatrix(oneTwo);
     console.log(this.camera.position)
 
 	 this.camera.matrixAutoUpdate = false;
-	this.camera.matrix = noClue;
+	this.camera.matrix = oneTwo;
 
 
 
