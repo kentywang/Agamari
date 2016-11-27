@@ -116,20 +116,29 @@ poleDir.subVectors(poleDir , localUp.clone().multiplyScalar(dot));
     			poleDir.z,localUp.z,cross.z,cameraPosition.z,
     			0,0,0,1);
 
-    var bitBetter = new THREE.Matrix4();
-    bitBetter.makeRotationFromQuaternion(cameraReferenceOrientation);
-    //console.log(bitBetter)
+    var cameraPlace = new THREE.Matrix4();
+    cameraPlace.makeTranslation ( 0, curCamHeight * scope.scale, curCamZoom * scope.scale ) 
+    // cameraPlace.makeRotationFromQuaternion(cameraReferenceOrientation);
+    //console.log cameraPlace)
+
+    var cameraRot = new THREE.Matrix4();
+    cameraRot.makeRotationX(-0.6);
 
     var oneTwo = new THREE.Matrix4();
-    oneTwo.multiplyMatrices(noClue,bitBetter);
+    oneTwo.multiplyMatrices(noClue , cameraPlace);
+
+	var oneTwoThree = new THREE.Matrix4();
+    oneTwoThree.multiplyMatrices(oneTwo, cameraRot);
 
 
     //this.camera.applyMatrix(oneTwo);
    // console.log(this.camera.position)
 
 	 this.camera.matrixAutoUpdate = false;
-	this.camera.matrix = noClue;
+	this.camera.matrix = oneTwoThree;
 
+
+		//  this.camera.rotation.x = -0.6; // scale this with height to planet
 
 
 
