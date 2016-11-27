@@ -31,12 +31,17 @@ THREE.PlayerControls = function ( camera, player, cannonMesh, raycastReference ,
     this.ssmesh = new THREE.Mesh( geometry, material );
     scene.add(this.ssmesh)
 this.playerRotation = new THREE.Quaternion();
-	this.camera.oldPosition = new THREE.Vector3(0,10000,0);
+	this.camera.oldPosition = new THREE.Vector3(0,0,0);
 	// this.camera.oldPosition.x = 0;
 	// this.camera.oldPosition.y = 10000;
 	// this.camera.oldPosition.z = 0;
 //this.camera.oldPosition = this.camera.position.clone();
-this.arst = new THREE.Vector3();
+var cameraReferenceOrientation = new THREE.Quaternion();
+var poleDir = new THREE.Vector3(1,0,0);
+
+
+
+
 	this.update = function() { 
 
 
@@ -53,7 +58,7 @@ this.arst = new THREE.Vector3();
 this.camera.oldPosition = this.camera.position.clone();
 
      var playerPosition = new THREE.Vector3(this.player.position.x, this.player.position.y, this.player.position.z);
-
+// 
 		  //Current zoom of the camera behind the ball
 		  // this.camera.position.z = curCamZoom * scope.scale;
 		   // this.camera.position.y = curCamHeight * scope.scale;
@@ -67,45 +72,81 @@ this.camera.oldPosition = this.camera.position.clone();
   //quatty.setFromUnitVectors(new THREE.Vector3(0,1,0), playerNormalToPlanet);
 //var playerNormalToPlanet = playerPosition.normalize();
 
-		this.camera.position.multiplyScalar(1.0);
+		this.camera.position.multiplyScalar(1.1);
 		//var zoomBack = new THREE.Vector3(0,0,-1);
 		//zoomBack.projectOnVector(this.camera.position);
-		var zoomBack = new THREE.Vector3(0, -this.camera.position.z, this.camera.position.y);
-		zoomBack.normalize();
-		zoomBack.multiplyScalar(100);
-		this.camera.position.add(zoomBack);
+		// var zoomBack = new THREE.Vector3(0, -this.camera.position.z, this.camera.position.y);
+		// zoomBack.normalize();
+		// zoomBack.multiplyScalar(100);
+		// this.camera.position.add(zoomBack);
 		//console.log(zoomBack)
-
+  
 		// this.arst.x = this.camera.oldPosition.x - this.camera.position.x;
 		// this.arst.y = this.camera.oldPosition.y - this.camera.position.y;
 		// this.arst.z = this.camera.oldPosition.z - this.camera.position.z;
 		// this.arst = this.arst.normalize();
 		// this.arst = this.arst.multiplyScalar(100);
+		// this.camera.position.add(this.arst);
 
-		//this.camera.rotation.z = -10// scale this with height to planet;
+		//this.camera.rotation.z = -90// scale this with height to planet;
+var localUp = new THREE.Vector3();
+		 localUp = playerPosition.clone().normalize();
+
+
+// var cannonVel = new THREE.Vector3(this.cannonMesh.velocity.x, this.cannonMesh.velocity.z, this.cannonMesh.velocity.y);
+var referenceForward = new THREE.Vector3(0, 0, 1);
+// cameraReferenceOrientation.setFromUnitVectors(localUp, cannonVel.normalize());
+
+
+ // no orientation for now, change cameraReforient if necessary
+//var referenceForward = new THREE.Vector3(0, 0, 1);
+referenceForward.applyQuaternion(cameraReferenceOrientation);
+console.log(referenceForward)
+// var newAxisAngle = new.THREE Quaternion();
+var correctionAngle = Math.atan2(referenceForward.x, referenceForward.z)
+var cameraPoru = new THREE.Vector3(0,-1,0);
+cameraReferenceOrientation.setFromAxisAngle(cameraPoru,correctionAngle);
+//console.log("correction angle", correctionAngle)
+
+poleDir.applyAxisAngle(localUp,correctionAngle).normalize(); 
+
+
+
+//probably need to incorporate cross product bewteen pole and local up into calc
+		 // var localUp = new THREE.Vector3();
+		 // localUp = playerPosition.clone().normalize();
+
+		//var poleDir = new THREE.Vector3(1,0,0);// moved up
+
+		var cross = new THREE.Vector3();
+		cross.crossVectors(poleDir,localUp);	
+		cross.multiplyScalar(100);
+		
+		this.camera.position.add(cross);
+
 
   var currentRotation = new THREE.Quaternion();
   currentRotation.setFromUnitVectors(
     this.camera.oldPosition.clone().normalize(), 
     this.camera.position.clone().normalize()
   );
-  // console.log("1", currentRotation);
-  //raycastReference.getWorldQuaternion(this.playerRotation);
+
 
   
- // currentRotation.premultiply(this.playerRotation)
-   this.playerRotation.premultiply(currentRotation);
+ 
+  this.playerRotation.premultiply(currentRotation);
   this.camera.quaternion.copy(this.playerRotation);
+  
 //this.camera.quaternion.copy(currentRotation);
 //  var camVec = new THREE.Vector3();
 //             camera.getWorldDirection( camVec );
 // var cannonVel = new THREE.Vector3(this.cannonMesh.velocity.x, this.cannonMesh.velocity.z, this.cannonMesh.velocity.y);
 
-// var arst = new THREE.Quaternion();
+ //var arst = new THREE.Quaternion();
 // arst.setFromUnitVectors(camVec.normalize(), cannonVel.normalize())
 
 //this.camera.getWorldQuaternion(arst);
-//this.camera.quaternion.multiply(arst);
+this.camera.quaternion.multiply(cameraReferenceOrientation);
 
 
 //  this.camera.oldPosition = this.camera.position.clone();
@@ -214,7 +255,7 @@ this.camera.oldPosition = this.camera.position.clone();
 	       	      //  console.log(tangentVecCannon.x, tangentVecCannon.y, tangentVecCannon.z)
 	 		 var vec = new THREE.Vector3();
             camera.getWorldDirection( vec );
-          this.cannonMesh.applyImpulse(new CANNON.Vec3(vec.x * 70,vec.z * 70,vec.y* 70).negate,newPosition);
+          this.cannonMesh.applyImpulse(new CANNON.Vec3(vec.x * 70,vec.z * 70,vec.y* 70).negate(),newPosition);
 	    
 	    }
 
@@ -223,8 +264,8 @@ this.camera.oldPosition = this.camera.position.clone();
 	        // left arrow or 'a' - rotate left
 				      //  console.log(tangentLatVecCannon.x, tangentLatVecCannon.y, tangentLatVecCannon.z)
 
-            this.cannonMesh.applyImpulse(tangentLatVecCannon,newPosition);
-
+            //this.cannonMesh.applyImpulse(tangentLatVecCannon,newPosition);
+            this.cannonMesh.position.x += 2
             raycastReference.rotation.y += .2;
 	    }
 
@@ -233,7 +274,8 @@ this.camera.oldPosition = this.camera.position.clone();
 	        // right arrow or 'd' - rotate right
 	 		tangentLatVecCannon.negate();
 	        //console.log(tangentLatVecCannon.x, tangentLatVecCannon.y, tangentLatVecCannon.z)
-            this.cannonMesh.applyImpulse(tangentLatVecCannon,newPosition);
+           // this.cannonMesh.applyImpulse(tangentLatVecCannon,newPosition);
+               this.cannonMesh.position.x -= 2
 			raycastReference.rotation.y -= .2;
 	    }
 	};
