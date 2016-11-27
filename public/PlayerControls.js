@@ -32,11 +32,12 @@ THREE.PlayerControls = function ( camera, player, cannonMesh, raycastReference ,
     scene.add(this.ssmesh)
 this.playerRotation = new THREE.Quaternion();
 	this.camera.oldPosition = new THREE.Vector3(0,10000,0);
-	// this.camera.oldPosition.x = 0;
-	// this.camera.oldPosition.y = 10000;
-	// this.camera.oldPosition.z = 0;
-//this.camera.oldPosition = this.camera.position.clone();
-this.arst = new THREE.Vector3();
+
+
+var cameraReferenceOrientation = new THREE.Quaternion();
+var poleDir = new THREE.Vector3(1,0,0);
+
+
 	this.update = function() { 
 
 
@@ -62,6 +63,11 @@ this.camera.oldPosition = this.camera.position.clone();
 
 // transform = transform of position? * transform of local orientation;
 
+
+
+
+
+
 	var cameraReferenceOrientation = new THREE.Quaternion();
 	var cameraPosition = this.player.position.clone();
 	var poleDirection = new THREE.Vector3(1,0,0)
@@ -69,30 +75,61 @@ this.camera.oldPosition = this.camera.position.clone();
     var localUp = cameraPosition.clone().normalize();
 
 
+ // no orientation for now, change cameraReforient if necessary
+//var referenceForward = new THREE.Vector3(0, 0, 1);
+var referenceForward = new THREE.Vector3(0, 0, 1);
+referenceForward.applyQuaternion(cameraReferenceOrientation);
+console.log(referenceForward)
+// var newAxisAngle = new.THREE Quaternion();
+var correctionAngle = Math.atan2(referenceForward.x, referenceForward.z)
+var cameraPoru = new THREE.Vector3(0,-1,0);
+cameraReferenceOrientation.setFromAxisAngle(cameraPoru,correctionAngle);
+//console.log("correction angle", correctionAngle)
+
+poleDir.applyAxisAngle(localUp,correctionAngle).normalize(); 
+//probably need to incorporate cross product bewteen pole and local up into calc
+		 // var localUp = new THREE.Vector3();
+		 // localUp = playerPosition.clone().normalize();
+
+		//var poleDir = new THREE.Vector3(1,0,0);// moved up
+
+		var cross = new THREE.Vector3();
+		cross.crossVectors(poleDir,localUp);	
+		// cross.multiplyScalar(100);
+		
+		// this.camera.position.add(cross);
+var dot = localUp.dot(poleDir);
+//console.log(dot)
+poleDir.subVectors(poleDir , localUp.clone().multiplyScalar(dot));
+
+
+
+
+// console.log(poleDir);
+
+
+
+
     var noClue = new THREE.Matrix4();
-    noClue.set(	1,0,0,cameraPosition.x,
-    			0,1,0,cameraPosition.y,
-    			0,0,1,cameraPosition.z,
-    			0,0,0,1)
-   // noClue.makeTranslation(poleDirection.x,poleDirection.y,poleDirection.z);
-    //noClue.makeTranslation(localUp.x,localUp.y,localUp.z);
-    // 	var cross = poleDirection.cross(localUp);
-    // // noClue.makeTranslation(cross.x,cross.y,cross.z);
-    //noClue.makeTranslation(cameraPosition.x,cameraPosition.y,cameraPosition.z)
-    console.log(noClue)
-    //  noClue.makeTranslation(cameraPosition.x,cameraPosition.y,cameraPosition.z)
+    noClue.set(	poleDir.x,localUp.x,cross.x,cameraPosition.x,
+    			poleDir.y,localUp.y,cross.y,cameraPosition.y,
+    			poleDir.z,localUp.z,cross.z,cameraPosition.z,
+    			0,0,0,1);
+
     var bitBetter = new THREE.Matrix4();
-    bitBetter.makeRotationFromQuaternion(this.playerRotation);
+    bitBetter.makeRotationFromQuaternion(cameraReferenceOrientation);
+    //console.log(bitBetter)
 
     var oneTwo = new THREE.Matrix4();
     oneTwo.multiplyMatrices(noClue,bitBetter);
 
 
     //this.camera.applyMatrix(oneTwo);
-    console.log(this.camera.position)
+   // console.log(this.camera.position)
 
 	 this.camera.matrixAutoUpdate = false;
-	this.camera.matrix = oneTwo;
+	this.camera.matrix = noClue;
+
 
 
 
