@@ -54,68 +54,39 @@ this.camera.oldPosition = this.camera.position.clone();
 
      var playerPosition = new THREE.Vector3(this.player.position.x, this.player.position.y, this.player.position.z);
 
-		  //Current zoom of the camera behind the ball
-		  // this.camera.position.z = curCamZoom * scope.scale;
-		   // this.camera.position.y = curCamHeight * scope.scale;
-		   // this.camera.position.x = 0;
-		   //this.camera.rotation.x = -0.6; // scale this with height to planet
-		this.camera.position.copy(playerPosition);
-		//this.camera.position.z -= 30//curCamZoom * scope.scale;
-		//this.camera.position.y -= 8;//curCamHeight * scope.scale;
-
-  //var quatty = new THREE.Quaternion();
-  //quatty.setFromUnitVectors(new THREE.Vector3(0,1,0), playerNormalToPlanet);
-//var playerNormalToPlanet = playerPosition.normalize();
-
-		this.camera.position.multiplyScalar(1.0);
-		//var zoomBack = new THREE.Vector3(0,0,-1);
-		//zoomBack.projectOnVector(this.camera.position);
-		var zoomBack = new THREE.Vector3(0, -this.camera.position.z, this.camera.position.y);
-		zoomBack.normalize();
-		zoomBack.multiplyScalar(100);
-		this.camera.position.add(zoomBack);
-		//console.log(zoomBack)
-
-		// this.arst.x = this.camera.oldPosition.x - this.camera.position.x;
-		// this.arst.y = this.camera.oldPosition.y - this.camera.position.y;
-		// this.arst.z = this.camera.oldPosition.z - this.camera.position.z;
-		// this.arst = this.arst.normalize();
-		// this.arst = this.arst.multiplyScalar(100);
-
-		//this.camera.rotation.z = -10// scale this with height to planet;
-
-  var currentRotation = new THREE.Quaternion();
-  currentRotation.setFromUnitVectors(
-    this.camera.oldPosition.clone().normalize(), 
-    this.camera.position.clone().normalize()
-  );
-  // console.log("1", currentRotation);
-  //raycastReference.getWorldQuaternion(this.playerRotation);
-
-  
- // currentRotation.premultiply(this.playerRotation)
-   this.playerRotation.premultiply(currentRotation);
-  this.camera.quaternion.copy(this.playerRotation);
-//this.camera.quaternion.copy(currentRotation);
-//  var camVec = new THREE.Vector3();
-//             camera.getWorldDirection( camVec );
-// var cannonVel = new THREE.Vector3(this.cannonMesh.velocity.x, this.cannonMesh.velocity.z, this.cannonMesh.velocity.y);
-
-// var arst = new THREE.Quaternion();
-// arst.setFromUnitVectors(camVec.normalize(), cannonVel.normalize())
-
-//this.camera.getWorldQuaternion(arst);
-//this.camera.quaternion.multiply(arst);
+	// this.camera.position.x = this.player.position.x
+	// this.camera.position.y = this.player.position.y
+	// this.camera.position.z = this.player.position.z + 50;
 
 
-//  this.camera.oldPosition = this.camera.position.clone();
+// transform = transform of 4 vectors * quat
+
+	var cameraReferenceOrientation = new THREE.Quaternion();
+	var cameraPosition = this.player.position.clone();
+	var poleDirection = new THREE.Vector3(1,0,0)
+
+    var localUp = cameraPosition.clone().normalize();
+
+
+    var noClue = new THREE.Matrix4();
+   // noClue.makeTranslation(poleDirection.x,poleDirection.y,poleDirection.z);
+    noClue.makeTranslation(localUp.x,localUp.y,localUp.z);
+    // 	var cross = poleDirection.cross(localUp);
+    // noClue.makeTranslation(cross.x,cross.y,cross.z);
+    // noClue.makeTranslation(cameraPosition.x,cameraPosition.y,cameraPosition.z)
+
+    this.camera.applyMatrix(noClue);
+
+
+//   //this.camera.updateMatrix();
+	// this.camera.matrixAutoUpdate = false;
+	// this.camera.matrix.setPosition(0,-100,0);
+
+   // this.camera.updateMatrixWorld( true );
 
 
 
 
-
-		// this.camera.position.set(this.player.position.x ,this.player.position.y + 120, this.player.position.z + 70);
-  // 		this.camera.lookAt(this.player.position);
 
 	};
 
@@ -154,9 +125,10 @@ this.camera.oldPosition = this.camera.position.clone();
 
 	      var vec = new THREE.Vector3();
             camera.getWorldDirection( vec );
+            console.log(vec, camera.position)
             var quat = new THREE.Quaternion();
             raycastReference.getWorldQuaternion(quat);
-           //console.log(vec.x, vec.y, vec.z)//quat.x, quat.y, quat.z)
+        
             var quatInv = new THREE.Quaternion();
             quat.copy(quatInv);
             quatInv.inverse();
