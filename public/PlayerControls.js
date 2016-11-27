@@ -54,6 +54,7 @@ this.camera.oldPosition = this.camera.position.clone();
 
      var playerPosition = new THREE.Vector3(this.player.position.x, this.player.position.y, this.player.position.z);
 
+     //this.camera.position.copy(playerPosition);
 	// this.camera.position.x = this.player.position.x
 	// this.camera.position.y = this.player.position.y
 	// this.camera.position.z = this.player.position.z + 50;
@@ -70,16 +71,23 @@ this.camera.oldPosition = this.camera.position.clone();
 
     var noClue = new THREE.Matrix4();
    // noClue.makeTranslation(poleDirection.x,poleDirection.y,poleDirection.z);
-    noClue.makeTranslation(localUp.x,localUp.y,localUp.z);
+    //noClue.makeTranslation(localUp.x,localUp.y,localUp.z);
     // 	var cross = poleDirection.cross(localUp);
-    // noClue.makeTranslation(cross.x,cross.y,cross.z);
-    // noClue.makeTranslation(cameraPosition.x,cameraPosition.y,cameraPosition.z)
+    // // noClue.makeTranslation(cross.x,cross.y,cross.z);
+    noClue.makeTranslation(cameraPosition.x,cameraPosition.y,cameraPosition.z)
+    //  noClue.makeTranslation(cameraPosition.x,cameraPosition.y,cameraPosition.z)
 
     this.camera.applyMatrix(noClue);
+    console.log(this.camera.position)
+
+	 this.camera.matrixAutoUpdate = false;
+	this.camera.matrix = noClue;
+
+    //this.camera.position.set(0,0,0)
+    //this.camera.updateMatrix();
 
 
-//   //this.camera.updateMatrix();
-	// this.camera.matrixAutoUpdate = false;
+//this.camera.updateMatrix();
 	// this.camera.matrix.setPosition(0,-100,0);
 
    // this.camera.updateMatrixWorld( true );
@@ -125,7 +133,7 @@ this.camera.oldPosition = this.camera.position.clone();
 
 	      var vec = new THREE.Vector3();
             camera.getWorldDirection( vec );
-            console.log(vec, camera.position)
+            //console.log(vec, camera.position)
             var quat = new THREE.Quaternion();
             raycastReference.getWorldQuaternion(quat);
         
@@ -186,7 +194,7 @@ this.camera.oldPosition = this.camera.position.clone();
 	       	      //  console.log(tangentVecCannon.x, tangentVecCannon.y, tangentVecCannon.z)
 	 		 var vec = new THREE.Vector3();
             camera.getWorldDirection( vec );
-          this.cannonMesh.applyImpulse(new CANNON.Vec3(vec.x * 70,vec.z * 70,vec.y* 70).negate,newPosition);
+          this.cannonMesh.applyImpulse(new CANNON.Vec3(vec.x * 70,vec.z * 70,vec.y* 70).negate(),newPosition);
 	    
 	    }
 

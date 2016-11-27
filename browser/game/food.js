@@ -46,7 +46,7 @@ export class Food {
     mesh.name = this.id;
     mesh.castShadow = true;
     mesh.position.x = x;
-    mesh.position.y = 450+ 10 + parms[0] * 2;
+    mesh.position.y = 390+ 10 + parms[0] * 2;
     mesh.position.z = z;
     mesh.cannon = new CANNON.Body({ shape, mass: 0, material: groundMaterial });
 
