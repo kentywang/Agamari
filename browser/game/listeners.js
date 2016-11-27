@@ -1,7 +1,11 @@
 import store from '../store';
 import { attachFood } from './utils';
 
-import { closeConsole, setError } from '../reducers/controlPanel';
+import { authenticated } from '../reducers/auth';
+import { closeConsole,
+         setPassword,
+         setError,
+         resetError } from '../reducers/controlPanel';
 import { receivePlayers } from '../reducers/players';
 import { removeFood,
          receiveFood,
@@ -16,6 +20,17 @@ import {Food} from '../game/food';
 
 
 export default socket => {
+    socket.on('authenticated', user => {
+      store.dispatch(authenticated(user));
+      store.dispatch(resetError());
+      console.log('authentication approved');
+    });
+
+    socket.on('authentication_failed', () => {
+      store.dispatch(setError('Incorrect email or password.'));
+      store.dispatch(setPassword(''));
+    });
+
     // Receive current positions for all players and update game state
     // Happens before start and on server broadcast interval
     socket.on('player_data', state => {

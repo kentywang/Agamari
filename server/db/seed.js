@@ -34,6 +34,12 @@ let rooms = [
 
  let users = [
     {
+      email: 'test@test.com',
+      password: '1234',
+      admin: false,
+      nickname: 'test'
+    },
+    {
       email: 'dan@fullstack.com',
       password: 'diggitydan',
       admin: false,

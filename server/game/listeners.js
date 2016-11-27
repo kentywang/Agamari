@@ -1,6 +1,5 @@
-const { forOwn, pickBy } = require('lodash');
-let Promise = require('bluebird');
-
+const Promise = require('bluebird');
+const passport = require('passport');
 
 const initPos = {
   x: 0,
@@ -16,7 +15,7 @@ const initPos = {
 
 const { User } = require('../db');
 const store = require('../store');
-
+const { startGame } = require('./utils');
 
 const { receivePlayer, removePlayer } = require('../reducers/players');
 const { removeFood } = require('../reducers/food');
@@ -33,52 +32,39 @@ const setUpListeners = (io, socket) => {
     console.log('A new client has connected');
     console.log('socket id: ', socket.id);
 
+    socket.on('authentication', ({email, password}) => {
+      console.log('authenticating', email, password);
+      User.findOne({ where: { email }})
+      .then(user => {
+        if (user) {
+          user.authenticate(password)
+            .then(ok => {
+              if (!ok) {
+                socket.emit('authentication_failed');
+              } else {
+                // Create new player with db info, initial position and room
+                console.log(socket.handshake.headers.cookie);
+                startGame(io, socket, user);
+              }
+            });
+        } else {
+          socket.emit('authentication_failed');
+        }
+      })
+      .catch(() => {
+        socket.emit('authentication_failed');
+      });
+    });
+
     // Player requests to start game as guest
     socket.on('start_as_guest', ({ nickname }) => {
       User.create({ nickname, guest: true })
-        .then(({id, nickname}) => {
-          // Create new player with db info, initial position and room
-          let player = Object.assign({}, initPos, {id, nickname, room: 'room1'});
-
-          // Log player out of all current rooms (async, stored in array of promises)
-          let leavePromises = [];
-          forOwn(socket.rooms, room => {
-            leavePromises.push(socket.leaveAsync(room));
-          });
-
-          // Add player to server game state
-          store.dispatch(receivePlayer(socket.id, player));
-
-          // Tell all players in room to create object for new player
-          io.sockets.in('room1').emit('add_player', socket.id, player);
-
-             let { players, food } = store.getState();
-             console.log('adding player to game', players);
-             console.log(leavePromises);
-          Promise.all(leavePromises)
-            .then(() => {
-              // Find all players in room and tell new player to add to game state
-                console.log('current player', player);
-              let roomPlayers = pickBy(players, (player) => {
-                return player.room === 'room1';
-              })
-              //console.log('roomPlayers', roomPlayers)
-              // let roomPlayers = players.filter(({ room }) => room === 'room1');
-              // here we pass the entire players store (incl. diet arrays)
-              socket.emitAsync('player_data', roomPlayers);
-            })
-            .then(() => {
-              // Find all food in room and tell new player to add to game state
-              let roomFood = pickBy(food, ({ room }) => room === 'room1');
-              // let roomFood = food.filter(({ room }) => room === 'room1');
-              socket.emitAsync('food_data', roomFood);
-            })
-            .then(() => socket.joinAsync('room1')) // Join room
-            .then(() => socket.emit('start_game')); // Tell player to initialize game
+        .then((user) => {
+          startGame(io, socket, user);
         })
         .catch(err => {
           console.error(err);
-          socket.emit('start_fail', err);
+          socket.emit('start_fail', err.message);
         });
     });
 
