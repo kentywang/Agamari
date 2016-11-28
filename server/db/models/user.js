@@ -10,7 +10,6 @@ const User = db.define('user', {
   },
   password: {
     type: Sequelize.VIRTUAL,
-    allowNull:false
   },
   password_digest: {
     type: Sequelize.STRING,
@@ -21,8 +20,7 @@ const User = db.define('user', {
   },
   username: {
     type: Sequelize.STRING,
-    unique: true,
-    allowNull:false
+    unique: true
   },
   nickname: {
     type: Sequelize.STRING,
