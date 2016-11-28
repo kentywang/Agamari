@@ -10,12 +10,12 @@ const RESET_ERROR = 'RESET_ERROR';
 /*=------ACTION CREATORS-------*/
 
 const initialState = {
-  isOpen: true,
+  isOpen: false,
   nickname: '',
   error: null };
 
 
-export const start = () => ({
+export const open = () => ({
   type: OPEN_GAME,
 });
 
@@ -57,9 +57,9 @@ export const startAsGuest = (nickname, socket) => dispatch => {
 export default (state = initialState, action) => {
   switch (action.type) {
     case OPEN_GAME:
-    	return Object.assign({}, state, {isOpen: false});
-    case STOP_GAME:
     	return Object.assign({}, state, {isOpen: true});
+    case STOP_GAME:
+    	return Object.assign({}, state, {isOpen: false});
 		case SET_ERROR:
 			return Object.assign({}, state, { error: action.error });
 		case RESET_ERROR:
