@@ -1,3 +1,4 @@
+const { pickBy } = require('lodash');
 let newState;
 
 /*----------  INITIAL STATE  ----------*/
@@ -8,6 +9,7 @@ const RECEIVE_ALL_FOOD = 'RECEIVE_ALL_FOOD';
 const RECEIVE_FOOD = 'RECEIVE_FOOD';
 const RECEIVE_MULTIPLE_FOOD = 'RECEIVE_MULTIPLE_FOOD';
 const REMOVE_FOOD = 'REMOVE_FOOD';
+const REMOVE_MULTIPLE_FOOD = 'REMOVE_MULTIPLE_FOOD';
 
 
 /*----------  ACTION CREATORS  ----------*/
@@ -32,6 +34,11 @@ module.exports.removeFood = id => ({
   id
 });
 
+module.exports.removeMultipleFood = food => ({
+  type: REMOVE_MULTIPLE_FOOD,
+  food
+});
+
 
 /*----------  THUNK CREATORS  ----------*/
 
@@ -52,6 +59,9 @@ const immutable = (state = initialState, action) => {
       newState = Object.assign({}, state);
       delete newState[action.id];
       return newState;
+    case REMOVE_MULTIPLE_FOOD:
+      newState = Object.assign({}, state);
+      return pickBy(newState, (food, id) => !action.food[id]);
     default:
       return state;
   }
