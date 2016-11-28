@@ -1,25 +1,26 @@
 /*-------- ACTION TYPES  ---------*/
 
 //const IS_DISPLAYED = 'IS_DISPLAYED';
-const OPEN_GAME ='OPEN_GAME';
+const START_GAME ='START_GAME';
 const STOP_GAME = 'STOP_GAME';
 const SET_ERROR = 'SET_ERROR';
+const SET_NICKNAME = 'SET_NICKNAME';
 const RESET_ERROR = 'RESET_ERROR';
 
 
 /*=------ACTION CREATORS-------*/
 
 const initialState = {
-  isOpen: false,
+  isPlaying: false,
   nickname: '',
   error: null };
 
 
-export const open = () => ({
-  type: OPEN_GAME,
+export const startGame = () => ({
+  type: START_GAME,
 });
 
-export const stop = () => ({
+export const stopGame = () => ({
   type: STOP_GAME
 });
 
@@ -56,14 +57,16 @@ export const startAsGuest = (nickname, socket) => dispatch => {
 
 export default (state = initialState, action) => {
   switch (action.type) {
-    case OPEN_GAME:
-    	return Object.assign({}, state, {isOpen: true});
+    case START_GAME:
+    	return Object.assign({}, state, {isPlaying: true});
     case STOP_GAME:
-    	return Object.assign({}, state, {isOpen: false});
+    	return Object.assign({}, state, {isPlaying: false});
 		case SET_ERROR:
 			return Object.assign({}, state, { error: action.error });
 		case RESET_ERROR:
 			return Object.assign({}, state, { error: null });
+    case SET_NICKNAME:
+    return Object.assign({}, state, { nickname: action.text });
    	default:
    	return state;
   }

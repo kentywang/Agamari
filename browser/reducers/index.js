@@ -4,7 +4,7 @@ import controlPanel from './controlPanel';
 import players from './players';
 import food from './food';
 import environment from './environment';
-import gamestate from './gamestate';
+import gameState from './gameState';
 
 export default combineReducers({
   auth,
@@ -12,5 +12,5 @@ export default combineReducers({
   players,
   food,
   environment,
-  gamestate,
+  gameState,
 });
