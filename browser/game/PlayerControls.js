@@ -22,6 +22,9 @@ THREE.PlayerControls = function ( camera, player, cannonMesh, raycastReference ,
 	var curCamZoom = 65;
 	var curCamHeight = 45;
 
+	this.left = false;
+	this.right = false;
+
 	// helpful dev tool, yo
 	// var geometry = new THREE.BoxGeometry( 30,3,2 );
  //    var material = new THREE.MeshPhongMaterial({ 
@@ -32,10 +35,13 @@ THREE.PlayerControls = function ( camera, player, cannonMesh, raycastReference ,
  	this.playerRotation = new THREE.Quaternion();
 	
 	var cameraReferenceOrientation = new THREE.Quaternion();
+	var cameraReferenceOrientationObj = new THREE.Object3D();
 	var poleDir = new THREE.Vector3(1,0,0);
 
 
 	this.update = function() { 
+		//cameraReferenceOrientation.copy(cameraReferenceOrientationObj.quaternion);
+
 		//console.log(store.getState().abilities && )
 		if(!store.getState().abilities.launch && Date.now() - scope.cooldown > 5000){
 			// console.log("launchReady")
@@ -47,19 +53,36 @@ THREE.PlayerControls = function ( camera, player, cannonMesh, raycastReference ,
 
 	    var playerPosition = new THREE.Vector3(this.player.position.x, this.player.position.y, this.player.position.z);
 
-			var cameraReferenceOrientation = new THREE.Quaternion();
+			//var cameraReferenceOrientation = new THREE.Quaternion();
 			var cameraPosition = this.player.position.clone();
 			var poleDirection = new THREE.Vector3(1,0,0)
 
 		    var localUp = cameraPosition.clone().normalize();
 
 		 // no orientation for now, change cameraReforient if necessary
+	 	if(this.left){
+	 		// var cameraRot2 = new THREE.Matrix4(); 
+	 		// cameraRot2.makeRotationY(0.005);
+	 		// noClue.multiplyMatrices(noClue, cameraRot2)
+	 		cameraReferenceOrientationObj.rotation.y = 0.008;// change to rotation
+	 		this.left = false;
+	 	}
+	 	else if(this.right){
+	 		// var cameraRot2 = new THREE.Matrix4(); 
+	 		// cameraRot2.makeRotationY(-0.005);
+	 		// noClue.multiplyMatrices(noClue, cameraRot2)
+	 		cameraReferenceOrientationObj.rotation.y = -0.008;
+	 		this.right = false;
+	 	}
+
 		var referenceForward = new THREE.Vector3(0, 0, 1);
-		referenceForward.applyQuaternion(cameraReferenceOrientation);
+		referenceForward.applyQuaternion(cameraReferenceOrientationObj.quaternion);
 		var correctionAngle = Math.atan2(referenceForward.x, referenceForward.z)
 		var cameraPoru = new THREE.Vector3(0,-1,0);
-		cameraReferenceOrientation.setFromAxisAngle(cameraPoru,correctionAngle);
+		cameraReferenceOrientationObj.quaternion.setFromAxisAngle(cameraPoru,correctionAngle);
 		poleDir.applyAxisAngle(localUp,correctionAngle).normalize(); 
+
+		cameraReferenceOrientationObj.quaternion.copy(cameraReferenceOrientation);
 		
 		var cross = new THREE.Vector3();
 		cross.crossVectors(poleDir,localUp);	
@@ -73,7 +96,9 @@ THREE.PlayerControls = function ( camera, player, cannonMesh, raycastReference ,
 	    			poleDir.z,localUp.z,cross.z,cameraPosition.z,
 	    			0,0,0,1);
 
-	    var cameraPlace = new THREE.Matrix4();
+	 	this.camera.matrixAutoUpdate = false;
+
+		var cameraPlace = new THREE.Matrix4();
 	    cameraPlace.makeTranslation ( 0, curCamHeight * scope.scale, curCamZoom * scope.scale ) 
 	  
 	    var cameraRot = new THREE.Matrix4();
@@ -86,8 +111,7 @@ THREE.PlayerControls = function ( camera, player, cannonMesh, raycastReference ,
 		var oneTwoThree = new THREE.Matrix4();
 	    oneTwoThree.multiplyMatrices(oneTwo, cameraRot);
 
-	 	this.camera.matrixAutoUpdate = false;
-		this.camera.matrix = oneTwoThree;
+	    this.camera.matrix = oneTwoThree;
 	};
 
 	this.checkKeyStates = function () {
@@ -202,13 +226,14 @@ THREE.PlayerControls = function ( camera, player, cannonMesh, raycastReference ,
 
 	        // left arrow or 'a' - rotate left
 	        this.cannonMesh.applyImpulse(new CANNON.Vec3(cross1.x * 350 /*Math.pow(scope.scale, 1 + (scope.scale * 1))*/, cross1.z * 350 /*Math.pow(scope.scale, 1 + (scope.scale * 1))*/, cross1.y * 350 /*Math.pow(scope.scale, 1 + (scope.scale * 1))*/) ,topOfBall);
+	        this.left = true;
 	    }
 
 	    if (keyState[39] || keyState[68]) {
 
 	        // right arrow or 'd' - rotate right
             this.cannonMesh.applyImpulse(new CANNON.Vec3(-cross1.x * 350 /*Math.pow(scope.scale, 1 + (scope.scale * 1))*/,-cross1.z * 350 /*Math.pow(scope.scale, 1 + (scope.scale * 1))*/,-cross1.y * 350 /*Math.pow(scope.scale, 1 + (scope.scale * 1))*/), topOfBall);
-
+            this.right = true;
 	    }
 	};
 
