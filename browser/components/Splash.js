@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 
-import { displaySplash } from '../reducers/splash.js';
+import { displaySplash } from '../reducers/gamestate.js';
 class Splash extends Component {
   render () {
     <div style={{width: '100%', height: '100vh'}}>
@@ -28,13 +28,16 @@ class Splash extends Component {
   }
 }
 
-//const mapStateToProps = ({})
+const mapStateToProps = ()=>({});
 
 const mapDispatchToProps = dispatch => ({
-  isOpen: () => dispatch(displaySplash())
+  open: () => dispatch(start()),
+  close: () =>dispatch(stop())
 })
 
 export default connect(
   null,
   mapDispatchToProps
 )(Splash);
+
+
