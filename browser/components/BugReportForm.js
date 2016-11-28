@@ -17,6 +17,7 @@ class BugReportForm extends Component {
     };
     this.open = this.open.bind(this);
     this.close = this.close.bind(this);
+    this.updateName = this.updateName.bind(this);
     this.updateEmail = this.updateEmail.bind(this);
     this.updateSubject = this.updateSubject.bind(this);
     this.updateDetails = this.updateDetails.bind(this);
@@ -65,8 +66,8 @@ class BugReportForm extends Component {
   }
 
   render() {
-    let { open, close, updateName, updateEmail, updateSubject, updateDetails, submitForm } = this;
-    let { isOpen, email, subject, details, message } = this.state;
+    let { open, close, updateName, updateEmail, updateSubject, updateDetails, submitForm} = this;
+    let { name, isOpen, email, subject, details, message } = this.state;
     return (
       <div style={{position: 'absolute', zIndex: 1, right: '10px', bottom: '10px'}}>
       {isOpen ?
