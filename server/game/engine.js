@@ -8,7 +8,7 @@ let elapsedTime = Date.now(),
     id = 1;
 
 const spawnFood = io => {
-  if (Date.now() - elapsedTime > 50){
+  if (Date.now() - elapsedTime > 166){
     //console.log('spawning food');
     elapsedTime = Date.now();
     let { rooms, food, players } = store.getState();
@@ -24,6 +24,7 @@ const spawnFood = io => {
                 z = (Math.random() * 2400) - 1200,
                 type = types[~~(Math.random() * types.length)],
                 foodSize = [];
+
             switch (type){
               case 'box':
                 foodSize = [

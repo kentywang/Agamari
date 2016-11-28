@@ -5,7 +5,7 @@ const { pickBy, filter } = require('lodash');
 const { receiveFood } = require('./reducers/food');
 const { updatePlayer } = require('./reducers/players');
 
-const { initPos } = require('./sockets');
+//const { initPos } = require('./sockets');
 
 let types = ["box", "sphere"]
 let elapsedTime = Date.now(),

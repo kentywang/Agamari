@@ -2,16 +2,22 @@ const { forOwn, pickBy } = require('lodash');
 let Promise = require('bluebird');
 
 
-const initPos = {
-  x: 0,
-  y: 1800,
-  z: 0,
-  qx: 0,
-  qy: 0,
-  qz: 0,
-  qw: 1,
-  scale: 1,
-  volume: 4200 // this would change depending on what we choose for starting ball size
+function initPos(){
+  let x = 0;//Math.random() * 2400 - 1200;
+  let y = 1800;//Math.random() * 2400 - 1200;
+  let z = 0;//Math.random() * 2400 - 1200;
+
+  return {
+    x,
+    y,
+    z,
+    qx: 0,
+    qy: 0,
+    qz: 0,
+    qw: 1,
+    scale: 1,
+    volume: 4000 
+  }
 };
 
 const { User } = require('../db');
@@ -38,7 +44,7 @@ const setUpListeners = (io, socket) => {
       User.create({ nickname, guest: true })
         .then(({id, nickname}) => {
           // Create new player with db info, initial position and room
-          let player = Object.assign({}, initPos, {id, nickname, room: 'room1'});
+          let player = Object.assign({}, initPos(), {id, nickname, room: 'room1'});
 
           // Log player out of all current rooms (async, stored in array of promises)
           let leavePromises = [];
@@ -148,10 +154,11 @@ const setUpListeners = (io, socket) => {
         store.dispatch(changePlayerScale(id, (volume - eater.volume) / eater.volume));
         // io.sockets.in(room).emit('remove_eaten_player', socket.id, id, store.getState().players[id], store.getState().players[socket.id]);
         store.dispatch(updateVolume(id, volume));
-        store.dispatch(updatePlayer(socket.id, initPos));
+        store.dispatch(updatePlayer(socket.id, initPos()));
         store.dispatch(clearDiet(socket.id));
-        io.sockets.in(room).emit('add_player', socket.id, Object.assign({}, initPos, {nickname: eaten.nickname}), true);
-        socket.emit('you_lose', 'You died!');
+        io.sockets.in(room).emit('add_player', socket.id, Object.assign({}, initPos(), {nickname: eaten.nickname}), true);
+        socket.emit('you_lose', eater.nickname);
+        io.sockets.in(room).emit('casualty_report', eater.nickname, eaten.nickname);
       }
     });
 }

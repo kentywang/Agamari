@@ -14,12 +14,18 @@ import { Food } from './food';
 let scene, camera, canvas, renderer;
 let world, groundMaterial, shadowLight;
 let geometry, material, groundShape, groundBody, hemisphereLight, ambientLight;
+let timeFromStart = Date.now();
 // variables for physics
 let time, lastTime;
 // camera
 let raycastReference, raycastHeight;
+let pivotMoon = new THREE.Object3D();
+let someColors = myColors();
 
 export const init = () => {
+
+
+
   let { players, food } = store.getState();
   // initialize THREE scene, camera, renderer
   scene = new THREE.Scene();
@@ -27,7 +33,7 @@ export const init = () => {
   camera = new THREE.PerspectiveCamera(65,
                                        window.innerWidth / window.innerHeight,
                                        1,
-                                       2400);
+                                       3000);
 
   canvas = document.getElementById('canvas');
 
@@ -69,6 +75,7 @@ scene.add(camera)
   let newPlayer, newFood;
 
   forOwn(players, (data, id) => {
+    //console.log(data)
     let isMainPlayer = id === socket.id;
     newPlayer = new Player(id, data, isMainPlayer);
     newPlayer.init();
@@ -122,8 +129,8 @@ scene.add(camera)
   // define the resolution of the shadow; the higher the better,
   // but also the more expensive and less performant
 
-  shadowLight.shadow.mapSize.width = 1024;
-  shadowLight.shadow.mapSize.height = 1024;
+  shadowLight.shadow.mapSize.width = 512;
+  shadowLight.shadow.mapSize.height = 512;
 
   // to activate the lights, just add them to the scene
   scene.add(hemisphereLight);
@@ -131,8 +138,12 @@ scene.add(camera)
 
   // an ambient light modifies the global color of a scene and makes the shadows softer
 
-  ambientLight = new THREE.AmbientLight(myColors['green'], 0.5);
+  ambientLight = new THREE.AmbientLight(someColors['pink'], 0.5);
   scene.add(ambientLight);
+
+  //add moon's pivot
+  scene.add(pivotMoon);
+
 
   loadGame();
 
@@ -144,6 +155,10 @@ scene.add(camera)
 
 export function animate() {
   requestAnimationFrame( animate );
+
+  pivotMoon.rotation.x += .0001;
+  pivotMoon.rotation.y -= .00005;
+
   let playerMesh = scene.getObjectByName(socket.id);
   if (playerMesh) {
     //Updates the raycast reference so that it follows the position of the player
@@ -159,7 +174,8 @@ export function animate() {
     raycastReference.quaternion.copy(quaternionOnPlanet);
 
     // Set the direction of the light
-    shadowLight.position.set(playerMesh.position.x + 150, playerMesh.position.y + 300, playerMesh.position.z + 150);
+    shadowLight.position.copy(playerMesh.position);
+    shadowLight.position.multiplyScalar(1.2);
 
     // receive and process controls and camera
     if ( controls ) controls.update();
@@ -212,48 +228,31 @@ function onWindowResize() {
 function createLevel(){
  // planet creation
  var planet_geometry = new THREE.TetrahedronGeometry( 1200, 4 );
- var planet_material = new THREE.MeshPhongMaterial( { color: myColors['red'], shading: THREE.FlatShading});
+ var planet_material = new THREE.MeshPhongMaterial( { color: someColors['red'], shading: THREE.FlatShading});
  var planet = new THREE.Mesh( planet_geometry, planet_material );
 
   planet.receiveShadow = true;
 
  scene.add(planet);
 
- // create THREE plane
-  var box_geometry = new THREE.BoxGeometry( 200, 5, 1000 );
-  var box_geometry2 = new THREE.BoxGeometry( 600, 5, 200 );
-  var box_material = new THREE.MeshPhongMaterial( { color: myColors['blue'], shading: THREE.FlatShading});
-  var plane = new THREE.Mesh( box_geometry, box_material );
-  var plane2 = new THREE.Mesh( box_geometry, box_material );
-  var plane3 = new THREE.Mesh( box_geometry2, box_material );
-  var plane4 = new THREE.Mesh( box_geometry2, box_material );
-  plane.position.set(0,450,0);
-  plane2.position.set(800,450,0);
-  plane3.position.set(400,450,400);
-  plane4.position.set(400,450,-400);
-
-  plane.receiveShadow = true;
-  plane2.receiveShadow = true;
-  plane3.receiveShadow = true;
-  plane4.receiveShadow = true;
-
-  var topPlane = new THREE.Group();
-
- topPlane.add( plane );
-  topPlane.add( plane2 );
-  topPlane.add( plane3 );
-  topPlane.add( plane4 );
-
-topPlane.position.set(0,1500,0);
-  scene.add(topPlane);
+ // create THREE moon
+  var box_geometry = new THREE.TetrahedronGeometry( 400 , 3)
+  var box_material = new THREE.MeshPhongMaterial( { color: "#F8B195", shading: THREE.FlatShading});
+  var moon = new THREE.Mesh( box_geometry, box_material );
+  ;
+  moon.position.set(0,0,-2200);
+  //moon.castShadow = true;
+  
+  pivotMoon.add(moon);
 
   // create Cannon planet
   var planetShape = new CANNON.Sphere(1200);
   var planetBody = new CANNON.Body({ mass: 0, material:groundMaterial, shape: planetShape });
   world.add(planetBody);
+
 }
 
-export { scene, camera, canvas, renderer, world, groundMaterial, myColors, raycastReference };
+export { scene, camera, canvas, renderer, world, groundMaterial, raycastReference, timeFromStart };
 
 // function botInit(){
   // const bot_geometry = new THREE.BoxGeometry(1,1,1);

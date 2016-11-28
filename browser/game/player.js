@@ -7,11 +7,11 @@ import { scene,
          camera,
          world,
          groundMaterial,
-         myColors,
          raycastReference } from './main';
 import { Food } from './food';
 import socket from '../socket';
 import store from '../store';
+import { myColors } from './config';
 
 let geometry, material, shape, mesh, pivot, name, sprite, controls;
 
@@ -30,9 +30,11 @@ export class Player {
   init() {
     let { isMainPlayer, id, initialData, lastEaten } = this;
 
+    let someColors = myColors();
+
     // THREE
     geometry = new THREE.TetrahedronGeometry( 10, 2 );
-    material = new THREE.MeshPhongMaterial({ color: myColors['grey'],
+    material = new THREE.MeshPhongMaterial({ color: "#355c7d",
                                              shading: THREE.FlatShading });
     mesh = new THREE.Mesh( geometry, material );
 
@@ -52,6 +54,8 @@ export class Player {
     mesh.position.x = initialData.x;
     mesh.position.y = initialData.y;
     mesh.position.z = initialData.z;
+    mesh.position.normalize().multiplyScalar(1200);
+    mesh.position.multiplyScalar(1.5);
     mesh.quaternion.x = initialData.qx;
     mesh.quaternion.y = initialData.qy;
     mesh.quaternion.z = initialData.qz;
@@ -120,8 +124,8 @@ export class Player {
               let mainVol = players[socket.id].volume;
               let thisVol = players[this.id].volume;
 
-              //player must be 12 times the volume of enemy to eat it
-              if (thisVol > mainVol * 12 ){
+              //player must be 6 times the volume of enemy to eat it
+              if (thisVol > mainVol/* * 6*/ ){
                 this.lastEaten = Date.now();
                 socket.emit('got_eaten', id, thisVol + mainVol);
               }

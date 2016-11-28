@@ -6,6 +6,7 @@ import { receivePlayers } from '../reducers/players';
 import { removeFood,
          receiveFood,
          receiveMultipleFood } from '../reducers/food';
+import { lose, ateSomeone } from '../reducers/gameStatus';
 
 import { init,
          animate,
@@ -41,6 +42,7 @@ export default socket => {
 
     // Create player object when new player joins or on respawn
     socket.on('add_player', (id, initialData) => {
+     //console.log("add player")
       let isMainPlayer = id === socket.id;
       let player = new Player(id, initialData, isMainPlayer);
       player.init();
@@ -55,8 +57,13 @@ export default socket => {
         scene.remove(playerObject);
         let { children } = playerObject.children[0];
         for (let child of children) scene.remove(child);
-        playerObject.dispose();
-        if (eaterId === socket.id) createjs.Sound.play('eatSound');
+        //playerObject.dispose(); // this isn't working yet
+        //console.log(eaterId, socket.id)
+        if (eaterId === socket.id){
+          //console.log("hello mom")
+          createjs.Sound.play('eatSound');
+          store.dispatch(ateSomeone(playerObject.nickname));// dispatch exits this function for some reason
+        }
       }
     });
 
@@ -78,6 +85,10 @@ export default socket => {
           //console.log(scene.getObjectByName(playerId).cannon.mass)
         }
       });
+
+    socket.on('you_lose', eater =>{
+        store.dispatch(lose(eater));
+    });
 
 //     socket.on('remove_eaten_player', (id, playerId, playerData, eatenData) => {
 //       let playerObject = scene.getObjectByName(id);

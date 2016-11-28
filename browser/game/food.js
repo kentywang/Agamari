@@ -1,4 +1,5 @@
-import { scene, world, groundMaterial, myColors } from './main';
+import { scene, world, groundMaterial } from './main';
+import { myColors } from './config';
 import socket from '../socket';
 import store from '../store';
 const THREE = require('three');
@@ -19,9 +20,13 @@ export class Food {
   }
 
   init() {
+    let someColors = myColors();
     // Pick a random color
     count = 0;
-    for (var prop in myColors){
+
+    // never allow food to be same color as planet or players
+    someColors["pink"] = null;
+    for (var prop in someColors){
       if (Math.random() < 1 / ++count){
         color = prop;
       }
@@ -32,13 +37,13 @@ export class Food {
     switch (type) {
       case 'box':
         geometry = new THREE.BoxGeometry( parms[0], parms[1], parms[2] );
-        material = new THREE.MeshPhongMaterial( {color: myColors[color], shading: THREE.FlatShading} );
+        material = new THREE.MeshPhongMaterial( {color: someColors[color], shading: THREE.FlatShading} );
         shape = new CANNON.Box(new CANNON.Vec3(parms[0] / 2, parms[1] / 2, parms[2] / 2));
         break;
       case 'sphere':
       default:
         geometry = new THREE.TetrahedronGeometry( parms[0], 1 );
-        material = new THREE.MeshPhongMaterial( {color: myColors[color], shading: THREE.FlatShading} );
+        material = new THREE.MeshPhongMaterial( {color: someColors[color], shading: THREE.FlatShading} );
         shape = new CANNON.Sphere(parms[0]);
     }
 
