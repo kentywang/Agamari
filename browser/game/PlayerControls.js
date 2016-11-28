@@ -19,8 +19,8 @@ THREE.PlayerControls = function ( camera, player, cannonMesh, raycastReference ,
 	var scope = this;
 
 
-	var curCamZoom = 50;
-	var curCamHeight = 40;
+	var curCamZoom = 65;
+	var curCamHeight = 45;
 
 	// helpful dev tool, yo
 	// var geometry = new THREE.BoxGeometry( 30,3,2 );
@@ -73,7 +73,7 @@ THREE.PlayerControls = function ( camera, player, cannonMesh, raycastReference ,
 	    cameraPlace.makeTranslation ( 0, curCamHeight * scope.scale, curCamZoom * scope.scale ) 
 	  
 	    var cameraRot = new THREE.Matrix4();
-	    cameraRot.makeRotationX(0.1 - (playerPosition.length()/1000));// scale this with height to planet!
+	    cameraRot.makeRotationX(-0.1 - (playerPosition.length()/2000));// scale this with height to planet!
 
 
 	    var oneTwo = new THREE.Matrix4();
@@ -138,11 +138,26 @@ THREE.PlayerControls = function ( camera, player, cannonMesh, raycastReference ,
 
 			if(Date.now() - scope.cooldown > 5000){
 
-		        // spacebar - dash/push
+		    // spacebar - dash/push
+		    var dash = new THREE.Vector3();
+		     if(keyState[38] || keyState[87]){
+				dash.copy(cross2).negate();
+		    }else
+		    if (keyState[40] || keyState[83]) {
+		    	dash.copy(cross2);
+		    }else
+		    if (keyState[37] || keyState[65]) {
+		    	dash.copy(cross1);
+		    }else
+		    if (keyState[39] || keyState[68]) {
+		    	dash.copy(cross1).negate();
+		    }
+		    else{
+		    	dash.copy(playerPosition).normalize().divideScalar(2);
+		    }
 
-	            this.cannonMesh.applyImpulse(new CANNON.Vec3(-cross2.x * 15000 /*Math.pow(scope.scale, 1 + (scope.scale * 1))*/, -cross2.z * 15000 /*Math.pow(scope.scale, 1 + (scope.scale * 1))*/, -cross2.y * 15000 /*Math.pow(scope.scale, 1 + (scope.scale * 1))*/), newPosition);
-	            scope.cooldown = Date.now();
-	            //this.cannonMesh.position.y -= 2;
+	        this.cannonMesh.applyImpulse(new CANNON.Vec3(dash.x * 60000 /*Math.pow(scope.scale, 1 + (scope.scale * 1))*/, dash.z * 60000 /*Math.pow(scope.scale, 1 + (scope.scale * 1))*/, dash.y * 60000 /*Math.pow(scope.scale, 1 + (scope.scale * 1))*/), newPosition);
+	        scope.cooldown = Date.now();
 			}
 	    }
 

@@ -27,7 +27,7 @@ export const init = () => {
   camera = new THREE.PerspectiveCamera(65,
                                        window.innerWidth / window.innerHeight,
                                        1,
-                                       10000);
+                                       2400);
 
   canvas = document.getElementById('canvas');
 
@@ -211,8 +211,8 @@ function onWindowResize() {
 
 function createLevel(){
  // planet creation
- var planet_geometry = new THREE.TetrahedronGeometry( 800, 3 );
- var planet_material = new THREE.MeshPhongMaterial( { color: myColors['pink'], shading: THREE.FlatShading});
+ var planet_geometry = new THREE.TetrahedronGeometry( 1200, 4 );
+ var planet_material = new THREE.MeshPhongMaterial( { color: myColors['red'], shading: THREE.FlatShading});
  var planet = new THREE.Mesh( planet_geometry, planet_material );
 
   planet.receiveShadow = true;
@@ -248,7 +248,7 @@ topPlane.position.set(0,1500,0);
   scene.add(topPlane);
 
   // create Cannon planet
-  var planetShape = new CANNON.Sphere(800);
+  var planetShape = new CANNON.Sphere(1200);
   var planetBody = new CANNON.Body({ mass: 0, material:groundMaterial, shape: planetShape });
   world.add(planetBody);
 }
