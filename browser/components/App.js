@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 
 import Canvas from './Canvas';
 import ControlPanel from './ControlPanel';
+import BugReportForm from './BugReportForm';
 
 class App extends Component {
   render() {
@@ -10,6 +11,7 @@ class App extends Component {
       <div>
           <ControlPanel />
           <Canvas />
+          <BugReportForm/>
       </div>
       );
 
