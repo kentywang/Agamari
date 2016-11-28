@@ -1,8 +1,9 @@
 const request = require('supertest-as-promised')
 const expect = require('chai').expect;
 const { User, Room, Score, db } = require('../../server/db/index');
-const app = require('../../server/index')
+const app = require('../../server/index');
 const agent = request.agent(app);
+
 
 describe('Rooms Routes:', function () {
 
