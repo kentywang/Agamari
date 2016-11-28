@@ -381,12 +381,14 @@ describe('Scores Routes:', function () {
 
       return Promise.all(creatingScores)
       .then(createdScores => {
+        //console.log(createdScores);
         score = createdScores[1];
+        console.log("sadflkadskfj sladkfjdsalk",score);
       });
 
     });
 
-    xit('returns the JSON of the article based on the id', function () {
+    it('returns the JSON of the article based on the id', function () {
       //console.log(room);
       return agent
       .get('api/scores/'+score.id)
@@ -395,7 +397,7 @@ describe('Scores Routes:', function () {
         if (typeof res.body === 'string') {
           res.body = JSON.parse(res.body);
         }
-        expect(res.body.value).to.equal();
+        expect(res.body.value).to.equal(4000);
       });
 
     });
