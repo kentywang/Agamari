@@ -46,8 +46,8 @@ const spawnFood = io => {
             //console.log(parms)
 
             let data = { x, z, type, parms, room: currentRoom };
-            store.dispatch(receiveFood(id, data));
-            io.sockets.in(currentRoom).emit('add_food', id, data);
+            store.dispatch(receiveFood('f' + id, data));
+            io.sockets.in(currentRoom).emit('add_food', 'f' + id, data);
             id++;
           }
         }

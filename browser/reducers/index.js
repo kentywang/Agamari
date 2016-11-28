@@ -1,12 +1,12 @@
 import { combineReducers } from 'redux';
-import auth from './auth';
+import user from './user';
 import controlPanel from './controlPanel';
 import players from './players';
 import food from './food';
 import environment from './environment';
 
 export default combineReducers({
-  auth,
+  user,
   controlPanel,
   players,
   food,

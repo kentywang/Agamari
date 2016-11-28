@@ -5,8 +5,8 @@ import { forOwn } from 'lodash';
 import { getMeshData, setCannonPosition, setMeshPosition } from './utils';
 import { myColors, fixedTimeStep, maxSubSteps } from './config';
 import store from '../store';
-import socket from '../socket';
-
+// import socket from '../socket';
+import { emit } from '../reducers/user';
 import { loadGame, loadEnvironment } from './game';
 import {controls, Player} from './player';
 import { Food } from './food';
@@ -20,147 +20,147 @@ let time, lastTime;
 let raycastReference, raycastHeight;
 
 export const init = () => {
-  let { players, food } = store.getState();
-  // initialize THREE scene, camera, renderer
-  scene = new THREE.Scene();
+  let { user, players, food } = store.getState();
+    // initialize THREE scene, camera, renderer
+    scene = new THREE.Scene();
 
-  camera = new THREE.PerspectiveCamera(65,
-                                       window.innerWidth / window.innerHeight,
-                                       1,
-                                       1000);
+    camera = new THREE.PerspectiveCamera(65,
+                                         window.innerWidth / window.innerHeight,
+                                         1,
+                                         1000);
 
-  canvas = document.getElementById('canvas');
+    canvas = document.getElementById('canvas');
 
-  renderer = new THREE.WebGLRenderer({alpha: true, canvas});
-  renderer.setPixelRatio( window.devicePixelRatio );
-  renderer.setSize(window.innerWidth / 2,
-                   window.innerHeight / 2,
-                   false);
+    renderer = new THREE.WebGLRenderer({alpha: true, canvas});
+    renderer.setPixelRatio( window.devicePixelRatio );
+    renderer.setSize(window.innerWidth / 2,
+                     window.innerHeight / 2,
+                     false);
 
-  //This is the object that follows the ball and keeps its z/y rotation
-  //It casts rays outwards to detect objects for the player
-  raycastReference = new THREE.Object3D();
-  raycastHeight = 1;
-  raycastReference.position.y = raycastHeight;
-  scene.add(raycastReference);
+    //This is the object that follows the ball and keeps its z/y rotation
+    //It casts rays outwards to detect objects for the player
+    raycastReference = new THREE.Object3D();
+    raycastHeight = 1;
+    raycastReference.position.y = raycastHeight;
+    scene.add(raycastReference);
 
-  //Attach the camera to lock behind the ball
-  raycastReference.add(camera);
+    //Attach the camera to lock behind the ball
+    raycastReference.add(camera);
 
-  //setupCollisions(raycastReference);
-
-
-  // shading
-  renderer.shadowMap.enabled = true;
-  renderer.shadowMapSoft = true;
+    //setupCollisions(raycastReference);
 
 
-  // store set playerID to socket.id from store
-  // playerID = socket.id;
+    // shading
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMapSoft = true;
 
 
-  // initialize Cannon world
-  world = new CANNON.World();
-  world.gravity.set(0, 0, -200);
-  world.broadphase = new CANNON.NaiveBroadphase();
+    // store set playerID to socket.id from store
+    // playerID = socket.id;
 
 
-  // initialize all existing players in room
-  let newPlayer, newFood;
-
-  forOwn(players, (data, id) => {
-    let isMainPlayer = id === socket.id;
-    newPlayer = new Player(id, data, isMainPlayer);
-    newPlayer.init();
-    // if (isMainPlayer) player = newPlayer;
-  });
-
-  forOwn(food, (data, id) => {
-    newFood = new Food(id, data);
-    newFood.init();
-  });
+    // initialize Cannon world
+    world = new CANNON.World();
+    world.gravity.set(0, 0, -200);
+    world.broadphase = new CANNON.NaiveBroadphase();
 
 
-  // Adjust friction between ball & ground
-  groundMaterial = new CANNON.Material('groundMaterial');
-  var groundGroundCm = new CANNON.ContactMaterial(groundMaterial, groundMaterial, {
-      friction: 0.5,
-      restitution: 0.2,
-      contactEquationStiffness: 1e8,
-      contactEquationRelaxation: 3,
-      frictionEquationStiffness: 1e8,
-      frictionEquationRegularizationTime: 3,
-  });
-  world.addContactMaterial(groundGroundCm);
+    // initialize all existing players in room
+    let newPlayer, newFood;
+
+    forOwn(players, (data, id) => {
+      let isMainPlayer = id == user.id;
+      newPlayer = new Player(id, data, isMainPlayer);
+      newPlayer.init();
+      // if (isMainPlayer) player = newPlayer;
+    });
+
+    forOwn(food, (data, id) => {
+      newFood = new Food(id, data);
+      newFood.init();
+    });
 
 
-  // create THREE plane
-  geometry = new THREE.BoxGeometry( 800, 5, 800 );
-  material = new THREE.MeshPhongMaterial( { color: myColors['blue'], shading: THREE.FlatShading});
-  plane = new THREE.Mesh( geometry, material );
-
-  plane.receiveShadow = true;
-
-  scene.add( plane );
-
-
-  // create Cannon plane
-  groundShape = new CANNON.Box(new CANNON.Vec3(400, 400, 2.5));
-  groundBody = new CANNON.Body({ mass: 0, material: groundMaterial, shape: groundShape });
-
-  world.add(groundBody);
+    // Adjust friction between ball & ground
+    groundMaterial = new CANNON.Material('groundMaterial');
+    var groundGroundCm = new CANNON.ContactMaterial(groundMaterial, groundMaterial, {
+        friction: 0.5,
+        restitution: 0.2,
+        contactEquationStiffness: 1e8,
+        contactEquationRelaxation: 3,
+        frictionEquationStiffness: 1e8,
+        frictionEquationRegularizationTime: 3,
+    });
+    world.addContactMaterial(groundGroundCm);
 
 
-  // add some fog
-  scene.fog = new THREE.Fog(myColors['blue'], 50, 950);
+    // create THREE plane
+    geometry = new THREE.BoxGeometry( 800, 5, 800 );
+    material = new THREE.MeshPhongMaterial( { color: myColors['blue'], shading: THREE.FlatShading});
+    plane = new THREE.Mesh( geometry, material );
+
+    plane.receiveShadow = true;
+
+    scene.add( plane );
 
 
-  // A hemiplane light is a gradient colored light;
-  // the first parameter is the sky color, the second parameter is the ground color,
-  // the third parameter is the intensity of the light
-  hemisphereLight = new THREE.HemisphereLight(0xaaaaaa, 0x000000, 0.9);
+    // create Cannon plane
+    groundShape = new CANNON.Box(new CANNON.Vec3(400, 400, 2.5));
+    groundBody = new CANNON.Body({ mass: 0, material: groundMaterial, shape: groundShape });
 
-  // A directional light shines from a specific direction.
-  // It acts like the sun, that means that all the rays produced are parallel.
-  shadowLight = new THREE.DirectionalLight(0xffffff, 0.9);
+    world.add(groundBody);
 
-  // Allow shadow casting
-  shadowLight.castShadow = true;
 
-  // define the visible area of the projected shadow
-  shadowLight.shadow.camera.left = -400;
-  shadowLight.shadow.camera.right = 400;
-  shadowLight.shadow.camera.top = 400;
-  shadowLight.shadow.camera.bottom = -400;
-  shadowLight.shadow.camera.near = 1;
-  shadowLight.shadow.camera.far = 1000;
+    // add some fog
+    scene.fog = new THREE.Fog(myColors['blue'], 50, 950);
 
-  // define the resolution of the shadow; the higher the better,
-  // but also the more expensive and less performant
 
-  shadowLight.shadow.mapSize.width = 1024;
-  shadowLight.shadow.mapSize.height = 1024;
+    // A hemiplane light is a gradient colored light;
+    // the first parameter is the sky color, the second parameter is the ground color,
+    // the third parameter is the intensity of the light
+    hemisphereLight = new THREE.HemisphereLight(0xaaaaaa, 0x000000, 0.9);
 
-  // to activate the lights, just add them to the scene
-  scene.add(hemisphereLight);
-  scene.add(shadowLight);
+    // A directional light shines from a specific direction.
+    // It acts like the sun, that means that all the rays produced are parallel.
+    shadowLight = new THREE.DirectionalLight(0xffffff, 0.9);
 
-  // an ambient light modifies the global color of a scene and makes the shadows softer
-  ambientLight = new THREE.AmbientLight(myColors['red'], 0.5);
-  scene.add(ambientLight);
+    // Allow shadow casting
+    shadowLight.castShadow = true;
 
-  loadGame();
+    // define the visible area of the projected shadow
+    shadowLight.shadow.camera.left = -400;
+    shadowLight.shadow.camera.right = 400;
+    shadowLight.shadow.camera.top = 400;
+    shadowLight.shadow.camera.bottom = -400;
+    shadowLight.shadow.camera.near = 1;
+    shadowLight.shadow.camera.far = 1000;
 
-  //botInit();
+    // define the resolution of the shadow; the higher the better,
+    // but also the more expensive and less performant
 
-  // Events
-  window.addEventListener( 'resize', onWindowResize, false );
+    shadowLight.shadow.mapSize.width = 1024;
+    shadowLight.shadow.mapSize.height = 1024;
+
+    // to activate the lights, just add them to the scene
+    scene.add(hemisphereLight);
+    scene.add(shadowLight);
+
+    // an ambient light modifies the global color of a scene and makes the shadows softer
+    ambientLight = new THREE.AmbientLight(myColors['red'], 0.5);
+    scene.add(ambientLight);
+
+    loadGame();
+
+    //botInit();
+
+    // Events
+    window.addEventListener( 'resize', onWindowResize, false );
 };
 
 export function animate() {
+  let { user, players } = store.getState();
   requestAnimationFrame( animate );
-  let playerMesh = scene.getObjectByName(socket.id);
-  if (playerMesh) {
+  let playerMesh = scene.getObjectByName(user.id.toString());
     //Updates the raycast reference so that it follows the position of the player
     raycastReference.position.set(playerMesh.position.x, raycastHeight, playerMesh.position.z);
 
@@ -174,13 +174,11 @@ export function animate() {
     // Cannon's y & z are swapped from THREE, and w is flipped
   if (playerMesh.cannon) setMeshPosition(playerMesh);
 
-   let { players } = store.getState();
-
 
     // for all other players
     forOwn(players, (currentPlayer, id) => {
       let currentMesh = scene.getObjectByName(id);
-      if (currentPlayer !== socket.id && currentMesh) setCannonPosition(currentMesh);
+      if (currentPlayer !== user.id && currentMesh) setCannonPosition(currentMesh);
     });
 
     // run physics
@@ -190,14 +188,12 @@ export function animate() {
        world.step(fixedTimeStep, dt, maxSubSteps);
     }
     lastTime = time;
-  }
+    // this dispatch happens 60 times a second,
+    // updating the local state with player's new info and emitting to server
+    emit('update_position', getMeshData(playerMesh));
 
-  // this dispatch happens 60 times a second,
-  // updating the local state with player's new info and emitting to server
-  socket.emit('update_position', getMeshData(playerMesh));
-
-  loadEnvironment();
-  render();
+    loadEnvironment();
+    render();
 }
 
 function render() {

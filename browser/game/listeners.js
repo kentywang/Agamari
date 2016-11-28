@@ -1,7 +1,7 @@
 import store from '../store';
 import { attachFood } from './utils';
 
-import { authenticated } from '../reducers/auth';
+import { authenticated } from '../reducers/user';
 import { closeConsole,
          setPassword,
          setError,
@@ -20,79 +20,79 @@ import {Food} from '../game/food';
 
 
 export default socket => {
-    socket.on('authenticated', user => {
-      store.dispatch(authenticated(user));
-      store.dispatch(resetError());
-      console.log('authentication approved');
-    });
+  let { user } = store.getState();
+  socket.on('authenticated', user => {
+    store.dispatch(authenticated(user));
+    store.dispatch(resetError());
+    console.log('authentication approved');
+  });
 
-    socket.on('authentication_failed', () => {
-      store.dispatch(setError('Incorrect email or password.'));
-      store.dispatch(setPassword(''));
-    });
+  socket.on('authentication_failed', () => {
+    store.dispatch(setError('Incorrect email or password.'));
+    store.dispatch(setPassword(''));
+  });
 
-    // Receive current positions for all players and update game state
-    // Happens before start and on server broadcast interval
-    socket.on('player_data', state => {
-      store.dispatch(receivePlayers(state));
-    });
+  // Receive current positions for all players and update game state
+  // Happens before start and on server broadcast interval
+  socket.on('player_data', state => {
+    store.dispatch(receivePlayers(state));
+  });
 
-    // Receive current positions for all food. Happens before start.
-    socket.on('food_data', state => {
-      store.dispatch(receiveMultipleFood(state));
-    });
+  // Receive current positions for all food. Happens before start.
+  socket.on('food_data', state => {
+    store.dispatch(receiveMultipleFood(state));
+  });
 
-    // Set app error state on start fail
-    socket.on('start_fail', err => {
-      store.dispatch(setError(err));
-    });
+  // Set app error state on start fail
+  socket.on('start_fail', err => {
+    store.dispatch(setError(err));
+  });
 
-    // Run init once player/food data has been received
-    socket.on('start_game', () => {
-      init();
-      animate();
-      store.dispatch(closeConsole());
-    });
+  // Run init once player/food data has been received
+  socket.on('start_game', () => {
+    init();
+    animate();
+    store.dispatch(closeConsole());
+  });
 
-    // Create player object when new player joins or on respawn
-    socket.on('add_player', (id, initialData) => {
-      let isMainPlayer = id === socket.id;
-      let player = new Player(id, initialData, isMainPlayer);
-      player.init();
-    });
+  // Create player object when new player joins or on respawn
+  socket.on('add_player', (id, initialData) => {
+    let isMainPlayer = id == user.id;
+    let player = new Player(id, initialData, isMainPlayer);
+    player.init();
+  });
 
-    // Remove player object when player leaves or dies
-    socket.on('remove_player', (id, eaterId) => {
-      let playerObject = scene.getObjectByName(id);
-      if (playerObject) {
-        world.remove(playerObject.cannon);
-        scene.remove(playerObject.sprite);
-        scene.remove(playerObject);
-        let { children } = playerObject.children[0];
-        for (let child of children) scene.remove(child);
-        playerObject.dispose();
-        if (eaterId === socket.id) createjs.Sound.play('eatSound');
+  // Remove player object when player leaves or dies
+  socket.on('remove_player', (id, eaterId) => {
+    let playerObject = scene.getObjectByName(id.toString());
+    if (playerObject) {
+      world.remove(playerObject.cannon);
+      scene.remove(playerObject.sprite);
+      scene.remove(playerObject);
+      let { children } = playerObject.children[0];
+      for (let child of children) scene.remove(child);
+      if (eaterId == user.id) createjs.Sound.play('eatSound');
+    }
+  });
+
+  // Create food object and add data to state on broadcast interval
+  socket.on('add_food', (id, data) => {
+    id = id.toString();
+    let food = new Food(id, data);
+    food.init();
+    store.dispatch(receiveFood(id, data));
+  });
+
+  // Remove food data from state and add to player diet. Add food object to player
+  socket.on('remove_food', (id, playerId, playerData) => {
+      attachFood(id, playerId, playerData);
+      store.dispatch(removeFood(id));
+
+      if (playerId == user.id){
+        createjs.Sound.play('eatSound');
+        //console.log(scene.getObjectByName(playerId).cannon.mass)
       }
     });
-
-    // Create food object and add data to state on broadcast interval
-    socket.on('add_food', (id, data) => {
-      id = id.toString();
-      let food = new Food(id, data);
-      food.init();
-      store.dispatch(receiveFood(id, data));
-    });
-
-    // Remove food data from state and add to player diet. Add food object to player
-    socket.on('remove_food', (id, playerId, playerData) => {
-        attachFood(id, playerId, playerData);
-        store.dispatch(removeFood(id));
-
-        if (playerId === socket.id){
-          createjs.Sound.play('eatSound');
-          //console.log(scene.getObjectByName(playerId).cannon.mass)
-        }
-      });
 
 //     socket.on('remove_eaten_player', (id, playerId, playerData, eatenData) => {
 //       let playerObject = scene.getObjectByName(id);

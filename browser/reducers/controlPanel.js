@@ -1,3 +1,5 @@
+import { emit } from './user';
+
 /*----------  INITIAL STATE  ----------*/
 const initialState = {
   isOpen: true,
@@ -58,9 +60,9 @@ export const resetError = () => ({
 
 /*----------  THUNK CREATORS  ----------*/
 
-export const startAsGuest = (nickname, socket) => dispatch => {
+export const startAsGuest = nickname => dispatch => {
   if (nickname) {
-    socket.emit('start_as_guest', { nickname });
+    emit('start_as_guest', { nickname });
     dispatch(resetError());
   } else {
     dispatch(setError('Please enter a nickname'));

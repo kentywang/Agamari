@@ -1,6 +1,5 @@
 const passport = require('passport');
 const { User } = require('./db');
-const router = require('express').Router();
 const CustomStrategy = require('passport-custom');
 
 passport.serializeUser((user, done) => {
@@ -50,24 +49,4 @@ passport.use(new (require('passport-local').Strategy)({
   }
 ));
 
-router.get('/whoami', (req, res) => res.send(req.user));
-
-
-router.post('/login/guest', passport.authenticate('guest-login'), (req, res, next) => {
-  console.log('prev req user', req.user);
-  console.log('guest logging in!')
-  res.send('OK');
-});
-
-router.post('/login', passport.authenticate('local'), (req, res, next) => {
-  console.log('prev req user', req.user);
-  console.log('user logging in!')
-  res.send('OK');
-});
-
-router.get('/logout', (req, res, next) => {
-  req.logout();
-  res.sendStatus(204);
-})
-
-module.exports = { router, passport};
+module.exports = passport;

@@ -12,17 +12,13 @@ import { openConsole,
          resetError,
          startAsGuest } from '../reducers/controlPanel';
 
-import { loginAsGuest, login, logout } from '../reducers/auth';
-
-const authenticate = (email, password) => {
-  socket.emit('authentication', { email, password });
-};
+import { loginAsGuest, login, logout, emit } from '../reducers/user';
 
 class ControlPanel extends Component {
   render() {
     let { players,
           controlPanel,
-          auth,
+          user,
           open,
           close,
           guestClick,
@@ -38,9 +34,8 @@ class ControlPanel extends Component {
           email,
           password,
           error } = controlPanel;
-    let player = socket && players[socket.id];
 
-    if (!auth) {
+    if (!user) {
       return (
       <div style={{position: 'absolute', zIndex: 1, marginLeft: '64%'}}>
       { isOpen ?
@@ -84,7 +79,6 @@ class ControlPanel extends Component {
           </div>
         </div> :
         <div>
-          {player && <p>{`Welcome ${nickname}`}</p>}
           <button className="btn" onClick={open}>Open</button>
         </div>}
         </div>
@@ -107,7 +101,7 @@ class ControlPanel extends Component {
               </div>
             </div> :
             <div>
-              {player && <p>{`Welcome ${nickname}`}</p>}
+              {<p>{`Welcome ${user.nickname}`}</p>}
               <button className="btn" onClick={open}>Open</button>
             </div> }
           </div>
@@ -116,7 +110,7 @@ class ControlPanel extends Component {
   }
 }
 
-const mapStateToProps = ({ players, controlPanel, auth }) => ({ players, controlPanel, auth });
+const mapStateToProps = ({ players, controlPanel, user }) => ({ players, controlPanel, user });
 
 const mapDispatchToProps = dispatch => ({
   open: () => dispatch(openConsole()),
@@ -129,7 +123,7 @@ const mapDispatchToProps = dispatch => ({
   clearError: () => dispatch(resetError()),
   signInAsGuest: nickname => dispatch(loginAsGuest(nickname)),
   signIn: (email, password) => dispatch(login(email, password)),
-  start: () => socket.emit('start'),
+  start: () => emit('start'),
   exit: () => dispatch(logout())
 });
 

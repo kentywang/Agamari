@@ -1,4 +1,5 @@
 const { forOwn, pickBy } = require('lodash');
+const chalk = require('chalk');
 let Promise = require('bluebird');
 
 const initPos = {
@@ -16,8 +17,9 @@ const initPos = {
 const store = require('../store');
 const { receivePlayer } = require('../reducers/players');
 
-module.exports.startGame = (io, socket, { id, nickname }) => {
-  let player = Object.assign({}, initPos, {id, nickname, room: 'room1'});
+module.exports.startGame = (io, socket) => {
+  let { id, email, nickname, guest } = socket.request.user;
+  let player = Object.assign({}, {id, email, nickname, guest, room: 'room1'}, initPos);
 
   // Log player out of all current rooms (async, stored in array of promises)
   let leavePromises = [];
@@ -26,16 +28,15 @@ module.exports.startGame = (io, socket, { id, nickname }) => {
   });
 
   // Add player to server game state
-  store.dispatch(receivePlayer(socket.id, player));
+  store.dispatch(receivePlayer(player.id, player));
 
   // Tell all players in room to create object for new player
-  io.sockets.in('room1').emit('add_player', socket.id, player);
+  io.sockets.in('room1').emit('add_player', player.id, player);
 
      let { players, food } = store.getState();
   Promise.all(leavePromises)
     .then(() => {
       // Find all players in room and tell new player to add to game state
-        console.log('current player', player);
       let roomPlayers = pickBy(players, (player) => {
         return player.room === 'room1';
       });

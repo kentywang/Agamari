@@ -61,6 +61,7 @@ export const makeTextSprite = (message, fontsize) => {
 };
 
 export const attachFood = (id, playerId, playerData) => {
+  playerId = playerId.toString();
   let foodObject = scene.getObjectByName(id);
   let player = scene.getObjectByName(playerId);
   let newQuat = new CANNON.Quaternion(-playerData.qx,
