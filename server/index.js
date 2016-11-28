@@ -35,3 +35,4 @@ require(path.join(__dirname, 'db')).db.sync()
     })
     .catch(console.error);
 
+module.exports = app;
