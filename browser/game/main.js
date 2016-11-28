@@ -39,8 +39,8 @@ export const init = () => {
 
   renderer = new THREE.WebGLRenderer({alpha: true, canvas});
   renderer.setPixelRatio( window.devicePixelRatio );
-  renderer.setSize(window.innerWidth / 2,
-                   window.innerHeight / 2,
+  renderer.setSize(window.innerWidth / 1.5,
+                   window.innerHeight / 1.5,
                    false);
 
   //This is the object that follows the ball and keeps its z/y rotation
@@ -154,7 +154,14 @@ scene.add(camera)
 };
 
 export function animate() {
-  requestAnimationFrame( animate );
+  setTimeout( function() {
+
+        requestAnimationFrame( animate );
+        
+        // this dispatch happens 30 times a second,
+        // updating the local state with player's new info and emitting to server
+        socket.emit('update_position', getMeshData(playerMesh));
+    }, 1000 / 30 );
 
   pivotMoon.rotation.x += .0001;
   pivotMoon.rotation.y -= .00005;
@@ -202,10 +209,6 @@ export function animate() {
     lastTime = time;
   }
 
-  // this dispatch happens 60 times a second,
-  // updating the local state with player's new info and emitting to server
-  socket.emit('update_position', getMeshData(playerMesh));
-
   loadEnvironment();
   render();
 }
@@ -220,8 +223,8 @@ function onWindowResize() {
   camera.updateProjectionMatrix();
 
   renderer.setPixelRatio( window.devicePixelRatio );
-  renderer.setSize(window.innerWidth / 2,
-                   window.innerHeight / 2,
+  renderer.setSize(window.innerWidth / 1.5,
+                   window.innerHeight / 1.5,
                    false);
 }
 

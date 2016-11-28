@@ -76,16 +76,16 @@ export const attachFood = (id, playerId, playerData) => {
   if (foodObject) {
     world.remove(foodObject.cannon);
 
-    let vec1 = new CANNON.Vec3((foodObject.position.x - playerData.x) * 0.8,
-                               (foodObject.position.z - playerData.z) * 0.8,
-                               (foodObject.position.y - playerData.y) * 0.8);
+    let vec1 = new CANNON.Vec3((foodObject.position.x - playerData.x) * 0.7,
+                               (foodObject.position.z - playerData.z) * 0.7,
+                               (foodObject.position.y - playerData.y) * 0.7);
     let vmult = newQuat.inverse().vmult(vec1);
     player.cannon.addShape(foodObject.cannon.shapes[0], vmult, newQuat.inverse());
 
     let invQuat = threeQuat.inverse();
-    let vec2 = new THREE.Vector3((foodObject.position.x - playerData.x) * 0.8,
-                                (foodObject.position.y - playerData.y) * 0.8,
-                                (foodObject.position.z - playerData.z) * 0.8);
+    let vec2 = new THREE.Vector3((foodObject.position.x - playerData.x) * 0.7,
+                                (foodObject.position.y - playerData.y) * 0.7,
+                                (foodObject.position.z - playerData.z) * 0.7);
     let vecRot = vec2.applyQuaternion(invQuat);
 
     foodObject.position.set(vecRot.x, vecRot.y, vecRot.z);

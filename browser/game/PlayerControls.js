@@ -64,14 +64,14 @@ THREE.PlayerControls = function ( camera, player, cannonMesh, raycastReference ,
 	 		// var cameraRot2 = new THREE.Matrix4(); 
 	 		// cameraRot2.makeRotationY(0.005);
 	 		// noClue.multiplyMatrices(noClue, cameraRot2)
-	 		cameraReferenceOrientationObj.rotation.y = 0.008;// change to rotation
+	 		cameraReferenceOrientationObj.rotation.y = 0.02;// change to rotation
 	 		this.left = false;
 	 	}
 	 	else if(this.right){
 	 		// var cameraRot2 = new THREE.Matrix4(); 
 	 		// cameraRot2.makeRotationY(-0.005);
 	 		// noClue.multiplyMatrices(noClue, cameraRot2)
-	 		cameraReferenceOrientationObj.rotation.y = -0.008;
+	 		cameraReferenceOrientationObj.rotation.y = -0.02;
 	 		this.right = false;
 	 	}
 
@@ -225,14 +225,14 @@ THREE.PlayerControls = function ( camera, player, cannonMesh, raycastReference ,
 	    if (keyState[37] || keyState[65]) {
 
 	        // left arrow or 'a' - rotate left
-	        this.cannonMesh.applyImpulse(new CANNON.Vec3(cross1.x * 350 /*Math.pow(scope.scale, 1 + (scope.scale * 1))*/, cross1.z * 350 /*Math.pow(scope.scale, 1 + (scope.scale * 1))*/, cross1.y * 350 /*Math.pow(scope.scale, 1 + (scope.scale * 1))*/) ,topOfBall);
+	        this.cannonMesh.applyImpulse(new CANNON.Vec3(cross1.x * 100 /*Math.pow(scope.scale, 1 + (scope.scale * 1))*/, cross1.z * 100 /*Math.pow(scope.scale, 1 + (scope.scale * 1))*/, cross1.y * 100 /*Math.pow(scope.scale, 1 + (scope.scale * 1))*/) ,topOfBall);
 	        this.left = true;
 	    }
 
 	    if (keyState[39] || keyState[68]) {
 
 	        // right arrow or 'd' - rotate right
-            this.cannonMesh.applyImpulse(new CANNON.Vec3(-cross1.x * 350 /*Math.pow(scope.scale, 1 + (scope.scale * 1))*/,-cross1.z * 350 /*Math.pow(scope.scale, 1 + (scope.scale * 1))*/,-cross1.y * 350 /*Math.pow(scope.scale, 1 + (scope.scale * 1))*/), topOfBall);
+            this.cannonMesh.applyImpulse(new CANNON.Vec3(-cross1.x * 100 /*Math.pow(scope.scale, 1 + (scope.scale * 1))*/,-cross1.z * 100 /*Math.pow(scope.scale, 1 + (scope.scale * 1))*/,-cross1.y * 100 /*Math.pow(scope.scale, 1 + (scope.scale * 1))*/), topOfBall);
             this.right = true;
 	    }
 	};

@@ -8,7 +8,7 @@ let elapsedTime = Date.now(),
     id = 1;
 
 const spawnFood = io => {
-  if (Date.now() - elapsedTime > 166){
+  if (Date.now() - elapsedTime > 33){
     //console.log('spawning food');
     elapsedTime = Date.now();
     let { rooms, food, players } = store.getState();
@@ -66,7 +66,7 @@ const broadcastState = (io) => {
       io.sockets.in(currentRoom).emit('player_data', roomPlayers);
     }
     spawnFood(io, store);
-  }, (1000 / 60));
+  }, (1000 / 30));
 };
 
 // function respawn(io, store, socket, room){
