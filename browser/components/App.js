@@ -7,6 +7,8 @@ import Splash from './Splash';
 
 
 
+import BugReportForm from './BugReportForm';
+
 
 class App extends Component {
   render() {
@@ -16,6 +18,7 @@ class App extends Component {
           {!isPlaying && <Splash />}
           {isPlaying && <ControlPanel />}
           {isPlaying && <Canvas />}
+          <BugReportForm/>
       </div>
       );
 

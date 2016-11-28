@@ -1,7 +1,7 @@
 let newState, idx;
 
 /*----------  INITIAL STATE  ----------*/
-const initialState = ['room1'];
+const initialState = [];
 
 
 /*----------  ACTION TYPES  ----------*/
@@ -9,12 +9,12 @@ const ADD_ROOM = 'ADD_ROOM';
 const REMOVE_ROOM = 'REMOVE_ROOM';
 
 /*----------  ACTION CREATORS  ----------*/
-module.exports.addRoom = name => ({
+const addRoom = name => ({
   type: ADD_ROOM,
   name
 });
 
-module.exports.removeFood = name => ({
+const removeRoom = name => ({
   type: REMOVE_ROOM,
   name
 });
@@ -24,10 +24,10 @@ module.exports.removeFood = name => ({
 
 
 /*----------  REDUCER  ----------*/
-module.exports.reducer = (state = initialState, action) => {
+const reducer = (state = initialState, action) => {
   switch (action.type) {
     case ADD_ROOM:
-      if (state.indexOf(action.name) === -1) return [...state, action.room];
+      if (state.indexOf(action.name) === -1) return [...state, action.name];
       else return state;
     case REMOVE_ROOM:
       idx = state.indexOf(action.name);
@@ -41,3 +41,5 @@ module.exports.reducer = (state = initialState, action) => {
     default: return state;
   }
 };
+
+module.exports = { reducer, addRoom, removeRoom };

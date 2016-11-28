@@ -3,7 +3,8 @@
 const expect = require('chai').expect;
 const { User, Room, Score, db } = require('../../server/db/index');
 
-//Test specs for User model
+//*****************************************************************************
+//TEST SPECS FOR USER MODEL
 //*****************************************************************************
 describe('The `User` model', function () {
   before(function () {
@@ -103,8 +104,8 @@ describe('The `User` model', function () {
   });  
 
 });
-
-//Test specs for Score model
+//*****************************************************************************
+//TEST SPECS FOR SCORES MODEL
 //*****************************************************************************
 
 describe('The `Score` model', function () {
@@ -159,9 +160,9 @@ describe('The `Score` model', function () {
 
 });
 
-//Test specs for Room model
 //*****************************************************************************
-
+//TEST SPECS FOR ROOM MODEL
+//*****************************************************************************
 
 
 describe('The `Room` model', function () {
