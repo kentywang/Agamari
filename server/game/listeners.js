@@ -107,11 +107,14 @@ const setUpListeners = (io, socket) => {
     });
 
     socket.on('got_eaten', (id, volume) => {
+      let clock = {};
       let { players } = store.getState();
       let eaten = players[user.id];
       let eater = players[id];
-      if (eaten && eater) {
+      if (eaten && eater && (Date.now - clock[eaten.id] > 3000)) {
+        clock[eaten.id] = Date.now();
         let { room } = eaten;
+
         io.sockets.in(room).emit('remove_player', user.id.toString(), id);
         //store.dispatch(addPlayerToDiet(eaten, id, store.getState().players[id]));
         //console.log(store.getState().players[id].diet);

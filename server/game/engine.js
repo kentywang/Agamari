@@ -1,6 +1,7 @@
 
-const { pickBy } = require('lodash');
+const { pickBy, size } = require('lodash');
 const { receiveFood } = require('../reducers/food');
+const { removeRoom } = require('../reducers/rooms');
 const store = require('../store');
 
 let types = ['box', 'sphere'];
@@ -14,11 +15,12 @@ const spawnFood = io => {
     let { rooms, food, players } = store.getState();
     //console.log('rooms', rooms);
       for (let currentRoom of rooms) {
-      //  console.log('currentRoom', currentRoom);
+        // console.log('currentRoom', currentRoom);
+        // console.log('currentRoom', currentRoom);
         let roomPlayers = pickBy(players, ({ room }) => room === currentRoom);
-        if (Object.keys(roomPlayers).length) {
+        if (size(roomPlayers)) {
         //  console.log('generating food');
-          if (Object.keys(food).length < 300) {
+          if (size(pickBy(food, currentFood => currentFood.room === currentRoom)) < 300) {
             let x = (Math.random() * 400) - 200,
                 z = (Math.random() * 400) - 200,
                 type = types[~~(Math.random() * types.length)],
@@ -46,6 +48,7 @@ const spawnFood = io => {
             //console.log(parms)
 
             let data = { x, z, type, parms, room: currentRoom };
+            console.log('food data', data);
             store.dispatch(receiveFood('f' + id, data));
             io.sockets.in(currentRoom).emit('add_food', 'f' + id, data);
             id++;
@@ -59,8 +62,11 @@ const broadcastState = (io) => {
   setInterval(() => {
     // On set interval, emit all player positions to all players in each room
     let { players, rooms } = store.getState();
+    // console.log('rooms', rooms, 'players', players);
+    // console.log('rooms', rooms);
     for (let currentRoom of rooms) {
       let roomPlayers = pickBy(players, ({ room }) => room === currentRoom);
+      if (!size(roomPlayers)) store.dispatch(removeRoom(currentRoom));
       io.sockets.in(currentRoom).emit('player_data', roomPlayers);
     }
     spawnFood(io, store);

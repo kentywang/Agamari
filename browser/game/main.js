@@ -67,10 +67,11 @@ export const init = () => {
 
     // initialize all existing players in room
     let newPlayer, newFood;
-
+    console.log('players', players);
     forOwn(players, (data, id) => {
       let isMainPlayer = id == user.id;
       newPlayer = new Player(id, data, isMainPlayer);
+      console.log('created player', newPlayer);
       newPlayer.init();
       // if (isMainPlayer) player = newPlayer;
     });
