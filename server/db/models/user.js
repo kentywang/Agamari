@@ -9,17 +9,20 @@ const User = db.define('user', {
     unique: true
   },
   password: {
-    type: Sequelize.VIRTUAL
+    type: Sequelize.VIRTUAL,
+    allowNull:false
   },
   password_digest: {
-    type: Sequelize.STRING
+    type: Sequelize.STRING,
+    
   },
   admin: {
     type: Sequelize.BOOLEAN
   },
   username: {
     type: Sequelize.STRING,
-    unique: true
+    unique: true,
+    allowNull:false
   },
   nickname: {
     type: Sequelize.STRING,
