@@ -23,6 +23,7 @@ describe('Rooms Routes:', function () {
 
   describe('GET /api/rooms', function () {
     it('responds with an array via JSON', function () {
+
       return agent
       .get('/api/rooms')
       .expect('Content-Type', /json/)
@@ -32,107 +33,104 @@ describe('Rooms Routes:', function () {
         expect(res.body).to.be.an.instanceOf(Array);
         expect(res.body).to.have.length(0);
       });
+       console.log(res.body);
+    });
 
-   // });
+    it('returns a room if there is one in the DB', function () {
 
-  //   it('returns an article if there is one in the DB', function () {
+      var room = Room.build({
+        name: 'Test Room'
+      });
 
-  //     var article = Article.build({
-  //       title: 'Test Article',
-  //       content: 'Test body'
-  //     });
+      return room.save().then(function () {
 
-  //     return article.save().then(function () {
+        return agent
+        .get('/api/rooms')
+        .expect(200)
+        .expect(function (res) {
+          expect(res.body).to.be.an.instanceOf(Array);
+          expect(res.body[0].name).to.equal('Test Room');
+        });
+        console.log(res.body);
+      });
 
-  //       return agent
-  //       .get('/articles')
-  //       .expect(200)
-  //       .expect(function (res) {
-  //         expect(res.body).to.be.an.instanceOf(Array);
-  //         expect(res.body[0].content).to.equal('Test body');
-  //       });
+    });
 
-  //     });
+    it('returns another room if there is another one in the DB', function () {
 
-  //   });
+      var room = Room.build({
+        name: 'Test Room'
+      });
 
-  //   it('returns another article if there is one in the DB', function () {
+      var article2 = Article.build({
+        name: 'Test Room'
+      });
 
-  //     var article1 = Article.build({
-  //       title: 'Test Article',
-  //       content: 'Test body'
-  //     });
+      return article1.save()
+      .then(function () { return article2.save() })
+      .then(function () {
 
-  //     var article2 = Article.build({
-  //       title: 'Another Test Article',
-  //       content: 'Another test body'
-  //     });
+        return agent
+        .get('/articles')
+        .expect(200)
+        .expect(function (res) {
+          expect(res.body).to.be.an.instanceOf(Array);
+          expect(res.body[0].content).to.equal('Test body');
+          expect(res.body[1].content).to.equal('Another test body');
+        });
 
-  //     return article1.save()
-  //     .then(function () { return article2.save() })
-  //     .then(function () {
+      });
 
-  //       return agent
-  //       .get('/articles')
-  //       .expect(200)
-  //       .expect(function (res) {
-  //         expect(res.body).to.be.an.instanceOf(Array);
-  //         expect(res.body[0].content).to.equal('Test body');
-  //         expect(res.body[1].content).to.equal('Another test body');
-  //       });
-
-  //     });
-
-  //   });
+    });
 
    });
 
-  // describe('GET /articles/:id', function () {
+  describe('GET /articles/:id', function () {
 
-  //   var coolArticle;
+    var coolArticle;
 
-  //   beforeEach(function () {
+    beforeEach(function () {
 
-  //     var creatingArticles = [{
-  //       title: 'Boring article',
-  //       content: 'This article is boring'
-  //     }, {
-  //       title: 'Cool Article',
-  //       content: 'This article is cool'
-  //     }, {
-  //       title: 'Riveting Article',
-  //       content: 'This article is riveting'
-  //     }]
-  //     .map(data => Article.create(data));
+      var creatingArticles = [{
+        title: 'Boring article',
+        content: 'This article is boring'
+      }, {
+        title: 'Cool Article',
+        content: 'This article is cool'
+      }, {
+        title: 'Riveting Article',
+        content: 'This article is riveting'
+      }]
+      .map(data => Article.create(data));
 
-  //     return Promise.all(creatingArticles)
-  //     .then(createdArticles => {
-  //       coolArticle = createdArticles[1];
-  //     });
+      return Promise.all(creatingArticles)
+      .then(createdArticles => {
+        coolArticle = createdArticles[1];
+      });
 
-  //   });
+    });
 
-  //   it('returns the JSON of the article based on the id', function () {
+    it('returns the JSON of the article based on the id', function () {
 
-  //     return agent
-  //     .get('/articles/' + coolArticle.id)
-  //     .expect(200)
-  //     .expect(function (res) {
-  //       if (typeof res.body === 'string') {
-  //         res.body = JSON.parse(res.body);
-  //       }
-  //       expect(res.body.title).to.equal('Cool Article');
-  //     });
+      return agent
+      .get('/articles/' + coolArticle.id)
+      .expect(200)
+      .expect(function (res) {
+        if (typeof res.body === 'string') {
+          res.body = JSON.parse(res.body);
+        }
+        expect(res.body.title).to.equal('Cool Article');
+      });
 
-  //   });
+    });
 
-  //   it('returns a 404 error if the ID is not correct', function () {
+    it('returns a 404 error if the ID is not correct', function () {
 
-  //     return agent
-  //     .get('/articles/76142896')
-  //     .expect(404);
+      return agent
+      .get('/articles/76142896')
+      .expect(404);
 
-  //   });
+    });
 
   });
 
