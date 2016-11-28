@@ -61,7 +61,8 @@
     "mocha": "^2.3.3",
     "nodemon": "^1.7.1",
     "supertest": "^1.1.0",
-    "supertest-as-promised": "^3.1.0"
+    "supertest-as-promised": "^3.1.0",
+    "enzyme": "^2.6.0"
 
   },
   "engines": {
