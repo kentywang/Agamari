@@ -23,25 +23,25 @@ class Canvas extends Component {
 			this.state.leaderboard = [];
 			var myNick = scene.getObjectByName(socket.id).nickname;
 			if (myNick.length > 15){
-				myNick = myNick.slice(0,14) + "..."; 
-			} 
+				myNick = myNick.slice(0,14) + "...";
+			}
 
 			for(let id in this.props.players){
 				var nick = scene.getObjectByName(id).nickname;
 				if (nick.length > 15){
-					nick = nick.slice(0,14) + "..."; 
-				} 
+					nick = nick.slice(0,14) + "...";
+				}
 				this.state.leaderboard.push({nick, vol: this.props.players[id].volume});
 			}
 			// sort leaders
 			this.state.leaderboard.sort((a, b) => b.vol - a.vol);
 
 			// add self to shortlist (if necessary)
-			var me = this.state.leaderboard.find(e => e.nick === myNick)
-			me.place = this.state.leaderboard.indexOf(me) + 1;
-			this.state.leaderboard.splice(3);
+			// var me = this.state.leaderboard.find(e => e.nick === myNick)
+			// me.place = this.state.leaderboard.indexOf(me) + 1;
+			this.state.leaderboard.splice(4);
 			if(me.place > 3){
-				this.state.leaderboard.push(me);
+				// this.state.leaderboard.push(me);
 			}
 		}
 
@@ -69,7 +69,7 @@ class Canvas extends Component {
 									<tr key={`leaderboard-row-${index+1}`} style={myNick === person.nick ? {backgroundColor: 'rgba(0,0,0,0.3)'} : {}}>
 										<td style={{padding: '0px 10px', borderRadius:'0px'}}>{person.place || index + 1}</td>
 										<td style={{padding: '0px 10px',borderRadius:'0px'}}>{person.nick}</td>
-										<td style={{padding: '0px 10px',borderRadius:'0px'}}>{(index === 0) && person.vol}</td>
+										<td style={{padding: '0px 10px',borderRadius:'0px'}}>{person.vol}</td>
 									</tr>
 								))
 							}
