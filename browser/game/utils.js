@@ -75,32 +75,31 @@ export const attachFood = (id, playerId, playerData) => {
   // attach food to player
   if (foodObject) {
     world.remove(foodObject.cannon);
-    scene.remove(foodObject);
-    // let vec1 = new CANNON.Vec3((foodObject.position.x - playerData.x) * 0.5,
-    //                            (foodObject.position.z - playerData.z) * 0.5,
-    //                            (foodObject.position.y - playerData.y) * 0.5);
-    // let vmult = newQuat.inverse().vmult(vec1);
-    // player.cannon.addShape(foodObject.cannon.shapes[0], vmult, newQuat.inverse());
+    let vec1 = new CANNON.Vec3((foodObject.position.x - playerData.x) * 0.5,
+                               (foodObject.position.z - playerData.z) * 0.5,
+                               (foodObject.position.y - playerData.y) * 0.5);
+    let vmult = newQuat.inverse().vmult(vec1);
+    player.cannon.addShape(foodObject.cannon.shapes[0], vmult, newQuat.inverse());
 
-    // let invQuat = threeQuat.inverse();
-    // let vec2 = new THREE.Vector3((foodObject.position.x - playerData.x) * 0.5,
-    //                             (foodObject.position.y - playerData.y) * 0.5,
-    //                             (foodObject.position.z - playerData.z) * 0.5);
-    // let vecRot = vec2.applyQuaternion(invQuat);
+    let invQuat = threeQuat.inverse();
+    let vec2 = new THREE.Vector3((foodObject.position.x - playerData.x) * 0.5,
+                                (foodObject.position.y - playerData.y) * 0.5,
+                                (foodObject.position.z - playerData.z) * 0.5);
+    let vecRot = vec2.applyQuaternion(invQuat);
 
-    // foodObject.position.set(vecRot.x, vecRot.y, vecRot.z);
-    // foodObject.quaternion.set(invQuat.x, invQuat.y, invQuat.z, invQuat.w);
+    foodObject.position.set(vecRot.x, vecRot.y, vecRot.z);
+    foodObject.quaternion.set(invQuat.x, invQuat.y, invQuat.z, invQuat.w);
 
-    // // add to pivot obj of player
-    // player.children[0].add(foodObject);
+    // add to pivot obj of player
+    player.children[0].add(foodObject);
 
-    // // throw out older food
-    // while (player.cannon.shapes.length > 50) {
-    //    player.cannon.shapes.splice(1, 1);
-    //    player.cannon.shapeOffsets.splice(1, 1);
-    //    player.cannon.shapeOrientations.splice(1, 1);
-    //    player.children[0].children.splice(0, 1);
-    //  }
+    // throw out older food
+    while (player.cannon.shapes.length > 50) {
+       player.cannon.shapes.splice(1, 1);
+       player.cannon.shapeOffsets.splice(1, 1);
+       player.cannon.shapeOrientations.splice(1, 1);
+       player.children[0].children.splice(0, 1);
+     }
   }
 };
 
