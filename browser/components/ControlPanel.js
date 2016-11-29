@@ -9,6 +9,7 @@ import { openConsole,
          setError,
          resetError,
          startAsGuest } from '../reducers/controlPanel';
+import {stopGame} from '../reducers/gameState';         
 
 class ControlPanel extends Component {
   render() {
@@ -17,7 +18,8 @@ class ControlPanel extends Component {
           open,
           close,
           updateNickname,
-          signInAsGuest } = this.props;
+          signInAsGuest,
+          leave } = this.props;
     let { isOpen,
           nickname,
           error } = controlPanel;
@@ -38,6 +40,7 @@ class ControlPanel extends Component {
             <button className="btn"onClick={() => signInAsGuest(nickname, socket)}>
               Start Game As Guest</button>
             <button className="btn" onClick={close}>Close Window</button>
+            <button className="btn" onClick={leave}>Leave Game</button>
           </div>
         </div> :
         <div>
@@ -54,6 +57,7 @@ const mapStateToProps = ({ players, controlPanel }) => ({ players, controlPanel 
 const mapDispatchToProps = dispatch => ({
   open: () => dispatch(openConsole()),
   close: () => dispatch(closeConsole()),
+  leave: ()=> dispatch(stopGame()),
   updateNickname: e => dispatch(setNickname(e.target.value)),
   clearNickname: () => dispatch(resetNickname()),
   updateError: error => dispatch(setError(error)),
