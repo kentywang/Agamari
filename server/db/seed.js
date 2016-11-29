@@ -17,39 +17,45 @@ let rooms = [
     }
   ];
 
- // let scores = [
- //    {
- //      value: 10,
- //      time: new Date()
- //    },
- //    {
- //      value: 50,
- //      time: new Date()
- //    },
- //    {
- //      value: 90,
- //      time: new Date()
- //    }
- //  ];
+ let scores = [
+    {
+      value: 10,
+      time: new Date()
+    },
+    {
+      value: 50,
+      time: new Date()
+    },
+    {
+      value: 900,
+      time: new Date()
+    }
+  ];
 
  let users = [
     {
       email: 'dan@fullstack.com',
       password: 'diggitydan',
       admin: false,
-      nickname: 'dan'
+      username: 'dan',
+      nickname: 'dan',
+      guest:false
     },
     {
       email: 'ben@fullstack.com',
       password: 'diggityben',
       admin: true,
-      nickname: 'ben'
+      username: 'ben',
+      nickname: 'ben',
+      guest:false
     },
     {
       email: 'joe@fullstack.com',
       password: 'diggityjoe',
       admin: false,
-      nickname: 'joe'
+      username: 'joe',
+      nickname: 'joe',
+      guest:false
     }
 
     ];
@@ -59,9 +65,9 @@ db.sync({force: true})
  console.log('Dropped old data, now inserting data');
  return rooms.map((room) =>  Room.create(room));
 })
-// .then(() => {
-//  return scores.map((score) =>  Score.create(score));
-// })
+.then(() => {
+ return scores.map((score) =>  Score.create(score));
+})
 .then(() => {
  return users.map((user) =>  User.create(user));
 })

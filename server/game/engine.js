@@ -1,6 +1,7 @@
 
-const { pickBy } = require('lodash');
-const { receiveFood } = require('../reducers/food');
+const { pickBy, size } = require('lodash');
+const { receiveFood, removeMultipleFood } = require('../reducers/food');
+const { removeRoom } = require('../reducers/rooms');
 const store = require('../store');
 
 let types = ['box', 'sphere'];
@@ -16,7 +17,8 @@ const spawnFood = io => {
       for (let currentRoom of rooms) {
       //  console.log('currentRoom', currentRoom);
         let roomPlayers = pickBy(players, ({ room }) => room === currentRoom);
-        if (Object.keys(roomPlayers).length) {
+        let roomFood = pickBy(food, ({ room }) => room === currentRoom );
+        if (size(roomPlayers)) {
         //  console.log('generating food');
           if (Object.keys(food).length < 300) {
             let x = (Math.random() * 1000) - 500,
@@ -52,6 +54,9 @@ const spawnFood = io => {
             io.sockets.in(currentRoom).emit('add_food', id, data);
             id++;
           }
+        } else {
+          store.dispatch(removeMultipleFood(roomFood));
+          store.dispatch(removeRoom(currentRoom));
         }
       }
     }

@@ -6,9 +6,6 @@ const Room = db.define('room', {
     type: Sequelize.STRING,
     unique: true,
   }
-},
-{
-
 });
 
 module.exports = Room;

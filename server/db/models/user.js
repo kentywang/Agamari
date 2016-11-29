@@ -12,7 +12,8 @@ const User = db.define('user', {
     type: Sequelize.VIRTUAL
   },
   password_digest: {
-    type: Sequelize.STRING
+    type: Sequelize.STRING,
+
   },
   admin: {
     type: Sequelize.BOOLEAN
