@@ -109,7 +109,7 @@ THREE.PlayerControls = function ( camera, player, cannonMesh, raycastReference ,
 	    cameraPlace.makeTranslation ( 0, curCamHeight * scope.scale * .8, curCamZoom * scope.scale * .8) 
 	  
 	    var cameraRot = new THREE.Matrix4();
-	    cameraRot.makeRotationX(-0.3 - (playerPosition.length()/1000));// scale this with height to planet!
+	    cameraRot.makeRotationX(-0.32 - (playerPosition.length()/1200));// scale this with height to planet!
 
 
 	    var oneTwo = new THREE.Matrix4();
