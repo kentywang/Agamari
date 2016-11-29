@@ -67,7 +67,7 @@ const broadcastState = (io) => {
     for (let currentRoom of rooms) {
       let roomPlayers = pickBy(players, ({ room }) => room === currentRoom);
       io.sockets.in(currentRoom).emit('player_data', roomPlayers);
-      spawnFood(io, store, currentRoom);
+      spawnFood(io, currentRoom);
     }
   }, (1000 / 30));
 };
