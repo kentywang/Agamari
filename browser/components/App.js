@@ -6,7 +6,6 @@ import ControlPanel from './ControlPanel';
 import Splash from './Splash';
 
 
-
 import BugReportForm from './BugReportForm';
 
 

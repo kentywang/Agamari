@@ -40,8 +40,10 @@ export function loadEnvironment() {
         playerObject.quaternion.z = qz;
         playerObject.quaternion.w = qw;
 
-        playerObject.sprite.position.copy(playerObject.position);
-        playerObject.sprite.position.add(playerObject.sprite.position.clone().normalize().multiplyScalar(scale * 15))
+        if (playerObject.sprite) {
+          playerObject.sprite.position.copy(playerObject.position);
+          playerObject.sprite.position.add(playerObject.sprite.position.clone().normalize().multiplyScalar(scale * 15))
+        }
       }
 
       // if (id === socket.id){

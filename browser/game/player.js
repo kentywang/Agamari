@@ -34,9 +34,22 @@ export class Player {
 
     let someColors = myColors();
 
+    let aFewColors = 
+    [ '#6C5B7B',
+      '#355C7D',
+      '#99B898',
+      '#2A363B',
+      '#A8A7A7',
+      '#E8175D',
+      '#F26B38',
+      '#2F9599',
+      '#45ADA8',
+      '#547980'];
+    let randomColor = aFewColors[~~(Math.random() * aFewColors.length)];
+
     // THREE
     geometry = new THREE.TetrahedronGeometry( 10, 2 );
-    material = new THREE.MeshPhongMaterial({ color: "#355c7d",
+    material = new THREE.MeshPhongMaterial({ color: randomColor,
                                              shading: THREE.FlatShading });
     mesh = new THREE.Mesh( geometry, material );
 
