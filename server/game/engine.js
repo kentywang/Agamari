@@ -30,15 +30,15 @@ const spawnFood = io => {
             switch (type){
               case 'box':
                 foodSize = [
-                  2 + (Math.random() * 8),
-                  2 + (Math.random() * 4),
-                  2 + (Math.random() * 3),
+                  2 + (Math.random() * 20),
+                  2 + (Math.random() * 20),
+                  2 + (Math.random() * 20),
                 ];
                 break;
               case 'sphere':
               default:
                 foodSize = [
-                  3 + (Math.random() * 2)
+                  3 + (Math.random() * 20)
                 ];
                 break;
             }
