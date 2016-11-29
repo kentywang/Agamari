@@ -79,7 +79,10 @@ class Canvas extends Component {
 					<div className="status">
 						{this.props.gameStatus}
 					</div>
-					<div className="abilities" style={this.props.abilities && this.props.abilities.launch ? {} : {color: 'rgba(255,255,255,0.3)'}}>{this.props.players[socket.id] && this.props.abilities && "launch ready"}</div>
+					<div className="abilities" style={this.props.abilities && this.props.abilities.launch ? {} : {color: 'rgba(255,255,255,0.3)'}}>
+					<div>{this.props.players[socket.id] && this.props.abilities && this.props.abilities.meter}</div>
+						<div>{this.props.players[socket.id] && this.props.abilities && "launch ready"}</div>
+					</div>
 					<div className="score">
 						<div>{this.props.players[socket.id] && 'volume'}
 						</div>
