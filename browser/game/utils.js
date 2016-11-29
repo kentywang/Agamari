@@ -75,7 +75,7 @@ export const attachFood = (id, playerId, playerData) => {
   // attach food to player
   if (foodObject) {
     world.remove(foodObject.cannon);
-
+    // scene.remove(foodObject);
     let vec1 = new CANNON.Vec3((foodObject.position.x - playerData.x) * 0.5,
                                (foodObject.position.z - playerData.z) * 0.5,
                                (foodObject.position.y - playerData.y) * 0.5);

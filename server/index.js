@@ -9,6 +9,9 @@ const store = require('./store');
 const setUpListeners = require('./game/listeners');
 const { broadcastState } = require('./game/engine');
 
+const memwatch = require('memwatch-next');
+memwatch.on('leak', info => console.log(chalk.blue(JSON.stringify(info))));
+memwatch.on('stats', stats => console.log(chalk.yellow(JSON.stringify(stats))));
 // Create server and app
 const server = http.createServer();
 const app = express();

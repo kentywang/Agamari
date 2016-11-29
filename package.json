@@ -37,6 +37,7 @@
     "jquery": "^3.1.1",
     "json-loader": "^0.5.4",
     "materialize-css": "^0.97.8",
+    "memwatch-next": "^0.3.0",
     "morgan": "^1.7.0",
     "nodemon": "^1.11.0",
     "passport": "^0.3.2",
@@ -62,7 +63,6 @@
     "nodemon": "^1.7.1",
     "supertest": "^1.1.0",
     "supertest-as-promised": "^3.1.0"
-
   },
   "engines": {
     "node": "6.7.0"
