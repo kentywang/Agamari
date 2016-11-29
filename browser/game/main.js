@@ -239,14 +239,72 @@ function createLevel(){
  scene.add(planet);
 
  // create THREE moon
-  var box_geometry = new THREE.TetrahedronGeometry( 100 , 3)
-  var box_material = new THREE.MeshPhongMaterial( { color: "#F8B195", shading: THREE.FlatShading});
-  var moon = new THREE.Mesh( box_geometry, box_material );
+  var moon_geometry = new THREE.TetrahedronGeometry( 100 , 3)
+  var moon_material = new THREE.MeshPhongMaterial( { color: "#F8B195", shading: THREE.FlatShading});
+  var moon = new THREE.Mesh( moon_geometry, moon_material );
   ;
   moon.position.set(0,0,-750);
   moon.castShadow = true;
   
   scene.add(moon);
+
+
+
+
+
+  
+  // create a cube geometry;
+  // this shape will be duplicated to create the cloud
+  var geom = new THREE.BoxGeometry(20,20,20);
+  
+  // create a material; a simple white material will do the trick
+  var mat = new THREE.MeshPhongMaterial({
+    color:'#E5E5E5',  
+  });
+  
+  // duplicate the geometry a random number of times
+  var nBlocs = 3+Math.floor(Math.random()*3);
+  for (var i=0; i<nBlocs; i++ ){
+    
+    // create the mesh by cloning the geometry
+    var m = new THREE.Mesh(geom, mat); 
+    
+    // set the position and the rotation of each clouds randomly
+    m.position.x = i*15;
+    m.position.y = Math.random()*10;
+    m.position.z = 750+Math.random()*10;
+    m.rotation.z = Math.random()*Math.PI*2;
+    m.rotation.y = Math.random()*Math.PI*2;
+    
+    // set the size of the clouds randomly
+    var s = .1 + Math.random()*.9;
+    m.scale.set(s,s,s);
+    
+    // allow each clouds to cast and to receive shadows
+    m.castShadow = true;
+    m.receiveShadow = true;
+    
+    // add the clouds to the container we first created
+  scene.add(m);
+}
+
+
+
+
+
+
+
+
+
+
+// var cloud_geometry = new THREE.TetrahedronGeometry( 10 , 5)
+//   var cloud_material = new THREE.MeshPhongMaterial( { color: "#FFF", shading: THREE.FlatShading});
+//   var cloud = new THREE.Mesh( cloud_geometry, cloud_material );
+//   ;
+//   cloud.position.set(0,0,850);
+ 
+//   scene.add(cloud);
+
 
   // create Cannon planet
   var planetShape = new CANNON.Sphere(500);
