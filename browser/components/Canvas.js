@@ -3,12 +3,14 @@ import { connect } from 'react-redux';
 import socket from '../socket';
 import { scene } from '../game/main';
 
+import { keepPlaying } from '../reducers/gameStatus';
+
 class Canvas extends Component {
 	constructor(props){
     	super(props);
     	this.state = {
     		leaderboard: [],
-    		displayVol : 4200
+    		displayVol : 4000
     	}
   	}
 
@@ -51,6 +53,11 @@ class Canvas extends Component {
 			this.state.displayVol = this.props.players[socket.id].volume;
 		}
 
+		// show eater/eaten status for 3 seconds before fading
+		if(this.props.gameStatus.length){
+			setTimeout(()=>this.props.keepPlaying(), 3000);
+		}
+
 
 		return (
 			<div>
@@ -69,7 +76,10 @@ class Canvas extends Component {
 							</tbody>
 						</table>
 					</div>
-					<div className="abilities">abilities</div>
+					<div className="status">
+						{this.props.gameStatus}
+					</div>
+					<div className="abilities" style={this.props.abilities && this.props.abilities.launch ? {} : {color: 'rgba(255,255,255,0.3)'}}>{this.props.players[socket.id] && this.props.abilities && "launch ready"}</div>
 					<div className="score">
 						<div>{this.props.players[socket.id] && 'volume'}
 						</div>
@@ -77,21 +87,18 @@ class Canvas extends Component {
 						</div>
 					</div>
 				</div>
-				<div style={{fontFamily: "Quicksand", fontWeight: "bold", display: "none"}}>
-					Keep this div in to preload fonts for canvas.
-				</div>
 				<div>
-					<canvas id="canvas"></canvas>
+					<canvas id="canvas" style={{background: 'linear-gradient(#00ABD6,#4ECDC4)'}}></canvas>
 				</div>
 			</div>
 		)
 	}
 }
 
-const mapStateToProps = ({ players }) => ({ players });
+const mapStateToProps = ({ players, gameStatus, abilities }) => ({ players, gameStatus, abilities });
 
 const mapDispatchToProps = dispatch => ({
-  // open: () => dispatch(openConsole()),
+  keepPlaying: () => dispatch(keepPlaying())
   // close: () => dispatch(closeConsole()),
   // updateNickname: e => dispatch(setNickname(e.target.value)),
   // clearNickname: () => dispatch(resetNickname()),

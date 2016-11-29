@@ -1,16 +1,22 @@
 let Promise = require('bluebird');
 
 
-const initPos = {
-  x: 0,
-  y: 50,
-  z: 0,
-  qx: 0,
-  qy: 0,
-  qz: 0,
-  qw: 1,
-  scale: 1,
-  volume: 4200 // this would change depending on what we choose for starting ball size
+function initPos(){
+  let x = 0;//Math.random() * 1000 - 500;
+  let y = 800;//Math.random() * 1000 - 500;
+  let z = 0;//Math.random() * 1000 - 500;
+
+  return {
+    x,
+    y,
+    z,
+    qx: 0,
+    qy: 0,
+    qz: 0,
+    qw: 1,
+    scale: 1,
+    volume: 4000 
+  }
 };
 
 const { User } = require('../db');
@@ -24,6 +30,7 @@ const { updatePlayer,
         updateVolume,
         changePlayerScale,
         addFoodToDiet,
+        addPlayerToDiet,
         clearDiet } = require('../reducers/players');
 
 const addRandomRoom = () => {
@@ -54,7 +61,7 @@ const setUpListeners = (io, socket) => {
           if (!room) room = addRandomRoom();
 
           // Create new player with db info, initial position and room
-          let player = Object.assign({}, initPos, {id, nickname, room});
+          let player = Object.assign({}, initPos(), {id, nickname, room});
 
           // Log player out of all current rooms (async, stored in array of promises)
           let leavePromises = [];
@@ -99,19 +106,19 @@ const setUpListeners = (io, socket) => {
     socket.on('update_position', data => {
       let player = store.getState().players[socket.id];
       if (player) {
-        if (data.y >= 5) {
+        //if (data.y >= 5) {
           // If player's y coordinate is greater than or equal to zero,
           // update game state with current position
           store.dispatch(updatePlayer(socket.id, data));
-        } else if (data.y < -5) {
-          // If y coordinate is below zero, tell players to remove player object.
-          // For now, we are automatically respawning player
-          io.sockets.in(player.room).emit('remove_player', socket.id);
-          store.dispatch(updatePlayer(socket.id, initPos));
-          store.dispatch(clearDiet(socket.id));
-          io.sockets.in(player.room).emit('add_player', socket.id, Object.assign({}, initPos, {nickname: player.nickname}), true);
-          socket.emit('you_lose', 'You fell off the board!');
-        }
+        // } else if (data.y < -5) {
+        //   // If y coordinate is below zero, tell players to remove player object.
+        //   // For now, we are automatically respawning player
+        //   io.sockets.in(player.room).emit('remove_player', socket.id);
+        //   store.dispatch(updatePlayer(socket.id, initPos));
+        //   store.dispatch(clearDiet(socket.id));
+        //   io.sockets.in(player.room).emit('add_player', socket.id, Object.assign({}, initPos, {nickname: player.nickname}), true);
+        //   socket.emit('you_lose', 'You fell off the board!');
+        // }
       }
     });
 
@@ -153,18 +160,23 @@ const setUpListeners = (io, socket) => {
       let eaten = players[socket.id];
       let eater = players[id];
 
-      if (eaten && eater) {
+
+      if (eaten && eater && Date.now() - (eaten.eatenCooldown || 0) > 3000) {
         let { room } = eaten;
-        io.sockets.in(room).emit('remove_player', socket.id, id);
-        //store.dispatch(addPlayerToDiet(eaten, id, store.getState().players[id]));
+        io.sockets.in(room).emit('remove_player', socket.id, id, eater, eaten);
+        store.dispatch(addPlayerToDiet(eaten, id, store.getState().players[id]));
         //console.log(store.getState().players[id].diet);
-        store.dispatch(changePlayerScale(id, (volume - eater.volume) / eater.volume));
+
+        // disabled because bouncing bug
+        //store.dispatch(changePlayerScale(id, (volume - eater.volume) / eater.volume));
+
         // io.sockets.in(room).emit('remove_eaten_player', socket.id, id, store.getState().players[id], store.getState().players[socket.id]);
         store.dispatch(updateVolume(id, volume));
-        store.dispatch(updatePlayer(socket.id, initPos));
+        store.dispatch(updatePlayer(socket.id, initPos()));
         store.dispatch(clearDiet(socket.id));
-        io.sockets.in(room).emit('add_player', socket.id, Object.assign({}, initPos, {nickname: eaten.nickname}), true);
-        socket.emit('you_lose', 'You died!');
+        io.sockets.in(room).emit('add_player', socket.id, Object.assign({}, initPos(), {nickname: eaten.nickname}), true);
+        socket.emit('you_lose', eater.nickname);
+        io.sockets.in(room).emit('casualty_report', eater.nickname, eaten.nickname);
       }
     });
 }

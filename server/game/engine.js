@@ -9,7 +9,7 @@ let elapsedTime = Date.now(),
     id = 1;
 
 const spawnFood = io => {
-  if (Date.now() - elapsedTime > 100){
+  if (Date.now() - elapsedTime > 33){
     //console.log('spawning food');
     elapsedTime = Date.now();
     let { rooms, food, players } = store.getState();
@@ -20,23 +20,25 @@ const spawnFood = io => {
         let roomFood = pickBy(food, ({ room }) => room === currentRoom );
         if (size(roomPlayers)) {
         //  console.log('generating food');
-          if (size(pickBy(food, ({ room }) => room === currentRoom)) < 300) {
-            let x = (Math.random() * 400) - 200,
-                z = (Math.random() * 400) - 200,
+          if (Object.keys(food).length < 300) {
+            let x = (Math.random() * 1000) - 500,
+                y = (Math.random() * 1000) - 500,
+                z = (Math.random() * 1000) - 500,
                 type = types[~~(Math.random() * types.length)],
                 foodSize = [];
+
             switch (type){
               case 'box':
                 foodSize = [
-                  1 + (Math.random() * 9),
-                  1 + (Math.random() * 5),
-                  1 + (Math.random() * 3),
+                  2 + (Math.random() * 8),
+                  2 + (Math.random() * 4),
+                  2 + (Math.random() * 3),
                 ];
                 break;
               case 'sphere':
               default:
                 foodSize = [
-                  1 + (Math.random() * 3)
+                  3 + (Math.random() * 2)
                 ];
                 break;
             }
@@ -44,10 +46,10 @@ const spawnFood = io => {
             // scale food to random player
             let randomPlayerId = Object.keys(roomPlayers)[~~(Math.random() * Object.keys(roomPlayers).length)];
             let playerToFeed = roomPlayers[randomPlayerId];
-            let parms = foodSize.map(e => -~(e * playerToFeed.scale));
+            let parms = foodSize.map(e => ~~(e * playerToFeed.scale));
             //console.log(parms)
 
-            let data = { x, z, type, parms, room: currentRoom };
+            let data = { x, y, z, type, parms, room: currentRoom };
             store.dispatch(receiveFood(id, data));
             io.sockets.in(currentRoom).emit('add_food', id, data);
             id++;
@@ -69,7 +71,7 @@ const broadcastState = (io) => {
       io.sockets.in(currentRoom).emit('player_data', roomPlayers);
     }
     spawnFood(io, store);
-  }, (1000 / 60));
+  }, (1000 / 30));
 };
 
 // function respawn(io, store, socket, room){

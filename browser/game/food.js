@@ -1,4 +1,5 @@
-import { scene, world, groundMaterial, myColors } from './main';
+import { scene, world, groundMaterial } from './main';
+import { myColors } from './config';
 import socket from '../socket';
 import store from '../store';
 const THREE = require('three');
@@ -19,26 +20,30 @@ export class Food {
   }
 
   init() {
+    let someColors = myColors();
     // Pick a random color
     count = 0;
-    for (var prop in myColors){
+
+    // never allow food to be same color as planet or players
+    someColors["pink"] = null;
+    for (var prop in someColors){
       if (Math.random() < 1 / ++count){
         color = prop;
       }
     }
 
     // Pick a random shape of random dimensions and create mesh/cannon mesh
-    let { type, parms, x, z } = this.initialData;
+    let { type, parms, x, y, z } = this.initialData;
     switch (type) {
       case 'box':
         geometry = new THREE.BoxGeometry( parms[0], parms[1], parms[2] );
-        material = new THREE.MeshPhongMaterial( {color: myColors[color], shading: THREE.FlatShading} );
+        material = new THREE.MeshPhongMaterial( {color: someColors[color], shading: THREE.FlatShading} );
         shape = new CANNON.Box(new CANNON.Vec3(parms[0] / 2, parms[1] / 2, parms[2] / 2));
         break;
       case 'sphere':
       default:
         geometry = new THREE.TetrahedronGeometry( parms[0], 1 );
-        material = new THREE.MeshPhongMaterial( {color: myColors[color], shading: THREE.FlatShading} );
+        material = new THREE.MeshPhongMaterial( {color: someColors[color], shading: THREE.FlatShading} );
         shape = new CANNON.Sphere(parms[0]);
     }
 
@@ -46,16 +51,20 @@ export class Food {
     mesh.name = this.id;
     mesh.castShadow = true;
     mesh.position.x = x;
-    mesh.position.y = 12;
+    mesh.position.y = y;
     mesh.position.z = z;
+    mesh.position.normalize().multiplyScalar(500);
+    mesh.position.add(mesh.position.clone().normalize().multiplyScalar(parms[0] * 2));
+    mesh.lookAt(new THREE.Vector3(0,0,0));
+
     mesh.cannon = new CANNON.Body({ shape, mass: 0, material: groundMaterial });
 
     mesh.cannon.position.x = mesh.position.x;
     mesh.cannon.position.z = mesh.position.y;
     mesh.cannon.position.y = mesh.position.z;
-    mesh.cannon.quaternion.x = mesh.quaternion.x;
-    mesh.cannon.quaternion.y = mesh.quaternion.y;
-    mesh.cannon.quaternion.z = mesh.quaternion.z;
+    mesh.cannon.quaternion.x = -mesh.quaternion.x;
+    mesh.cannon.quaternion.z = -mesh.quaternion.y;
+    mesh.cannon.quaternion.y = -mesh.quaternion.z;
     mesh.cannon.quaternion.w = mesh.quaternion.w;
 
     scene.add(mesh);
@@ -77,8 +86,8 @@ export class Food {
                   let playerVol = store.getState().players[socket.id].volume;
                   let foodVol = this.mesh.cannon.shapes[0].volume();
 
-                  // player must be 12 times the volume of food to eat it, and can't be more than 288 the volume
-                  if (playerVol > foodVol * 12 && playerVol < foodVol * 288) {
+                  // player must be 12 times the volume of food to eat it, and can't be more than 500 the volume
+                  if (playerVol > foodVol /** 12 && playerVol < foodVol * 500*/) {
                     // pass new volume so that server can update its store if/when food eaten goes thru
                     this.eaten = true;
                     socket.emit('eat_food', this.id, foodVol + playerVol);

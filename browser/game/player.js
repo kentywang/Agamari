@@ -1,19 +1,21 @@
 const THREE = require('three');
 const CANNON = require('../../public/cannon.min.js');
-const PlayerControls = require('../../public/PlayerControls');
+const PlayerControls = require('./PlayerControls');
 
 import { makeTextSprite } from './utils';
 import { scene,
          camera,
          world,
-         groundMaterial,
-         myColors,
+         groundMaterial, ballMaterial, 
          raycastReference } from './main';
 import { Food } from './food';
 import socket from '../socket';
 import store from '../store';
+import { myColors } from './config';
 
 let geometry, material, shape, mesh, pivot, name, sprite, controls;
+
+let lastEaten = Date.now();
 
 
 export class Player {
@@ -22,24 +24,28 @@ export class Player {
     this.initialData = data;
     this.isMainPlayer = isMainPlayer;
     this.mesh;
-    this.lastEaten;
+    //this.lastEaten;
 
     this.init = this.init.bind(this);
   }
 
   init() {
-    let { isMainPlayer, id, initialData, lastEaten } = this;
+    let { isMainPlayer, id, initialData } = this;
 
+    let someColors = myColors();
+
+    // THREE
     geometry = new THREE.TetrahedronGeometry( 10, 2 );
-    material = new THREE.MeshPhongMaterial({ color: myColors['grey'],
+    material = new THREE.MeshPhongMaterial({ color: "#355c7d",
                                              shading: THREE.FlatShading });
-    shape = new CANNON.Sphere(10);
-
     mesh = new THREE.Mesh( geometry, material );
+
+    // Cannon
+    shape = new CANNON.Sphere(10);
     if (isMainPlayer) {
       mesh.cannon = new CANNON.Body({ shape,
-                                      mass: 42,
-                                      material: groundMaterial });
+                                      mass: 40,
+                                      material: ballMaterial });
       mesh.cannon.linearDamping = mesh.cannon.angularDamping = 0.4;
     } else {
       mesh.cannon = new CANNON.Body({ shape, mass: 0 });
@@ -50,6 +56,8 @@ export class Player {
     mesh.position.x = initialData.x;
     mesh.position.y = initialData.y;
     mesh.position.z = initialData.z;
+    mesh.position.normalize().multiplyScalar(500);
+    mesh.position.multiplyScalar(1.5);
     mesh.quaternion.x = initialData.qx;
     mesh.quaternion.y = initialData.qy;
     mesh.quaternion.z = initialData.qz;
@@ -58,10 +66,10 @@ export class Player {
     mesh.name = id;
     mesh.nickname = initialData.nickname;
 
-
     // add pivot to attach food to
     pivot = new THREE.Group();
     mesh.add(pivot);
+
 
     // add Cannon box
     mesh.cannon.position.x = mesh.position.x;
@@ -74,6 +82,34 @@ export class Player {
 
     scene.add( mesh );
     world.add(mesh.cannon);
+
+    // Use the preStep callback to apply the gravity force on the planet and moon.
+    // This callback is evoked each timestep.
+    if(isMainPlayer){
+        // physics for planet
+        mesh.cannon.preStep = function(){
+          // Get the vector pointing from the ball to the planet center
+          var ball_to_planet = new CANNON.Vec3();
+          this.position.negate(ball_to_planet);
+          // Get distance from planet to ball
+          var distance = ball_to_planet.norm();
+          // Now apply force on moon
+          // Fore is pointing in the ball-planet direction
+          ball_to_planet.normalize();
+          ball_to_planet = ball_to_planet.scale(3000000 * this.mass/Math.pow(distance,2))
+          world.gravity.set(ball_to_planet.x, ball_to_planet.y, ball_to_planet.z); // changing gravity seems to apply friction, whereas just applying force doesn't
+         //  ball_to_planet.mult(100000000*this.mass/Math.pow(distance,2),this.force);
+
+          // gravity for moon
+          //if(moonStillExists){
+            // var ball_to_moon = new CANNON.Vec3(0,-1600,0);
+            // ball_to_moon.vadd(this.position);
+            // var distanceMoon = this.position.distanceTo(new CANNON.Vec3(0,-750,0));
+            // ball_to_moon.normalize();
+            // ball_to_moon.mult(10000000000*this.mass/Math.pow(distanceMoon,2), this.force);
+          //}
+      }
+    }
 
     // show name on player if not self
     if (!isMainPlayer) {
@@ -92,7 +128,8 @@ export class Player {
         let { players } = store.getState();
         let player = scene.getObjectByName(socket.id);
         // cooldown timer for being eaten
-        if (player && (!lastEaten || (Date.now() - lastEaten) > 3000)) {
+        if (player && Date.now() - lastEaten > 3000) {
+          //console.log(Date.now() - lastEaten > 3000)
           for (let contact of world.contacts){
             let thisHits = contact.bi === this.mesh.cannon,
                 mainIsHit = contact.bj === player.cannon,
@@ -102,9 +139,10 @@ export class Player {
               let mainVol = players[socket.id].volume;
               let thisVol = players[this.id].volume;
 
-              //player must be 12 times the volume of enemy to eat it
-              if (thisVol > mainVol * 12 ){
-                this.lastEaten = Date.now();
+              //player must be 2 times the volume of enemy to eat it
+              if (thisVol > mainVol/* * 2*/ ){
+                //console.log("lasteaten", Date.now() - lastEaten)
+                lastEaten = Date.now();
                 socket.emit('got_eaten', id, thisVol + mainVol);
               }
             }
@@ -123,40 +161,96 @@ export class Player {
             qz: e.qz,
             qw: e.qw
           };
+          if (e.food){
+            let newFood = new Food(null, e.food);
+            newFood.init();
+            let foodObject = newFood.mesh;
+            let player = this.mesh;
+            let newQuat = new CANNON.Quaternion(-playerData.qx,
+                                                -playerData.qz,
+                                                -playerData.qy,
+                                                playerData.qw);
+            let threeQuat = new THREE.Quaternion(playerData.qx,
+                                                 playerData.qy,
+                                                 playerData.qz,
+                                                 playerData.qw);
 
-          let newFood = new Food(null, e.food);
-          newFood.init();
-          let foodObject = newFood.mesh;
-          let player = this.mesh;
-          let newQuat = new CANNON.Quaternion(-playerData.qx,
-                                              -playerData.qz,
-                                              -playerData.qy,
-                                              playerData.qw);
-          let threeQuat = new THREE.Quaternion(playerData.qx,
-                                               playerData.qy,
-                                               playerData.qz,
-                                               playerData.qw);
+            // attach food to player
+            world.remove(foodObject.cannon);
+            let vec1 = new CANNON.Vec3((foodObject.position.x - playerData.x) * 0.5,
+                                       (foodObject.position.z - playerData.z) * 0.5,
+                                       (foodObject.position.y - playerData.y) * 0.5);
 
-          // attach food to player
-          world.remove(foodObject.cannon);
-          let vec1 = new CANNON.Vec3((foodObject.position.x - playerData.x) * 0.8,
-                                     (foodObject.position.z - playerData.z) * 0.8,
-                                     (foodObject.position.y - playerData.y) * 0.8);
+            let vmult = newQuat.inverse().vmult(vec1);
+            player.cannon.addShape(foodObject.cannon.shapes[0], vmult, newQuat.inverse());
 
-          let vmult = newQuat.inverse().vmult(vec1);
-          player.cannon.addShape(foodObject.cannon.shapes[0], vmult, newQuat.inverse());
+            let invQuat = threeQuat.inverse();
+            let vec2 = new THREE.Vector3((foodObject.position.x - playerData.x) * 0.5,
+                                        (foodObject.position.y - playerData.y) * 0.5,
+                                        (foodObject.position.z - playerData.z) * 0.5);
+            let vecRot = vec2.applyQuaternion(invQuat);
 
-          let invQuat = threeQuat.inverse();
-          let vec2 = new THREE.Vector3((foodObject.position.x - playerData.x) * 0.8,
-                                      (foodObject.position.y - playerData.y) * 0.8,
-                                      (foodObject.position.z - playerData.z) * 0.8);
-          let vecRot = vec2.applyQuaternion(invQuat);
+            foodObject.position.set(vecRot.x, vecRot.y, vecRot.z);
+            foodObject.quaternion.set(invQuat.x, invQuat.y, invQuat.z, invQuat.w);
 
-          foodObject.position.set(vecRot.x, vecRot.y, vecRot.z);
-          foodObject.quaternion.set(invQuat.x, invQuat.y, invQuat.z, invQuat.w);
+            // add to pivot obj of player
+            player.children[0].add(foodObject);
 
-          // add to pivot obj of player
-          player.children[0].add(foodObject);
+            while (player.cannon.shapes.length > 50) {
+             player.cannon.shapes.splice(1, 1);
+             player.cannon.shapeOffsets.splice(1, 1);
+             player.cannon.shapeOrientations.splice(1, 1);
+             player.children[0].children.splice(0, 1);
+           }
+          }else if(e.eatenPlayer){
+            // Not working yet
+            // // create mesh for adding eaten player(s)
+            // var oldEatenPlayer = new THREE.Mesh( geometry, material );
+            // oldEatenPlayer.scale.set(e.eatenPlayer.scale)
+
+            // let foodObject = oldEatenPlayer;
+            // let player = this.mesh;
+            // let eatenData = e.eatenPlayer;
+
+            // let newQuat = new CANNON.Quaternion(-playerData.qx,
+            //                                     -playerData.qz,
+            //                                     -playerData.qy,
+            //                                     playerData.qw);
+            // let newEatenQuat = new CANNON.Quaternion(-eatenData.qx,-eatenData.qz,-eatenData.qy,eatenData.qw);
+            // let threeQuat = new THREE.Quaternion(playerData.qx,
+            //                                      playerData.qy,
+            //                                      playerData.qz,
+            //                                      playerData.qw);
+            // let threeEatenQuat = new CANNON.Quaternion(-playerData.qx,-playerData.qz,-playerData.qy, playerData.qw);
+
+            // // attach player to eater
+            // if (foodObject) {
+
+            //   let vec1 = new CANNON.Vec3((eatenData.x - playerData.x) * .5,
+            //                              (eatenData.z - playerData.z) * .5,
+            //                              (eatenData.y - playerData.y) * .5);
+            //   let vmult = newQuat.inverse().vmult(vec1);
+
+            //   player.cannon.addShape(new CANNON.Sphere(e.eatenPlayer.scale * 10), vmult, newQuat.inverse());
+
+            //   let invQuat = threeQuat.inverse();
+            //   let vec2 = new THREE.Vector3((eatenData.x - playerData.x) * .5,
+            //                               (eatenData.y - playerData.y) * .5,
+            //                               (eatenData.z - playerData.z) * .5);
+            //   let vecRot = vec2.applyQuaternion(invQuat);
+
+            //   // create new clone of player to add
+            //   // var clone = foodObject.clone();
+            //   // clone.name = "";
+
+            //   foodObject.position.set(vecRot.x, vecRot.y, vecRot.z);
+            //   foodObject.quaternion.multiply(invQuat);
+
+            //   // add to pivot obj of player
+            //   player.children[0].add(foodObject);
+
+            //}
+          }
         });
       }
     }

@@ -1,7 +1,7 @@
 let newState;
 
 /*----------  INITIAL STATE  ----------*/
-const initialState = {};
+const initialState = {eatenCooldown: 0};
 
 /*----------  ACTION TYPES  ----------*/
 const RECEIVE_PLAYERS = 'RECEIVE_PLAYERS';
@@ -127,6 +127,7 @@ const immutable = (state = initialState, action) => {
     case CLEAR_DIET:
       newState = Object.assign({}, state);
       newState[action.id].diet = [];
+      newState[action.id].eatenCooldown = Date.now();
       return newState;
     default:
       return state;
@@ -159,6 +160,7 @@ const mutable = (state = initialState, action) => {
 // no ADD_FOOD_TO_DIET, nor ADD_PLAYER_To_DIET cases mutable implemented yet
     case CLEAR_DIET:
       state[action.id].diet = [];
+      state[action.id].eatenCooldown = Date.now();
       return state;
     default:
       return state;

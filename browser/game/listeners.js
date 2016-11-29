@@ -1,11 +1,12 @@
 import store from '../store';
-import { attachFood } from './utils';
+import { attachFood, attachPlayer } from './utils';
 
 import { closeConsole, setError } from '../reducers/controlPanel';
 import { receivePlayers } from '../reducers/players';
 import { removeFood,
          receiveFood,
          receiveMultipleFood } from '../reducers/food';
+import { lose, ateSomeone } from '../reducers/gameStatus';
 
 import { init,
          animate,
@@ -41,22 +42,32 @@ export default socket => {
 
     // Create player object when new player joins or on respawn
     socket.on('add_player', (id, initialData) => {
+     //console.log("add player")
       let isMainPlayer = id === socket.id;
       let player = new Player(id, initialData, isMainPlayer);
       player.init();
     });
 
     // Remove player object when player leaves or dies
-    socket.on('remove_player', (id, eaterId) => {
+    socket.on('remove_player', (id, eaterId, eaterData, eatenData) => {
       let playerObject = scene.getObjectByName(id);
       if (playerObject) {
+        if(eaterId){
+          // attach player if this was a eat event
+          attachPlayer(id, eaterId, eaterData, eatenData);
+        }
         world.remove(playerObject.cannon);
         scene.remove(playerObject.sprite);
         scene.remove(playerObject);
         let { children } = playerObject.children[0];
         for (let child of children) scene.remove(child);
-        playerObject.dispose();
-        if (eaterId === socket.id) createjs.Sound.play('eatSound');
+        //playerObject.dispose(); // this isn't working yet
+        //console.log(eaterId, socket.id)
+        if (eaterId === socket.id){
+          //console.log("hello mom")
+          createjs.Sound.play('eatSound');
+          store.dispatch(ateSomeone(playerObject.nickname));// dispatch exits this function for some reason
+        }
       }
     });
 
@@ -78,6 +89,10 @@ export default socket => {
           //console.log(scene.getObjectByName(playerId).cannon.mass)
         }
       });
+
+    socket.on('you_lose', eater =>{
+        store.dispatch(lose(eater));
+    });
 
 //     socket.on('remove_eaten_player', (id, playerId, playerData, eatenData) => {
 //       let playerObject = scene.getObjectByName(id);
