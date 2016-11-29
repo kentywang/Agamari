@@ -39,7 +39,7 @@ class Canvas extends Component {
 			// add self to shortlist (if necessary)
 			var me = this.state.leaderboard.find(e => e.nick === myNick)
 			me.place = this.state.leaderboard.indexOf(me) + 1;
-			this.state.leaderboard.splice(4);
+			this.state.leaderboard.splice(3);
 			if(me.place > 3){
 				this.state.leaderboard.push(me);
 			}
