@@ -2,8 +2,8 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import socket from '../socket';
 
-import gameState from '../reducers/gamestate.js';
-import { startGame, stopGame, setNickname, resetNickname, startAsGuest } from '../reducers/gamestate.js';
+import gameState from '../reducers/gameState.js';
+import { startGame, stopGame, setNickname, resetNickname, startAsGuest } from '../reducers/gameState.js';
 
 class Splash extends Component {
   render () {
