@@ -3,9 +3,9 @@ let Promise = require('bluebird');
 
 
 function initPos(){
-  let x = 0;//Math.random() * 2400 - 1200;
-  let y = 1800;//Math.random() * 2400 - 1200;
-  let z = 0;//Math.random() * 2400 - 1200;
+  let x = 0;//Math.random() * 1000 - 500;
+  let y = 800;//Math.random() * 1000 - 500;
+  let z = 0;//Math.random() * 1000 - 500;
 
   return {
     x,
@@ -30,6 +30,7 @@ const { updatePlayer,
         updateVolume,
         changePlayerScale,
         addFoodToDiet,
+        addPlayerToDiet,
         clearDiet } = require('../reducers/players');
 
 
@@ -146,12 +147,16 @@ const setUpListeners = (io, socket) => {
       let eaten = players[socket.id];
       let eater = players[id];
 
-      if (eaten && eater) {
+
+      if (eaten && eater && Date.now() - (eaten.eatenCooldown || 0) > 3000) {
         let { room } = eaten;
-        io.sockets.in(room).emit('remove_player', socket.id, id);
-        //store.dispatch(addPlayerToDiet(eaten, id, store.getState().players[id]));
+        io.sockets.in(room).emit('remove_player', socket.id, id, eater, eaten);
+        store.dispatch(addPlayerToDiet(eaten, id, store.getState().players[id]));
         //console.log(store.getState().players[id].diet);
-        store.dispatch(changePlayerScale(id, (volume - eater.volume) / eater.volume));
+
+        // disabled because bouncing bug
+        //store.dispatch(changePlayerScale(id, (volume - eater.volume) / eater.volume));
+
         // io.sockets.in(room).emit('remove_eaten_player', socket.id, id, store.getState().players[id], store.getState().players[socket.id]);
         store.dispatch(updateVolume(id, volume));
         store.dispatch(updatePlayer(socket.id, initPos()));

@@ -53,7 +53,7 @@ export class Food {
     mesh.position.x = x;
     mesh.position.y = y;
     mesh.position.z = z;
-    mesh.position.normalize().multiplyScalar(1200);
+    mesh.position.normalize().multiplyScalar(500);
     mesh.position.add(mesh.position.clone().normalize().multiplyScalar(parms[0] * 2));
     mesh.lookAt(new THREE.Vector3(0,0,0));
 
@@ -87,7 +87,7 @@ export class Food {
                   let foodVol = this.mesh.cannon.shapes[0].volume();
 
                   // player must be 12 times the volume of food to eat it, and can't be more than 500 the volume
-                  if (playerVol > foodVol * 12 && playerVol < foodVol * 500) {
+                  if (playerVol > foodVol /** 12 && playerVol < foodVol * 500*/) {
                     // pass new volume so that server can update its store if/when food eaten goes thru
                     this.eaten = true;
                     socket.emit('eat_food', this.id, foodVol + playerVol);

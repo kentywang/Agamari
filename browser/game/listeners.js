@@ -1,5 +1,5 @@
 import store from '../store';
-import { attachFood } from './utils';
+import { attachFood, attachPlayer } from './utils';
 
 import { closeConsole, setError } from '../reducers/controlPanel';
 import { receivePlayers } from '../reducers/players';
@@ -49,9 +49,13 @@ export default socket => {
     });
 
     // Remove player object when player leaves or dies
-    socket.on('remove_player', (id, eaterId) => {
+    socket.on('remove_player', (id, eaterId, eaterData, eatenData) => {
       let playerObject = scene.getObjectByName(id);
       if (playerObject) {
+        if(eaterId){
+          // attach player if this was a eat event
+          attachPlayer(id, eaterId, eaterData, eatenData);
+        }
         world.remove(playerObject.cannon);
         scene.remove(playerObject.sprite);
         scene.remove(playerObject);

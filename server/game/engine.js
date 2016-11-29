@@ -18,10 +18,10 @@ const spawnFood = io => {
         let roomPlayers = pickBy(players, ({ room }) => room === currentRoom);
         if (Object.keys(roomPlayers).length) {
         //  console.log('generating food');
-          if (Object.keys(food).length < 800) {
-            let x = (Math.random() * 2400) - 1200,
-                y = (Math.random() * 2400) - 1200,
-                z = (Math.random() * 2400) - 1200,
+          if (Object.keys(food).length < 300) {
+            let x = (Math.random() * 1000) - 500,
+                y = (Math.random() * 1000) - 500,
+                z = (Math.random() * 1000) - 500,
                 type = types[~~(Math.random() * types.length)],
                 foodSize = [];
 
@@ -30,7 +30,7 @@ const spawnFood = io => {
                 foodSize = [
                   2 + (Math.random() * 8),
                   2 + (Math.random() * 4),
-                  2 + (Math.random() * 2),
+                  2 + (Math.random() * 3),
                 ];
                 break;
               case 'sphere':

@@ -12,14 +12,14 @@ import {controls, Player} from './player';
 import { Food } from './food';
 
 let scene, camera, canvas, renderer;
-let world, groundMaterial, shadowLight;
+let world, groundMaterial, ballMaterial, shadowLight;
 let geometry, material, groundShape, groundBody, hemisphereLight, ambientLight;
 let timeFromStart = Date.now();
 // variables for physics
 let time, lastTime;
 // camera
 let raycastReference, raycastHeight;
-let pivotMoon = new THREE.Object3D();
+
 let someColors = myColors();
 
 export const init = () => {
@@ -33,7 +33,7 @@ export const init = () => {
   camera = new THREE.PerspectiveCamera(65,
                                        window.innerWidth / window.innerHeight,
                                        1,
-                                       3000);
+                                       2000);
 
   canvas = document.getElementById('canvas');
 
@@ -90,15 +90,21 @@ scene.add(camera)
 
   // Adjust friction between ball & ground
   groundMaterial = new CANNON.Material('groundMaterial');
-  var groundGroundCm = new CANNON.ContactMaterial(groundMaterial, groundMaterial, {
-      friction: 0.5,
-      restitution: 0.2,
+  ballMaterial = new CANNON.Material('ballMaterial');
+  var groundGroundCm = new CANNON.ContactMaterial(ballMaterial, groundMaterial, {
+      friction: 0.9,
+      restitution: 0.0,
       contactEquationStiffness: 1e8,
       contactEquationRelaxation: 3,
       frictionEquationStiffness: 1e8,
       frictionEquationRegularizationTime: 3,
   });
+  var ballCm = new CANNON.ContactMaterial(ballMaterial, ballMaterial, {
+      friction: 0.0,
+      restitution: 0.9
+  });
   world.addContactMaterial(groundGroundCm);
+  world.addContactMaterial(ballCm);
 
   createLevel();
 
@@ -138,11 +144,8 @@ scene.add(camera)
 
   // an ambient light modifies the global color of a scene and makes the shadows softer
 
-  ambientLight = new THREE.AmbientLight(someColors['pink'], 0.5);
+  ambientLight = new THREE.AmbientLight(someColors['green'], 0.5);
   scene.add(ambientLight);
-
-  //add moon's pivot
-  scene.add(pivotMoon);
 
 
   loadGame();
@@ -157,14 +160,11 @@ export function animate() {
   setTimeout( function() {
 
         requestAnimationFrame( animate );
-        
+
         // this dispatch happens 30 times a second,
         // updating the local state with player's new info and emitting to server
         socket.emit('update_position', getMeshData(playerMesh));
     }, 1000 / 30 );
-
-  pivotMoon.rotation.x += .0001;
-  pivotMoon.rotation.y -= .00005;
 
   let playerMesh = scene.getObjectByName(socket.id);
   if (playerMesh) {
@@ -230,7 +230,7 @@ function onWindowResize() {
 
 function createLevel(){
  // planet creation
- var planet_geometry = new THREE.TetrahedronGeometry( 1200, 4 );
+ var planet_geometry = new THREE.TetrahedronGeometry( 500, 4 );
  var planet_material = new THREE.MeshPhongMaterial( { color: someColors['red'], shading: THREE.FlatShading});
  var planet = new THREE.Mesh( planet_geometry, planet_material );
 
@@ -239,23 +239,32 @@ function createLevel(){
  scene.add(planet);
 
  // create THREE moon
-  var box_geometry = new THREE.TetrahedronGeometry( 400 , 3)
+  var box_geometry = new THREE.TetrahedronGeometry( 100 , 3)
   var box_material = new THREE.MeshPhongMaterial( { color: "#F8B195", shading: THREE.FlatShading});
   var moon = new THREE.Mesh( box_geometry, box_material );
   ;
-  moon.position.set(0,0,-2200);
+  moon.position.set(0,0,-750);
   //moon.castShadow = true;
   
-  pivotMoon.add(moon);
+  scene.add(moon);
 
   // create Cannon planet
-  var planetShape = new CANNON.Sphere(1200);
+  var planetShape = new CANNON.Sphere(500);
   var planetBody = new CANNON.Body({ mass: 0, material:groundMaterial, shape: planetShape });
   world.add(planetBody);
 
+  // create Cannon moon
+  var moonShape = new CANNON.Sphere(100);
+  var moonBody = new CANNON.Body({ mass: 0, material:groundMaterial, shape: moonShape });
+  moonBody.position.set(0,-750,0)
+  world.add(moonBody); // remove this when eaten
+
+  // add event listener to moon
+
+
 }
 
-export { scene, camera, canvas, renderer, world, groundMaterial, raycastReference, timeFromStart };
+export { scene, camera, canvas, renderer, world, groundMaterial, ballMaterial, raycastReference, timeFromStart };
 
 // function botInit(){
   // const bot_geometry = new THREE.BoxGeometry(1,1,1);

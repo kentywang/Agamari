@@ -76,16 +76,16 @@ export const attachFood = (id, playerId, playerData) => {
   if (foodObject) {
     world.remove(foodObject.cannon);
 
-    let vec1 = new CANNON.Vec3((foodObject.position.x - playerData.x) * 0.7,
-                               (foodObject.position.z - playerData.z) * 0.7,
-                               (foodObject.position.y - playerData.y) * 0.7);
+    let vec1 = new CANNON.Vec3((foodObject.position.x - playerData.x) * 0.5,
+                               (foodObject.position.z - playerData.z) * 0.5,
+                               (foodObject.position.y - playerData.y) * 0.5);
     let vmult = newQuat.inverse().vmult(vec1);
     player.cannon.addShape(foodObject.cannon.shapes[0], vmult, newQuat.inverse());
 
     let invQuat = threeQuat.inverse();
-    let vec2 = new THREE.Vector3((foodObject.position.x - playerData.x) * 0.7,
-                                (foodObject.position.y - playerData.y) * 0.7,
-                                (foodObject.position.z - playerData.z) * 0.7);
+    let vec2 = new THREE.Vector3((foodObject.position.x - playerData.x) * 0.5,
+                                (foodObject.position.y - playerData.y) * 0.5,
+                                (foodObject.position.z - playerData.z) * 0.5);
     let vecRot = vec2.applyQuaternion(invQuat);
 
     foodObject.position.set(vecRot.x, vecRot.y, vecRot.z);
@@ -95,7 +95,58 @@ export const attachFood = (id, playerId, playerData) => {
     player.children[0].add(foodObject);
 
     // throw out older food
-    if (player.cannon.shapes.length > 100) {
+    while (player.cannon.shapes.length > 50) {
+       player.cannon.shapes.splice(1, 1);
+       player.cannon.shapeOffsets.splice(1, 1);
+       player.cannon.shapeOrientations.splice(1, 1);
+       player.children[0].children.splice(0, 1);
+     }
+  }
+};
+
+export const attachPlayer = (id, playerId, eaterData, eatenData) => {
+ // console.log("attaching")
+  let foodObject = scene.getObjectByName(id);
+  let player = scene.getObjectByName(playerId);
+  let newQuat = new CANNON.Quaternion(-eaterData.qx,
+                                      -eaterData.qz,
+                                      -eaterData.qy,
+                                      eaterData.qw);
+  let newEatenQuat = new CANNON.Quaternion(-eatenData.qx,-eatenData.qz,-eatenData.qy,eatenData.qw);
+  let threeQuat = new THREE.Quaternion(eaterData.qx,
+                                       eaterData.qy,
+                                       eaterData.qz,
+                                       eaterData.qw);
+  let threeEatenQuat = new CANNON.Quaternion(-eaterData.qx,-eaterData.qz,-eaterData.qy, eaterData.qw);
+
+  // attach player to eater
+  if (foodObject) {
+    world.remove(foodObject.cannon);
+
+    let vec1 = new CANNON.Vec3((eatenData.x - eaterData.x) * .3,
+                               (eatenData.z - eaterData.z) * .3,
+                               (eatenData.y - eaterData.y) * .3);
+    let vmult = newQuat.inverse().vmult(vec1);
+    player.cannon.addShape(foodObject.cannon.shapes[0], vmult, newQuat.inverse());
+
+    let invQuat = threeQuat.inverse();
+    let vec2 = new THREE.Vector3((eatenData.x - eaterData.x) * .3,
+                                (eatenData.y - eaterData.y) * .3,
+                                (eatenData.z - eaterData.z) * .3);
+    let vecRot = vec2.applyQuaternion(invQuat);
+
+    // create new clone of player to add
+    var clone = foodObject.clone();
+    clone.name = "";
+
+    clone.position.set(vecRot.x, vecRot.y, vecRot.z);
+    clone.quaternion.multiply(invQuat);
+
+    // add to pivot obj of player
+    player.children[0].add(clone);
+
+    // throw out older food
+    if (player.cannon.shapes.length > 50) {
        player.cannon.shapes.splice(1, 1);
        player.cannon.shapeOffsets.splice(1, 1);
        player.cannon.shapeOrientations.splice(1, 1);
