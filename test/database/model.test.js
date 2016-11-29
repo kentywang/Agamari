@@ -1,7 +1,7 @@
 'use strict';
 
 const expect = require('chai').expect;
-const { User, Room, Score, db } = require('../../server/db/index');
+const { User, Room, Score, Bug, db } = require('../../server/db/index');
 
 //*****************************************************************************
 //TEST SPECS FOR USER MODEL
@@ -192,24 +192,61 @@ describe('The `Room` model', function () {
 
     });
 
-    // it('requires `value` and `date` and value should be non-negative integer', function () {
-
-    //   let violationErr1 = 'notNull Violation: nickname cannot be null';
-    //   let violationErr2 ='Validation error: Validation min failed';
-
-    //   return score.validate()
-    //   .then(function(result) {
-    //     expect(result).to.be.an.instanceOf(Error);
-    //     expect(result.message).to.contain(vviolationErr1);
-    //   });
-
-    // });
-
   });
 
 });
+//*****************************************************************************
+//TEST SPECS FOR BUG MODEL
+//*****************************************************************************
 
+describe('The `Bug` model', function () {
+  before(function () {
+    return db.sync({force: true});
+  });
+  let bug;
+  beforeEach(function(){
+    bug = Bug.build({
+      name: 'test',
+      email: 'test@gmail.com',
+      subject: 'test subject',
+      details : 'Bug on game physics'
+    });
+  });
 
+  afterEach(function () {
+    return Promise.all([
+      Bug.truncate({ cascade: true })
+    ]);
+  });
+
+  describe('attributes definition', function(){
+
+    
+    it('includes name, email, subject and details fields', function () {
+
+      return bug.save()
+      .then(function (savedBug) {
+        expect(savedBug.name).to.equal('test');
+        expect(savedBug.email).to.equal('test@gmail.com');
+        expect(savedBug.subject).to.equal('test subject');
+        expect(savedBug.details).to.equal('Bug on game physics');
+      });
+
+    });
+
+   it('validates email', function () {
+       
+      let invalidemail = 'test';
+      bug.email = invalidemail;
+
+      return bug.validate()
+      .then(function(result) {
+        expect(result).to.be.an.instanceOf(Error);       
+      });
+    });
+ });
+
+});
 
 
 

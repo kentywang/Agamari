@@ -383,12 +383,11 @@ describe('Scores Routes:', function () {
       .then(createdScores => {
         //console.log(createdScores);
         score = createdScores[1];
-        console.log("sadflkadskfj sladkfjdsalk",score);
       });
 
     });
 
-    it('returns the JSON of the article based on the id', function () {
+    xit('returns the JSON of the article based on the id', function () {
       //console.log(room);
       return agent
       .get('api/scores/'+score.id)
