@@ -244,7 +244,7 @@ function createLevel(){
   var moon = new THREE.Mesh( box_geometry, box_material );
   ;
   moon.position.set(0,0,-750);
-  //moon.castShadow = true;
+  moon.castShadow = true;
   
   scene.add(moon);
 

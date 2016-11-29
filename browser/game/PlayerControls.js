@@ -20,7 +20,7 @@ THREE.PlayerControls = function ( camera, player, cannonMesh, raycastReference ,
 
 
 	var curCamZoom = 60;
-	var curCamHeight = 50;
+	var curCamHeight = 70;
 
 	this.left = false;
 	this.right = false;
@@ -42,8 +42,10 @@ THREE.PlayerControls = function ( camera, player, cannonMesh, raycastReference ,
 
 
 	this.update = function() { 
-		this.camera.fov = Math.max(65, Math.min(55 + this.speedMult*10, 85));
-		
+		scope.scale = store.getState().players[scope.id].scale;
+
+		this.camera.fov = Math.max(55, Math.min(45 + this.speedMult*10, 65/(1 + (scope.scale * 0.01) )));
+		//console.log(this.camera.fov)
 		this.camera.updateProjectionMatrix();
 
 		//cameraReferenceOrientation.copy(cameraReferenceOrientationObj.quaternion);
@@ -53,7 +55,6 @@ THREE.PlayerControls = function ( camera, player, cannonMesh, raycastReference ,
 			// console.log("launchReady")
 			store.dispatch(launchReady());
 		}
-		scope.scale = store.getState().players[scope.id].scale;
 
 		this.checkKeyStates();
 		//console.log(this.speedMult);
@@ -105,7 +106,7 @@ THREE.PlayerControls = function ( camera, player, cannonMesh, raycastReference ,
 	 	this.camera.matrixAutoUpdate = false;
 
 		var cameraPlace = new THREE.Matrix4();
-	    cameraPlace.makeTranslation ( 0, curCamHeight * scope.scale, curCamZoom * scope.scale ) 
+	    cameraPlace.makeTranslation ( 0, curCamHeight * scope.scale * .8, curCamZoom * scope.scale * .8) 
 	  
 	    var cameraRot = new THREE.Matrix4();
 	    cameraRot.makeRotationX(-0.3 - (playerPosition.length()/1000));// scale this with height to planet!
@@ -219,31 +220,31 @@ THREE.PlayerControls = function ( camera, player, cannonMesh, raycastReference ,
 	    if (keyState[38] || keyState[87]) {
 	    	if(this.speedMult < 3) this.speedMult += 0.005;
 	        // up arrow or 'w' - move forward
-          this.cannonMesh.applyImpulse(new CANNON.Vec3(-cross2.x * 220 * this.speedMult /*Math.pow(scope.scale, 1 + (scope.scale * 1))*/, -cross2.z * 220 * this.speedMult /*Math.pow(scope.scale, 1 + (scope.scale * 1))*/, -cross2.y * 220 * this.speedMult /*Math.pow(scope.scale, 1 + (scope.scale * 1))*/) ,topOfBall);
+          this.cannonMesh.applyImpulse(new CANNON.Vec3(-cross2.x * 200 * (0.833 + this.scale/6) *this.speedMult /*Math.pow(scope.scale, 1 + (scope.scale * 1))*/, -cross2.z * 200 * (0.833 + this.scale/6) *this.speedMult /*Math.pow(scope.scale, 1 + (scope.scale * 1))*/, -cross2.y * 200 * (0.833 + this.scale/6) *this.speedMult /*Math.pow(scope.scale, 1 + (scope.scale * 1))*/) ,topOfBall);
 	    }
 
 	    if (keyState[40] || keyState[83]) {
 	    	if(this.speedMult < 3) this.speedMult += 0.005;
 	        // down arrow or 's' - move backward
-          this.cannonMesh.applyImpulse(new CANNON.Vec3(cross2.x * 220 * this.speedMult /*Math.pow(scope.scale, 1 + (scope.scale * 1))*/, cross2.z * 220 * this.speedMult /*Math.pow(scope.scale, 1 + (scope.scale * 1))*/, cross2.y * 220 * this.speedMult /*Math.pow(scope.scale, 1 + (scope.scale * 1))*/) ,topOfBall);
+          this.cannonMesh.applyImpulse(new CANNON.Vec3(cross2.x * 200 * (0.833 + this.scale/6) *this.speedMult /*Math.pow(scope.scale, 1 + (scope.scale * 1))*/, cross2.z * 200 * (0.833 + this.scale/6) *this.speedMult /*Math.pow(scope.scale, 1 + (scope.scale * 1))*/, cross2.y * 200 * (0.833 + this.scale/6) *this.speedMult /*Math.pow(scope.scale, 1 + (scope.scale * 1))*/) ,topOfBall);
 	    
 	    }
 
 	    if (keyState[37] || keyState[65]) {
 	    	if(this.speedMult < 3) this.speedMult += 0.005;
 	        // left arrow or 'a' - rotate left
-	        this.cannonMesh.applyImpulse(new CANNON.Vec3(cross1.x * 150 * this.speedMult /*Math.pow(scope.scale, 1 + (scope.scale * 1))*/, cross1.z * 150 * this.speedMult /*Math.pow(scope.scale, 1 + (scope.scale * 1))*/, cross1.y * 150 * this.speedMult /*Math.pow(scope.scale, 1 + (scope.scale * 1))*/) ,topOfBall);
+	        this.cannonMesh.applyImpulse(new CANNON.Vec3(cross1.x * 150 * (0.833 + this.scale/6) * this.speedMult /*Math.pow(scope.scale, 1 + (scope.scale * 1))*/, cross1.z * 150 * (0.833 + this.scale/6) * this.speedMult /*Math.pow(scope.scale, 1 + (scope.scale * 1))*/, cross1.y * 150 * (0.833 + this.scale/6) * this.speedMult /*Math.pow(scope.scale, 1 + (scope.scale * 1))*/) ,topOfBall);
 	        this.left = true;
 	    }
 
 	    if (keyState[39] || keyState[68]) {
 	    	if(this.speedMult < 3) this.speedMult += 0.005;
 	        // right arrow or 'd' - rotate right
-            this.cannonMesh.applyImpulse(new CANNON.Vec3(-cross1.x * 150 * this.speedMult /*Math.pow(scope.scale, 1 + (scope.scale * 1))*/,-cross1.z * 150 * this.speedMult /*Math.pow(scope.scale, 1 + (scope.scale * 1))*/,-cross1.y * 150 * this.speedMult /*Math.pow(scope.scale, 1 + (scope.scale * 1))*/), topOfBall);
+            this.cannonMesh.applyImpulse(new CANNON.Vec3(-cross1.x * 150 * (0.833 + this.scale/6) * this.speedMult /*Math.pow(scope.scale, 1 + (scope.scale * 1))*/,-cross1.z * 150 * (0.833 + this.scale/6) * this.speedMult /*Math.pow(scope.scale, 1 + (scope.scale * 1))*/,-cross1.y * 150 * (0.833 + this.scale/6) * this.speedMult /*Math.pow(scope.scale, 1 + (scope.scale * 1))*/), topOfBall);
             this.right = true;
 	    }
 	    if(!(keyState[38] || keyState[87] || keyState[40] || keyState[83] || keyState[37] || keyState[65] || keyState[39] || keyState[68])){
-	    	this.speedMult -= .04;
+	    	this.speedMult -= .06;
 	    }
 	};
 
