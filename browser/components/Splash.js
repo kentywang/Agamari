@@ -12,20 +12,30 @@ class Splash extends Component {
 
     return (
         <div>
+         <div id="title" style={{color:"white"}}>AGAMARI</div>
+          
+
           <div>
             <input value={nickname}
                    onChange={updateNickname}
                    type="text"
                    id="name-box"
+                   placeholder="Please Enter Nickname" 
                    className="validate"
+                   required aria-required="true"
                    style={{color: "white",
                     position: "fixed", 
                     top: "55%",
                     left: "50%",
-                    transform: "translate(-50%, -50%)"}}/>
-            <button className="btn" onClick={play} id="play-box">play</button>
+                    transform: "translate(-50%, -50%)"
+                    }}/>
+                    <label htmlFor="name-box" data-error="Please enter nickname" data-success="right">Please enter nickname</label>
+            <button className="Buttons" onClick={play} id="play-box">play</button>
           </div>
-          <div id="title">AGAMARI</div>
+          <div>
+            {/*<button className="btn" onClick={play} id="play-box">Rules</button>*/}
+          </div>
+         
         </div>
 
       );
