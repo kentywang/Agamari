@@ -16,13 +16,14 @@ class Splash extends Component {
           
 
           <div>
+      
             <input value={nickname}
                    onChange={updateNickname}
                    type="text"
                    id="name-box"
-                   placeholder="Please Enter Nickname" 
+                   placeholder="nickname" 
                    className="validate"
-                   required aria-required="true"
+                   autoFocus
                    style={{color: "white",
                     position: "fixed", 
                     top: "55%",
@@ -30,10 +31,11 @@ class Splash extends Component {
                     transform: "translate(-50%, -50%)"
                     }}/>
                     <label htmlFor="name-box" data-error="Please enter nickname" data-success="right">Please enter nickname</label>
+
             <button className="Buttons" onClick={play} id="play-box">play</button>
           </div>
           <div>
-            {/*<button className="btn" onClick={play} id="play-box">Rules</button>*/}
+            <button className="buttons" onClick={play} id="rules-box">Rules</button>
           </div>
          
         </div>
