@@ -65,22 +65,6 @@ body, html {
     text-align: center;
 }
 
-::-webkit-input-placeholder {
-   color: red;
-}
-
-:-moz-placeholder { /* Firefox 18- */
-   color: red;  
-}
-
-::-moz-placeholder {  /* Firefox 19+ */
-   color: red;  
-}
-
-:-ms-input-placeholder {  
-   color: red;  
-}
-
 #canvas {
 	position: absolute;
 	width: 100%;
