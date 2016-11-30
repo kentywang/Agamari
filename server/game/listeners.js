@@ -15,7 +15,7 @@ function initPos(){
     qz: 0,
     qw: 1,
     scale: 1,
-    volume: 4000 
+    volume: 4000
   }
 };
 
@@ -56,7 +56,7 @@ const setUpListeners = (io, socket) => {
           let room = undefined;
           for (let i = 0; i < rooms.length && !room; i++) {
             let playerCount = size(pickBy(players, player => player.room === rooms[i]));
-            if (playerCount < 2) room = rooms[i];
+            if (playerCount < 4) room = rooms[i];
           }
           if (!room) room = addRandomRoom();
 
@@ -75,7 +75,7 @@ const setUpListeners = (io, socket) => {
           // Tell all players in room to create object for new player
           io.sockets.in(room).emit('add_player', socket.id, player);
 
-             console.log('adding player to game', players);
+             console.log('adding player to game', players[socket.id]);
           Promise.all(leavePromises)
             .then(() => {
               // Find all players in room and tell new player to add to game state
@@ -131,7 +131,7 @@ const setUpListeners = (io, socket) => {
       // First, verify that food still exists.
       // Then increase player size and tell other players to remove food object
       if (eaten) {
-        store.dispatch(addFoodToDiet(eaten, socket.id, store.getState().players[socket.id]));
+        // **** store.dispatch(addFoodToDiet(eaten, socket.id, store.getState().players[socket.id]));
         //console.log("in eat food socket listener, number of diets: ", store.getState().players[socket.id].diet.length)
         store.dispatch(removeFood(id));
         store.dispatch(updateVolume(socket.id, volume));
@@ -164,7 +164,7 @@ const setUpListeners = (io, socket) => {
       if (eaten && eater && Date.now() - (eaten.eatenCooldown || 0) > 3000) {
         let { room } = eaten;
         io.sockets.in(room).emit('remove_player', socket.id, id, eater, eaten);
-        store.dispatch(addPlayerToDiet(eaten, id, store.getState().players[id]));
+        // *** store.dispatch(addPlayerToDiet(eaten, id, store.getState().players[id]));
         //console.log(store.getState().players[id].diet);
 
         // disabled because bouncing bug
