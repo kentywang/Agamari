@@ -19,7 +19,7 @@ class Splash extends Component {
                    id="name-box"
                    className="validate"
                    style={{color: "white",
-                    position: "fixed", 
+                    position: "fixed",
                     top: "55%",
                     left: "50%",
                     transform: "translate(-50%, -50%)"}}/>

@@ -6,6 +6,8 @@ const STOP_GAME = 'STOP_GAME';
 const SET_ERROR = 'SET_ERROR';
 const SET_NICKNAME = 'SET_NICKNAME';
 const RESET_ERROR = 'RESET_ERROR';
+const OPEN_INSTRUCTIONS = 'OPEN_INSTRUCTIONS';
+const CLOSE_INSTRUCTIONS = 'CLOSE_INSTRUCTIONS';
 
 
 /*=------ACTION CREATORS-------*/
@@ -13,7 +15,9 @@ const RESET_ERROR = 'RESET_ERROR';
 const initialState = {
   isPlaying: false,
   nickname: '',
-  error: null };
+  error: null,
+  instructionsOpen: true
+ };
 
 
 export const startGame = () => ({
@@ -42,6 +46,14 @@ export const resetError = () => ({
   type: RESET_ERROR
 });
 
+export const openInstructions = () => ({
+  type: OPEN_INSTRUCTIONS
+});
+
+export const closeInstructions = () => ({
+  type: CLOSE_INSTRUCTIONS
+});
+
 /*----------  THUNK CREATORS  ----------*/
 
 export const startAsGuest = (nickname, socket) => dispatch => {
@@ -66,8 +78,12 @@ export default (state = initialState, action) => {
 		case RESET_ERROR:
 			return Object.assign({}, state, { error: null });
     case SET_NICKNAME:
-    return Object.assign({}, state, { nickname: action.text });
+      return Object.assign({}, state, { nickname: action.text });
+    case OPEN_INSTRUCTIONS:
+      return Object.assign({}, state, { instructionsOpen: true });
+    case CLOSE_INSTRUCTIONS:
+      return Object.assign({}, state, { instructionsOpen: false });
    	default:
    	return state;
   }
-}
+};
