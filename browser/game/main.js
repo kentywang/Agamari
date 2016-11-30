@@ -159,13 +159,13 @@ scene.add(camera)
 export function animate() {
   animateTimeout = setTimeout( function() {
     //console.log('looping');
-        requestAnimationFrame( animate );
+        
 
         // this dispatch happens 30 times a second,
         // updating the local state with player's new info and emitting to server
         socket.emit('update_position', getMeshData(playerMesh));
     }, 1000 / 30 );
-
+requestAnimationFrame( animate );
   let { gameState, players } = store.getState();
 
   if (!gameState.isPlaying) clearTimeout(animateTimeout);
