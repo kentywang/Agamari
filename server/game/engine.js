@@ -9,7 +9,7 @@ let elapsedTime = Date.now(),
     id = 1;
 
 const spawnFood = io => {
-  if (Date.now() - elapsedTime > 33){
+  if (Date.now() - elapsedTime > 100){
     //console.log('spawning food');
     elapsedTime = Date.now();
     let { rooms, food, players } = store.getState();
@@ -20,7 +20,7 @@ const spawnFood = io => {
         let roomFood = pickBy(food, ({ room }) => room === currentRoom );
         if (size(roomPlayers)) {
         //  console.log('generating food');
-          if (Object.keys(food).length < 300) {
+           if (Object.keys(food).length < 200) {
             let x = (Math.random() * 1000) - 500,
                 y = (Math.random() * 1000) - 500,
                 z = (Math.random() * 1000) - 500,
@@ -44,10 +44,37 @@ const spawnFood = io => {
             }
 
             // scale food to random player
+
             let randomPlayerId = Object.keys(roomPlayers)[~~(Math.random() * Object.keys(roomPlayers).length)];
+
             let playerToFeed = roomPlayers[randomPlayerId];
+
+            // check to see what is the largest scale in the game
+            let largestScale = 1;
+            for (var Pid in roomPlayers) {
+              if(roomPlayers[Pid].scale > largestScale){
+                largestScale = roomPlayers[Pid].scale;
+              }
+            }
+
+            // if player is the largest in room and he isn't alone, rechoose a player to scale food to
+            if(Object.keys(roomPlayers).length > 1 && playerToFeed.scale === largestScale){
+              randomPlayerId = Object.keys(roomPlayers)[~~(Math.random() * Object.keys(roomPlayers).length)];
+            }
+
+            playerToFeed = roomPlayers[randomPlayerId];
+
             let parms = foodSize.map(e => ~~(e * playerToFeed.scale));
             //console.log(parms)
+
+            // create Moon at first
+            if(Object.keys(food).length == 0){
+              x = 0,
+              y = 0,
+              z = -1,
+              type = "moon",
+              parms = [120];
+            }
 
             let data = { x, y, z, type, parms, room: currentRoom };
             store.dispatch(receiveFood(id, data));
