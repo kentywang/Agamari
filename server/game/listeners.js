@@ -106,19 +106,20 @@ const setUpListeners = (io, socket) => {
     socket.on('update_position', data => {
       let player = store.getState().players[socket.id];
       if (player) {
-        //if (data.y >= 5) {
+        if ((data.x > -1600 && data.y > -1600 && data.z > -1600) && (data.x < 1600 && data.y < 1600 && data.z < 1600)) {
           // If player's y coordinate is greater than or equal to zero,
           // update game state with current position
           store.dispatch(updatePlayer(socket.id, data));
-        // } else if (data.y < -5) {
-        //   // If y coordinate is below zero, tell players to remove player object.
-        //   // For now, we are automatically respawning player
-        //   io.sockets.in(player.room).emit('remove_player', socket.id);
-        //   store.dispatch(updatePlayer(socket.id, initPos));
-        //   store.dispatch(clearDiet(socket.id));
-        //   io.sockets.in(player.room).emit('add_player', socket.id, Object.assign({}, initPos, {nickname: player.nickname}), true);
-        //   socket.emit('you_lose', 'You fell off the board!');
-        // }
+        } else{
+          // If y coordinate is below zero, tell players to remove player object.
+          // For now, we are automatically respawning player
+          io.sockets.in(player.room).emit('remove_player', socket.id);
+          store.dispatch(updatePlayer(socket.id, initPos()));
+          store.dispatch(clearDiet(socket.id));
+          io.sockets.in(player.room).emit('add_player', socket.id, Object.assign({}, initPos(), {nickname: player.nickname}), true);
+          console.log(player.room)
+          socket.emit('you_lose', player.room);
+        }
       }
     });
 
@@ -189,7 +190,7 @@ const setUpListeners = (io, socket) => {
         store.dispatch(updatePlayer(socket.id, initPos()));
         store.dispatch(clearDiet(socket.id));
         io.sockets.in(room).emit('add_player', socket.id, Object.assign({}, initPos(), {nickname: eaten.nickname}), true);
-        socket.emit('you_lose', eater.nickname);
+        socket.emit('you_got_eaten', eater.nickname);
         io.sockets.in(room).emit('casualty_report', eater.nickname, eaten.nickname);
       }
     });

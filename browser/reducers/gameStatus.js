@@ -7,6 +7,7 @@ const initialState = '';
 const LOSE = 'LOSE';
 const CONTINUE = 'CONTINUE';
 const ATE = 'ATE';
+const FELL = 'FELL';
 
 /*----------  ACTION CREATORS  ----------*/
 export const lose = eater => {
@@ -21,6 +22,10 @@ export const lose = eater => {
 }
 export const keepPlaying = () => ({
   type: CONTINUE
+});
+export const fell = room => ({
+  type: FELL,
+  eaten: room
 });
 export const ateSomeone = eaten => {
 	if(eaten.length > 15){
@@ -42,6 +47,8 @@ export default (state = initialState, action) => {
   switch (action.type) {
     case LOSE:
       return `${action.eater} rolled you up`;
+	case FELL:
+      return `You left ${action.eaten}'s orbit`;
   	case CONTINUE:
       return initialState;
     case ATE:

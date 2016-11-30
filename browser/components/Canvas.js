@@ -7,6 +7,9 @@ import { keepPlaying } from '../reducers/gameStatus';
 
 import BugReportForm from './BugReportForm';
 
+import ReactDOM from 'react-dom';
+import { TimelineMax } from '../../public/TweenMax.min'
+
 class Canvas extends Component {
 	constructor(props){
     	super(props);
@@ -18,6 +21,13 @@ class Canvas extends Component {
 
   	componentDidMount(){
 		createjs.Sound.registerSound("eat.ogg", "eatSound");
+		const leaderboard = ReactDOM.findDOMNode(this.refs.leaderboard);
+		const status = ReactDOM.findDOMNode(this.refs.status);
+		const abilities = ReactDOM.findDOMNode(this.refs.abilities);
+		const score = ReactDOM.findDOMNode(this.refs.score);
+  		TweenMax.from(leaderboard, 1, {x: "-=500", y: "-=500", ease: Power3.easeOut, delay: 1.5});
+  		TweenMax.from(abilities, 1, {x: "-=500", y: "+=500", ease: Power3.easeOut, delay: 1.5});
+  		TweenMax.from(score, 1, {x: "+=500", y: "+=500", ease: Power3.easeOut, delay: 1.5});
   	}
 
 	render = () => {
@@ -64,7 +74,7 @@ class Canvas extends Component {
 		return (
 			<div className="in-game">
 				<div className="hud">
-					<div className="leaderboard">
+					<div ref="leaderboard" className="leaderboard">
 						<table>
 							<tbody>
 							{this.props.players[socket.id] && this.state.leaderboard && this.state.leaderboard.map((person, index) => (
@@ -78,14 +88,14 @@ class Canvas extends Component {
 							</tbody>
 						</table>
 					</div>
-					<div className="status">
+					<div ref="status" className="status">
 						{this.props.gameStatus}
 					</div>
-					<div className="abilities" style={this.props.abilities && this.props.abilities.launch ? {} : {color: 'rgba(255,255,255,0.3)'}}>
+					<div ref="abilities" className="abilities" style={this.props.abilities && this.props.abilities.launch ? {} : {color: 'rgba(255,255,255,0.3)'}}>
 					<div>{this.props.players[socket.id] && this.props.abilities && this.props.abilities.meter}</div>
 						<div>{this.props.players[socket.id] && this.props.abilities && "launch ready"}</div>
 					</div>
-					<div className="score">
+					<div ref="score" className="score">
 						<div>{this.props.players[socket.id] && 'volume'}
 						</div>
 						<div>{this.props.players[socket.id] &&this.state.displayVol}

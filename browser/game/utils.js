@@ -47,9 +47,9 @@ export const makeTextSprite = (message, fontsize) => {
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
 
-  ctx.font = 'Bold ' + fontsize / 2 + 'px Quicksand';
+  ctx.font = 'Bold ' + fontsize/2 + 'px Quicksand';
   ctx.fillStyle = 'rgba(255,255,255,1)';
-  ctx.fillText(message, canvas.width / 2, fontsize / 2);
+  ctx.fillText(message, canvas.width / 2, fontsize/2);
 
   texture = new THREE.Texture(canvas);
   texture.minFilter = THREE.LinearFilter; // NearestFilter;

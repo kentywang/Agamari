@@ -6,7 +6,7 @@ import { receivePlayers } from '../reducers/players';
 import { removeFood,
          receiveFood,
          receiveMultipleFood } from '../reducers/food';
-import { lose, ateSomeone } from '../reducers/gameStatus';
+import { lose, fell, ateSomeone } from '../reducers/gameStatus';
 
 import { init,
          animate,
@@ -90,8 +90,12 @@ export default socket => {
         }
       });
 
-    socket.on('you_lose', eater =>{
+    socket.on('you_got_eaten', eater =>{
         store.dispatch(lose(eater));
+    });
+    socket.on('you_lose', room =>{
+      console.log(room);
+        store.dispatch(fell(room));
     });
 
 //     socket.on('remove_eaten_player', (id, playerId, playerData, eatenData) => {

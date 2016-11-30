@@ -33,6 +33,7 @@ class Splash extends Component {
                    {/* <label htmlFor="name-box" data-error="Please enter nickname" data-success="right">Please enter nickname</label>*/}
 
             <button className="Buttons" onClick={play} id="play-box">play</button>
+
           </div>
          {/* <div>
             <button className="buttons" onClick={play} id="rules-box">Rules</button>
