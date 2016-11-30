@@ -158,7 +158,7 @@ scene.add(camera)
 
 export function animate() {
   animateTimeout = setTimeout( function() {
-    console.log('looping');
+    //console.log('looping');
         requestAnimationFrame( animate );
 
         // this dispatch happens 30 times a second,

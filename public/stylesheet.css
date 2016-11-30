@@ -19,7 +19,27 @@ body, html {
     color: #ffffff;
     font-size: 1em;
     font-family: "Quicksand", sans-serif;
-    
+    overflow: hidden;
+	background: linear-gradient(#00ABD6,#4ECDC4);
+}
+
+#title {
+	font-family: "Quicksand", sans-serif;
+	font-weight: lighter;
+	font-size: 9em;
+	letter-spacing: 0.4em;
+	position: fixed; /* or absolute */
+	top: 40%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+}
+
+#play-box {
+	color: white;
+	position: fixed; 
+	top: 65%;
+	left: 50%;
+	transform: translate(-50%, -50%);
 }
 
 #canvas {

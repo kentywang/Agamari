@@ -5,6 +5,8 @@ import { scene } from '../game/main';
 
 import { keepPlaying } from '../reducers/gameStatus';
 
+import BugReportForm from './BugReportForm';
+
 class Canvas extends Component {
 	constructor(props){
     	super(props);
@@ -60,7 +62,7 @@ class Canvas extends Component {
 
 
 		return (
-			<div>
+			<div className="in-game">
 				<div className="hud">
 					<div className="leaderboard">
 						<table>
@@ -93,6 +95,7 @@ class Canvas extends Component {
 				<div>
 					<canvas id="canvas" style={{background: 'linear-gradient(#004570,#00ABD6)'}}></canvas>
 				</div>
+				<BugReportForm/>
 			</div>
 		)
 	}

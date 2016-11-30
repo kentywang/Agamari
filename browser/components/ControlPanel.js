@@ -21,7 +21,7 @@ class ControlPanel extends Component {
           <div className="card-content white-text">
                 <button className="btn"
                         style={{ float: 'left' }}
-                        onClick={leave}>Leave</button>
+                        onClick={leave}>quit</button>
                 <button className="btn-floating"
                         style={{ float: 'right' }}
                         onClick={close}>X</button>
