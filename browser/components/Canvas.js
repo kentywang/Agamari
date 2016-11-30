@@ -91,7 +91,7 @@ class Canvas extends Component {
 					</div>
 				</div>
 				<div>
-					<canvas id="canvas" style={{background: 'linear-gradient(#00ABD6,#4ECDC4)'}}></canvas>
+					<canvas id="canvas" style={{background: 'linear-gradient(#004570,#00ABD6)'}}></canvas>
 				</div>
 			</div>
 		)
