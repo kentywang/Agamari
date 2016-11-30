@@ -18,6 +18,7 @@ class Splash extends Component {
                    type="text"
                    id="name-box"
                    className="validate"
+                   placeholder = "nickname"
                    style={{color: "white",
                     position: "fixed", 
                     top: "55%",
