@@ -111,17 +111,17 @@ const immutable = (state = initialState, action) => {
     case ADD_FOOD_TO_DIET:
       newState = Object.assign({}, state);
       newState[action.id] = Object.assign({}, state[action.id]);
-        if(!newState[action.id].diet){ 
+        if(!newState[action.id].diet){
           newState[action.id].diet = [];
-        } 
+        }
       newState[action.id].diet.push({food: action.food, x: action.data.x, y: action.data.y, z: action.data.z, qx: action.data.qx, qy: action.data.qy, qz: action.data.qz, qw: action.data.qw, scale: action.data.scale}); // when I do playerData: action.data, I get max call stack. Why?
       return newState;
     case ADD_PLAYER_TO_DIET:
       newState = Object.assign({}, state);
       newState[action.id] = Object.assign({}, state[action.id]);
-        if(!newState[action.id].diet){ 
+        if(!newState[action.id].diet){
           newState[action.id].diet = [];
-        } 
+        }
       newState[action.id].diet.push({eatenPlayer: action.food, x: action.data.x, y: action.data.y, z: action.data.z, qx: action.data.qx, qy: action.data.qy, qz: action.data.qz, qw: action.data.qw, scale: action.data.scale}); // when I do playerData: action.data, I get max call stack. Why?
       return newState;
     case CLEAR_DIET:
