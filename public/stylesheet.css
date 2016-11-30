@@ -36,10 +36,18 @@ body, html {
 
 #play-box {
 	color: white;
-	position: fixed; 
-	top: 65%;
-	left: 50%;
-	transform: translate(-50%, -50%);
+    position: fixed;
+    font-size: 2em;
+    top: 65%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100px;
+    height: 6%;
+    border: 1px solid;
+    padding-bottom: 50px;
+    border-radius: 15px;
+    background-color: transparent;
+    text-align: center;
 }
 
 #canvas {

@@ -23,7 +23,7 @@ class Splash extends Component {
                     top: "55%",
                     left: "50%",
                     transform: "translate(-50%, -50%)"}}/>
-            <button className="btn" onClick={play} id="play-box">play</button>
+            <button className="button" onClick={play} id="play-box">play</button>
           </div>
           <div id="title">AGAMARI</div>
         </div>
