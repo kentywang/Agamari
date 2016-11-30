@@ -73,7 +73,7 @@ class BugReportForm extends Component {
       {isOpen ?
           <div className="card-panel grey lighten-5" style={{ border: '#ccc solid 2px', borderRadius: '5px'}}>
                   <div className="" style={{float: 'right'}}>
-                    <button className="btn" onClick={close}>X</button>
+                    <button className="btn-floating" onClick={close}>X</button>
                   </div>
             { message ?
               <div style={{color: 'black'}}>

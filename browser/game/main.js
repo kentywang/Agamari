@@ -10,7 +10,7 @@ import socket from '../socket';
 import { loadGame, loadEnvironment } from './game';
 import {controls, Player} from './player';
 import { Food } from './food';
-
+let animateTimeout;
 let scene, camera, canvas, renderer;
 let world, groundMaterial, ballMaterial, shadowLight;
 let geometry, material, groundShape, groundBody, hemisphereLight, ambientLight;
@@ -157,8 +157,8 @@ scene.add(camera)
 };
 
 export function animate() {
-  setTimeout( function() {
-
+  animateTimeout = setTimeout( function() {
+    console.log('looping');
         requestAnimationFrame( animate );
 
         // this dispatch happens 30 times a second,
@@ -166,6 +166,9 @@ export function animate() {
         socket.emit('update_position', getMeshData(playerMesh));
     }, 1000 / 30 );
 
+  let { gameState, players } = store.getState();
+
+  if (!gameState.isPlaying) clearTimeout(animateTimeout);
   let playerMesh = scene.getObjectByName(socket.id);
   if (playerMesh) {
     //Updates the raycast reference so that it follows the position of the player
@@ -190,9 +193,6 @@ export function animate() {
     // sync THREE mesh with Cannon mesh
     // Cannon's y & z are swapped from THREE, and w is flipped
   if (playerMesh.cannon) setMeshPosition(playerMesh);
-
-   let { players } = store.getState();
-
 
     // for all other players
     forOwn(players, (currentPlayer, id) => {
@@ -245,17 +245,17 @@ function createLevel(){
   ;
   moon.position.set(0,0,-750);
   moon.castShadow = true;
-  
+
   scene.add(moon);
 
   // create Cannon planet
   var planetShape = new CANNON.Sphere(500);
-  var planetBody = new CANNON.Body({ mass: 0, material:groundMaterial, shape: planetShape });
+  var planetBody = new CANNON.Body({ mass: 0, material: groundMaterial, shape: planetShape });
   world.add(planetBody);
 
   // create Cannon moon
   var moonShape = new CANNON.Sphere(100);
-  var moonBody = new CANNON.Body({ mass: 0, material:groundMaterial, shape: moonShape });
+  var moonBody = new CANNON.Body({ mass: 0, material: groundMaterial, shape: moonShape });
   moonBody.position.set(0,-750,0)
   world.add(moonBody); // remove this when eaten
 
@@ -264,7 +264,7 @@ function createLevel(){
 
 }
 
-export { scene, camera, canvas, renderer, world, groundMaterial, ballMaterial, raycastReference, timeFromStart };
+export { scene, camera, canvas, renderer, world, groundMaterial, ballMaterial, raycastReference, timeFromStart, clearTimeout };
 
 // function botInit(){
   // const bot_geometry = new THREE.BoxGeometry(1,1,1);

@@ -154,6 +154,20 @@ const setUpListeners = (io, socket) => {
       }
     });
 
+    // Verify client disconnect
+    socket.on('leave', () => {
+      let player = store.getState().players[socket.id];
+      if (player) {
+        let { room } = player;
+
+        // Remove player from server game state and tell players to remove player object
+        store.dispatch(removePlayer(socket.id));
+        io.sockets.in(room).emit('remove_player', socket.id);
+
+        console.log(`${player.nickname} has left ${room}.`);
+      }
+    });
+
     socket.on('got_eaten', (id, volume) => {
       //console.log('this guy ate!', id);
       let { players } = store.getState();

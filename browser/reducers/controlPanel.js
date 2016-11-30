@@ -1,6 +1,6 @@
 /*----------  INITIAL STATE  ----------*/
 const initialState = {
-  isOpen: true,
+  isOpen: false,
   nickname: '',
   error: null };
 
