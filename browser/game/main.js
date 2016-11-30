@@ -238,26 +238,26 @@ function createLevel(){
 
  scene.add(planet);
 
- // create THREE moon
-  var box_geometry = new THREE.TetrahedronGeometry( 100 , 3)
-  var box_material = new THREE.MeshPhongMaterial( { color: "#F8B195", shading: THREE.FlatShading});
-  var moon = new THREE.Mesh( box_geometry, box_material );
-  ;
-  moon.position.set(0,0,-750);
-  moon.castShadow = true;
-  
-  scene.add(moon);
-
   // create Cannon planet
   var planetShape = new CANNON.Sphere(500);
   var planetBody = new CANNON.Body({ mass: 0, material:groundMaterial, shape: planetShape });
   world.add(planetBody);
 
+ // create THREE moon
+  // var box_geometry = new THREE.TetrahedronGeometry( 100 , 3)
+  // var box_material = new THREE.MeshPhongMaterial( { color: "#F8B195", shading: THREE.FlatShading});
+  // var moon = new THREE.Mesh( box_geometry, box_material );
+  // ;
+  // moon.position.set(0,0,-750);
+  // moon.castShadow = true;
+  
+  // scene.add(moon);
+
   // create Cannon moon
-  var moonShape = new CANNON.Sphere(100);
-  var moonBody = new CANNON.Body({ mass: 0, material:groundMaterial, shape: moonShape });
-  moonBody.position.set(0,-750,0)
-  world.add(moonBody); // remove this when eaten
+  // var moonShape = new CANNON.Sphere(100);
+  // var moonBody = new CANNON.Body({ mass: 0, material:groundMaterial, shape: moonShape });
+  // moonBody.position.set(0,-750,0)
+  // world.add(moonBody); // remove this when eaten
 
   // add event listener to moon
 
