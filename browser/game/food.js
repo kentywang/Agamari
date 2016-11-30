@@ -63,7 +63,7 @@ export class Food {
     }else{
       mesh.position.normalize().multiplyScalar(500);
     }
-    mesh.position.add(mesh.position.clone().normalize().multiplyScalar(parms[0] * 2));
+    mesh.position.add(mesh.position.clone().normalize().multiplyScalar(parms[0] * 2.5));
     mesh.lookAt(new THREE.Vector3(0,0,0));
 
     mesh.cannon = new CANNON.Body({ shape, mass: 0, material: groundMaterial });
