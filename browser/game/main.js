@@ -115,11 +115,11 @@ scene.add(camera)
   // A hemiplane light is a gradient colored light;
   // the first parameter is the sky color, the second parameter is the ground color,
   // the third parameter is the intensity of the light
-  hemisphereLight = new THREE.HemisphereLight(0xaaaaaa, 0x000000, 0.9);
+  hemisphereLight = new THREE.HemisphereLight("#004570", someColors["pink"], 0.8);
 
   // A directional light shines from a specific direction.
   // It acts like the sun, that means that all the rays produced are parallel.
-  shadowLight = new THREE.DirectionalLight(0xffffff, 0.9);
+  shadowLight = new THREE.DirectionalLight("#4ECDC4", 0.3);
 
   // Allow shadow casting
   shadowLight.castShadow = true;
@@ -238,30 +238,41 @@ function createLevel(){
 
  scene.add(planet);
 
- // create THREE moon
-  var box_geometry = new THREE.TetrahedronGeometry( 100 , 3)
-  var box_material = new THREE.MeshPhongMaterial( { color: "#F8B195", shading: THREE.FlatShading});
-  var moon = new THREE.Mesh( box_geometry, box_material );
-  ;
-  moon.position.set(0,0,-750);
-  moon.castShadow = true;
-
-  scene.add(moon);
 
   // create Cannon planet
   var planetShape = new CANNON.Sphere(500);
   var planetBody = new CANNON.Body({ mass: 0, material: groundMaterial, shape: planetShape });
   world.add(planetBody);
 
-  // create Cannon moon
-  var moonShape = new CANNON.Sphere(100);
-  var moonBody = new CANNON.Body({ mass: 0, material: groundMaterial, shape: moonShape });
-  moonBody.position.set(0,-750,0)
-  world.add(moonBody); // remove this when eaten
+  // create stars
+ var particleCount = 1800,
+    particles = new THREE.Geometry(),
+    pMaterial = new THREE.ParticleBasicMaterial({
+      color: 0xFFFFFF,
+      size: 3
+    });
 
-  // add event listener to moon
+  // now create the individual particles
+  for (var p = 0; p < particleCount; p++) {
 
+    // create a particle with random
+    // position values, -250 -> 250
+    var pX = Math.random() * 1000 - 500,
+        pY = Math.random() * 1000 - 500,
+        pZ = Math.random() * 1000 - 500,
+        particle = new THREE.Vector3(pX, pY, pZ)
+        particle.normalize().multiplyScalar(Math.random() * 1000 + 500)
+    // add it to the geometry
+    particles.vertices.push(particle);
+  }
 
+  // create the particle system
+  var particleSystem = new THREE.Points(
+      particles,
+      pMaterial);
+
+  // add it to the scene
+  scene.add(particleSystem);
 }
 
 export { scene, camera, canvas, renderer, world, groundMaterial, ballMaterial, raycastReference, timeFromStart, clearTimeout };

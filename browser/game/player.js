@@ -40,10 +40,8 @@ export class Player {
       '#99B898',
       '#2A363B',
       '#A8A7A7',
-      '#E8175D',
-      '#F26B38',
-      '#2F9599',
-      '#45ADA8',
+      '#b45431',
+      '#37797b',
       '#547980'];
     let randomColor = aFewColors[~~(Math.random() * aFewColors.length)];
 

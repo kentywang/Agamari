@@ -56,6 +56,7 @@
     "sequelize": "^3.26.0",
     "socket.io": "^1.5.1",
     "three": "^0.82.1",
+    "three-vignette-background": "^1.0.3",
     "webpack": "^1.13.3"
   },
   "devDependencies": {
