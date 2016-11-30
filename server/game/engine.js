@@ -42,7 +42,6 @@ const spawnFood = (io, currentRoom) => {
               break;
           }
 
-<<<<<<< HEAD
             // scale food to random player
 
             let randomPlayerId = Object.keys(roomPlayers)[~~(Math.random() * Object.keys(roomPlayers).length)];
