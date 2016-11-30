@@ -247,7 +247,7 @@ function createLevel(){
   // create stars
  var particleCount = 1800,
     particles = new THREE.Geometry(),
-    pMaterial = new THREE.ParticleBasicMaterial({
+    pMaterial = new THREE.PointsMaterial({
       color: 0xFFFFFF,
       size: 3
     });

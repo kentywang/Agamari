@@ -42,7 +42,7 @@ export function loadEnvironment() {
 
         if (playerObject.sprite) {
           playerObject.sprite.position.copy(playerObject.position);
-          playerObject.sprite.position.add(playerObject.sprite.position.clone().normalize().multiplyScalar(scale * 15))
+          playerObject.sprite.position.add(playerObject.sprite.position.clone().normalize().multiplyScalar(scale * 12))
         }
       }
 

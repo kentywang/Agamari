@@ -68,7 +68,7 @@ export class Player {
     mesh.position.y = initialData.y;
     mesh.position.z = initialData.z;
     mesh.position.normalize().multiplyScalar(500);
-    mesh.position.multiplyScalar(1.5);
+    mesh.position.multiplyScalar(1.4);
     mesh.quaternion.x = initialData.qx;
     mesh.quaternion.y = initialData.qy;
     mesh.quaternion.z = initialData.qz;
@@ -125,8 +125,8 @@ export class Player {
     // show name on player if not self
     if (!isMainPlayer) {
       let { nickname } = initialData;
-      name = nickname.length > 12 ? nickname.slice(0, 11) + '...' : nickname;
-      sprite = makeTextSprite(name, 50);
+      name = nickname.length > 8 ? nickname.slice(0, 7) : nickname;
+      sprite = makeTextSprite(name, 70);
       mesh.sprite = sprite;
       scene.add(sprite); // might run into issues with children
     }
