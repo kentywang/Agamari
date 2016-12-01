@@ -17,7 +17,6 @@ class ControlPanel extends Component {
     return (
       <div style={{position: 'absolute', zIndex: 1, right: '10px', top: '10px'}}>
       {isOpen ?
-        <div className="card blue-grey darken-1">
           <div className="card-content white-text">
                 <button className="btn"
                         style={{ float: 'left' }}
@@ -25,8 +24,7 @@ class ControlPanel extends Component {
                 <button className="btn-floating"
                         style={{ float: 'right' }}
                         onClick={close}>X</button>
-          </div>
-        </div> :
+          </div> :
         <div>
           <button className="btn-floating" onClick={open}><i className="material-icons">menu</i></button>
         </div>}
