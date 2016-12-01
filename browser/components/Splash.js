@@ -2,19 +2,43 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import socket from '../socket';
 
-import gameState from '../reducers/gamestate.js';
-import { startGame, stopGame, setNickname, resetNickname, startAsGuest } from '../reducers/gamestate.js';
+import { startGame, stopGame, setNickname, resetNickname, startAsGuest } from '../reducers/gameState.js';
 
 class Splash extends Component {
   render () {
-    let { updateNickname, players, open, gameState, play} = this.props;
-    let { isPlaying, error, nickname } = gameState;
-    let player = socket && players[socket.id];
+    let { updateNickname, gameState, play } = this.props;
+    let { nickname } = gameState;
 
 
     return (
         <div>
-         <button className="btn" onClick={play}>Open</button>
+         <div id="title" style={{color:"white"}}>AGAMARI</div>
+          
+
+          <div>
+      
+            <input value={nickname}
+                   onChange={updateNickname}
+                   type="text"
+                   id="name-box"
+                   placeholder="nickname" 
+                   className="validate"
+                   autoFocus
+                   style={{color: "white",
+                    position: "fixed", 
+                    top: "55%",
+                    left: "50%",
+                    transform: "translate(-50%, -50%)"
+                    }}/>
+                   {/* <label htmlFor="name-box" data-error="Please enter nickname" data-success="right">Please enter nickname</label>*/}
+
+            <button className="Buttons" onClick={play} id="play-box">play</button>
+
+          </div>
+         {/* <div>
+            <button className="buttons" onClick={play} id="rules-box">Rules</button>
+          </div>*/}
+         
         </div>
 
       );
@@ -24,13 +48,22 @@ class Splash extends Component {
 const mapStateToProps = ({players, gameState}) => ({players, gameState});
 
 const mapDispatchToProps = dispatch => ({
-  play: () => dispatch(startGame()),
+  // play: () => dispatch(startGame()),
   leave: () => dispatch(stopGame()),
   updateNickname: e => dispatch(setNickname(e.target.value)),
-  signInAsGuest: (nickname, socket) => dispatch(startAsGuest(nickname, socket))
-})
+  signInAsGuest: (nickname, socket) => {
+    dispatch(startGame());
+    dispatch(startAsGuest(nickname, socket));
+  }
+});
+
+const mergeProps = (stateProps, dispatchProps, ownProps) => (
+  Object.assign({}, stateProps, dispatchProps, ownProps, {
+    play: () => dispatchProps.signInAsGuest(stateProps.gameState.nickname, socket)
+  }));
 
 export default connect(
   mapStateToProps,
-  mapDispatchToProps
+  mapDispatchToProps,
+  mergeProps
 )(Splash);

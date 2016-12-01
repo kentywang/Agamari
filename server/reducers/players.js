@@ -1,7 +1,7 @@
 let newState;
 
 /*----------  INITIAL STATE  ----------*/
-const initialState = {};
+const initialState = {eatenCooldown: 0};
 
 /*----------  ACTION TYPES  ----------*/
 const RECEIVE_PLAYERS = 'RECEIVE_PLAYERS';
@@ -111,22 +111,23 @@ const immutable = (state = initialState, action) => {
     case ADD_FOOD_TO_DIET:
       newState = Object.assign({}, state);
       newState[action.id] = Object.assign({}, state[action.id]);
-        if(!newState[action.id].diet){ 
+        if(!newState[action.id].diet){
           newState[action.id].diet = [];
-        } 
+        }
       newState[action.id].diet.push({food: action.food, x: action.data.x, y: action.data.y, z: action.data.z, qx: action.data.qx, qy: action.data.qy, qz: action.data.qz, qw: action.data.qw, scale: action.data.scale}); // when I do playerData: action.data, I get max call stack. Why?
       return newState;
     case ADD_PLAYER_TO_DIET:
       newState = Object.assign({}, state);
       newState[action.id] = Object.assign({}, state[action.id]);
-        if(!newState[action.id].diet){ 
+        if(!newState[action.id].diet){
           newState[action.id].diet = [];
-        } 
+        }
       newState[action.id].diet.push({eatenPlayer: action.food, x: action.data.x, y: action.data.y, z: action.data.z, qx: action.data.qx, qy: action.data.qy, qz: action.data.qz, qw: action.data.qw, scale: action.data.scale}); // when I do playerData: action.data, I get max call stack. Why?
       return newState;
     case CLEAR_DIET:
       newState = Object.assign({}, state);
       newState[action.id].diet = [];
+      newState[action.id].eatenCooldown = Date.now();
       return newState;
     default:
       return state;
@@ -159,6 +160,7 @@ const mutable = (state = initialState, action) => {
 // no ADD_FOOD_TO_DIET, nor ADD_PLAYER_To_DIET cases mutable implemented yet
     case CLEAR_DIET:
       state[action.id].diet = [];
+      state[action.id].eatenCooldown = Date.now();
       return state;
     default:
       return state;

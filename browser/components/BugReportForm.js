@@ -3,7 +3,6 @@ import { connect } from 'react-redux';
 import socket from '../socket';
 import axios from 'axios';
 
-
 class BugReportForm extends Component {
   constructor(props){
     super(props);
@@ -73,7 +72,7 @@ class BugReportForm extends Component {
       {isOpen ?
           <div className="card-panel grey lighten-5" style={{ border: '#ccc solid 2px', borderRadius: '5px'}}>
                   <div className="" style={{float: 'right'}}>
-                    <button className="btn" onClick={close}>X</button>
+                    <button className="btn-floating" onClick={close}>X</button>
                   </div>
             { message ?
               <div style={{color: 'black'}}>
@@ -82,7 +81,7 @@ class BugReportForm extends Component {
               <div className="row" style={{color: 'black', fontWeight: 'bold', marginBottom: 0}}>
                 <div>
                   <h5 className="center-align"
-                      style={{fontWeight: 'bold'}}>&nbsp;&nbsp;Report A Bug</h5>
+                      style={{fontWeight: 'bold'}}>&nbsp;&nbsp;report a bug</h5>
                 </div>
                 <div className="row" style={{margin: '0'}}>
                     <div className="input-field col s6">
@@ -129,7 +128,7 @@ class BugReportForm extends Component {
                     </div>
                   </div>
                 <div>
-                  <button className="btn" style={{float: 'right'}}onClick={submitForm}>Submit</button>
+                  <button className="btn" style={{float: 'right'}}onClick={submitForm}>submit</button>
                 </div>
               </div> }
           </div> :

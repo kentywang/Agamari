@@ -3,7 +3,7 @@ const THREE = require('three');
 import store from '../store';
 import socket from '../socket';
 
-import { scene, camera, plane, myColors } from './main';
+import { scene, camera } from './main';
 import { forOwn } from 'lodash';
 
 
@@ -19,18 +19,14 @@ const loadGame = () => {
   };
 
   window.onbeforeunload = function() {
-    //remove self from server db here
+    //remove self from server db herew
   };
 };
 
 export function loadEnvironment() {
   let { players } = store.getState();
 
-  // Kenty: added if statement below to get around undefined plane error
-  if (plane) plane.material.color = new THREE.Color(myColors[color]);
-
   // set location and rotation for other players
-  // (I should probably use player.setOrientation instead)
   forOwn(players, (data, id) => {
     let playerObject = scene.getObjectByName(id);
     let { x, y, z, qx, qy, qz, qw, scale, volume} = data;
@@ -44,14 +40,15 @@ export function loadEnvironment() {
         playerObject.quaternion.z = qz;
         playerObject.quaternion.w = qw;
 
-        playerObject.sprite.position.x = playerObject.position.x;
-        playerObject.sprite.position.y = playerObject.position.y + (scale * 5);
-        playerObject.sprite.position.z = playerObject.position.z;
+        if (playerObject.sprite) {
+          playerObject.sprite.position.copy(playerObject.position);
+          playerObject.sprite.position.add(playerObject.sprite.position.clone().normalize().multiplyScalar(scale * 12))
+        }
       }
 
-      if (id === socket.id){
-        playerObject.cannon.mass = volume * 0.01;
-      }
+      // if (id === socket.id){
+      //   playerObject.cannon.mass = volume * 0.01;
+      // }
 
       // scale name text
       if (playerObject.sprite){
@@ -72,7 +69,6 @@ export function loadEnvironment() {
 
       // camera sees more further out, less closer
       camera.far += (scale * 0.3);
-      //camera.near += (data.scale * .01);
     }
 
   });

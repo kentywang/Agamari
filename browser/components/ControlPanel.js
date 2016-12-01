@@ -3,49 +3,32 @@ import { connect } from 'react-redux';
 import socket from '../socket';
 
 import { openConsole,
-         closeConsole,
-         setNickname,
-         resetNickname,
-         setError,
-         resetError,
-         startAsGuest } from '../reducers/controlPanel';
-import {stopGame} from '../reducers/gameState';         
+         closeConsole } from '../reducers/controlPanel';
+import {stopGame} from '../reducers/gameState';
 
 class ControlPanel extends Component {
   render() {
-    let { players,
-          controlPanel,
+    let { controlPanel,
           open,
           close,
-          updateNickname,
-          signInAsGuest,
           leave } = this.props;
-    let { isOpen,
-          nickname,
-          error } = controlPanel;
-    let player = socket && players[socket.id];
+    let { isOpen } = controlPanel;
 
     return (
-      <div style={{position: 'absolute', zIndex: 1, 'marginLeft': '64%'}}>
+      <div style={{position: 'absolute', zIndex: 1, right: '10px', top: '10px'}}>
       {isOpen ?
         <div className="card blue-grey darken-1">
           <div className="card-content white-text">
-            {error && <p>{error}</p>}
-            <div className="input-field">
-              <input type="text"
-                     placeholder="Nickname"
-                     value={nickname}
-                     onChange={updateNickname}/>
-            </div>
-            <button className="btn"onClick={() => signInAsGuest(nickname, socket)}>
-              Start Game As Guest</button>
-            <button className="btn" onClick={close}>Close Window</button>
-            <button className="btn" onClick={leave}>Leave Game</button>
+                <button className="btn"
+                        style={{ float: 'left' }}
+                        onClick={leave}>quit</button>
+                <button className="btn-floating"
+                        style={{ float: 'right' }}
+                        onClick={close}>X</button>
           </div>
         </div> :
         <div>
-          {player && <p>{`Welcome ${nickname}`}</p>}
-          <button className="btn" onClick={open}>Open</button>
+          <button className="btn-floating" onClick={open}><i className="material-icons">menu</i></button>
         </div>}
         </div>
       );
@@ -57,12 +40,10 @@ const mapStateToProps = ({ players, controlPanel }) => ({ players, controlPanel 
 const mapDispatchToProps = dispatch => ({
   open: () => dispatch(openConsole()),
   close: () => dispatch(closeConsole()),
-  leave: ()=> dispatch(stopGame()),
-  updateNickname: e => dispatch(setNickname(e.target.value)),
-  clearNickname: () => dispatch(resetNickname()),
-  updateError: error => dispatch(setError(error)),
-  clearError: () => dispatch(resetError()),
-  signInAsGuest: (nickname, socket) => dispatch(startAsGuest(nickname, socket))
+  leave: () => {
+    dispatch(stopGame());
+    socket.emit('leave');
+  }
 });
 
 export default connect(
