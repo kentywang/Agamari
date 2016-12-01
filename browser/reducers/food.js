@@ -7,6 +7,7 @@ const initialState = {};
 const RECEIVE_FOOD = 'RECEIVE_FOOD';
 const RECEIVE_MULTIPLE_FOOD = 'RECEIVE_MULTIPLE_FOOD';
 const REMOVE_FOOD = 'REMOVE_FOOD';
+const REMOVE_ALL_FOOD = 'REMOVE_ALL_FOOD';
 
 
 /*----------  ACTION CREATORS  ----------*/
@@ -26,6 +27,10 @@ export const removeFood = id => ({
   id
 });
 
+export const removeAllFood = () => ({
+  type: REMOVE_ALL_FOOD
+});
+
 
 /*----------  THUNK CREATORS  ----------*/
 
@@ -43,6 +48,8 @@ const immutable = (state = initialState, action) => {
       newState = Object.assign({}, state);
       delete newState[action.id];
       return newState;
+    case REMOVE_ALL_FOOD:
+      return initialState;
     default: return state;
   }
 };

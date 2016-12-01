@@ -23,8 +23,8 @@ class Splash extends Component {
                    autoFocus
                    required/>
                    {/* <label htmlFor="name-box" data-error="Please enter nickname" data-success="right">Please enter nickname</label>*/}
-            <button className="Buttons" type="submit" style={nickname? {color: "white"} : {color: "grey"}} onClick={()=>{
-              if(nickname)
+            <button className="Buttons" type="submit" style={nickname.trim()? {color: "white"} : {color: "grey"}} onClick={()=>{
+              if(nickname.trim())
                 play();
             }} id="play-box">play</button>
           </div>

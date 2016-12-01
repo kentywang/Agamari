@@ -9,7 +9,7 @@ let elapsedTime = {},
     id = 1;
 
 const spawnFood = (io, currentRoom) => {
-  if (!elapsedTime[currentRoom] || Date.now() - elapsedTime[currentRoom] > 100){
+  if (!elapsedTime[currentRoom] || Date.now() - elapsedTime[currentRoom] > 200){
     //console.log('spawning food');
     elapsedTime[currentRoom] = Date.now();
     let { food, players } = store.getState();
@@ -17,9 +17,10 @@ const spawnFood = (io, currentRoom) => {
     //  console.log('currentRoom', currentRoom);
       let roomPlayers = pickBy(players, ({ room }) => room === currentRoom);
       let roomFood = pickBy(food, ({ room }) => room === currentRoom );
+      //console.log("room_food", roomFood)
       if (size(roomPlayers)) {
       //  console.log('generating food');
-        if (size(roomFood) < 200) {
+        if (size(roomFood) < 150) {
           let x = (Math.random() * 1000) - 500,
               y = (Math.random() * 1000) - 500,
               z = (Math.random() * 1000) - 500,

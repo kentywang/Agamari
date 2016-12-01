@@ -2,9 +2,9 @@ let Promise = require('bluebird');
 
 
 function initPos(){
-  let x = 0;//Math.random() * 1000 - 500;
-  let y = 800;//Math.random() * 1000 - 500;
-  let z = 0;//Math.random() * 1000 - 500;
+  let x = Math.random() * 1000 - 500;
+  let y = Math.random() * 1000 - 500;
+  let z = Math.random() * 1000 - 500;
 
   return {
     x,
@@ -31,7 +31,9 @@ const { updatePlayer,
         changePlayerScale,
         addFoodToDiet,
         addPlayerToDiet,
-        clearDiet } = require('../reducers/players');
+        clearDiet,
+        afk,
+        unAfk } = require('../reducers/players');
 
 const addRandomRoom = () => {
   let { rooms } = store.getState();
@@ -56,7 +58,7 @@ const setUpListeners = (io, socket) => {
           let room = undefined;
           for (let i = 0; i < rooms.length && !room; i++) {
             let playerCount = size(pickBy(players, player => player.room === rooms[i]));
-            if (playerCount < 8) room = rooms[i];
+            if (playerCount < 4) room = rooms[i];
           }
           if (!room) room = addRandomRoom();
 
@@ -91,6 +93,7 @@ const setUpListeners = (io, socket) => {
               // Find all food in room and tell new player to add to game state
               let roomFood = pickBy(food, currentFood => currentFood.room === room);
               // let roomFood = food.filter(({ room }) => room === room);
+             
               socket.emitAsync('food_data', roomFood);
             })
             .then(() => socket.joinAsync(room)) // Join room
@@ -131,6 +134,7 @@ const setUpListeners = (io, socket) => {
       let player = store.getState().players[socket.id];
       // First, verify that food still exists.
       // Then increase player size and tell other players to remove food object
+     // console.log(id, food[id])
       if (eaten) {
         // **** store.dispatch(addFoodToDiet(eaten, socket.id, store.getState().players[socket.id]));
         //console.log("in eat food socket listener, number of diets: ", store.getState().players[socket.id].diet.length)
@@ -192,6 +196,34 @@ const setUpListeners = (io, socket) => {
         io.sockets.in(room).emit('add_player', socket.id, Object.assign({}, initPos(), {nickname: eaten.nickname}), true);
         socket.emit('you_got_eaten', eater.nickname);
         io.sockets.in(room).emit('casualty_report', eater.nickname, eaten.nickname);
+      }
+    });
+
+    socket.on('time_me', ()=>{
+
+      store.dispatch(afk(socket.id));
+      // kick player in 1 min if their browser window doesn't become active again
+      setTimeout(()=>{
+        let player = store.getState().players[socket.id];
+        if (player && player.afk) {
+            let { room } = player;
+
+            socket.emit("afk_leave");
+            // Remove player from server game state and tell players to remove player object
+            store.dispatch(removePlayer(socket.id));
+            io.sockets.in(room).emit('remove_player', socket.id);
+
+            console.log(`${player.nickname} has left ${room}.`);
+        }
+      },60*1000)
+    })
+
+    socket.on('untime_me', ()=>{
+
+      // set afk status to false
+      let player = store.getState().players[socket.id];
+      if(player){
+        store.dispatch(unAfk(socket.id));
       }
     });
 }
