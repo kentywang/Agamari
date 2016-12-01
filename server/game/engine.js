@@ -6,10 +6,14 @@ const store = require('../store');
 
 let types = ['box', 'sphere'];
 let elapsedTime = {},
+    moonSpawnTime = {},
     id = 1;
 
 const spawnFood = (io, currentRoom) => {
   if (!elapsedTime[currentRoom] || Date.now() - elapsedTime[currentRoom] > 200){
+    if(!moonSpawnTime[currentRoom]){
+      moonSpawnTime[currentRoom] = Date.now() - 7 * 60 * 1000;
+    }
     //console.log('spawning food');
     elapsedTime[currentRoom] = Date.now();
     let { food, players } = store.getState();
@@ -67,11 +71,13 @@ const spawnFood = (io, currentRoom) => {
             let parms = foodSize.map(e => ~~(e * playerToFeed.scale));
             //console.log(parms)
 
-            // create Moon at first
-            if(Object.keys(food).length == 0){
-              x = 0,
-              y = 0,
-              z = -1,
+            // create Moon at first, then in 10 sec increments
+            if(Date.now() - moonSpawnTime[currentRoom] > 7 * 60 * 1000){
+              moonSpawnTime[currentRoom] = Date.now();
+
+              x = (Math.random() * 1000) - 500,
+              y = (Math.random() * 1000) - 500,
+              z = (Math.random() * 1000) - 500,
               type = "moon",
               parms = [120];
             }
