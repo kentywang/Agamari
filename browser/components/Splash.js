@@ -13,10 +13,7 @@ class Splash extends Component {
     return (
         <div>
          <div id="title" style={{color:"white"}}>AGAMARI</div>
-          
-
-          <div>
-      
+           <div className="input-field">
             <input value={nickname}
                    onChange={updateNickname}
                    type="text"
@@ -24,16 +21,12 @@ class Splash extends Component {
                    placeholder="nickname" 
                    className="validate"
                    autoFocus
-                   style={{color: "white",
-                    position: "fixed", 
-                    top: "55%",
-                    left: "50%",
-                    transform: "translate(-50%, -50%)"
-                    }}/>
+                   required/>
                    {/* <label htmlFor="name-box" data-error="Please enter nickname" data-success="right">Please enter nickname</label>*/}
-
-            <button className="Buttons" onClick={play} id="play-box">play</button>
-
+            <button className="Buttons" type="submit" style={nickname? {color: "white"} : {color: "grey"}} onClick={()=>{
+              if(nickname)
+                play();
+            }} id="play-box">play</button>
           </div>
          {/* <div>
             <button className="buttons" onClick={play} id="rules-box">Rules</button>

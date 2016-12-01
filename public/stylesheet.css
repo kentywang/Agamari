@@ -34,37 +34,6 @@ body, html {
 	transform: translate(-50%, -50%);
 }
 
-#play-box {
-    color: white;
-    position: fixed;
-    font-size: 2em;
-    top: 65%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 100px;
-    height: 30px;
-    border: 1px solid;
-    padding-bottom: 50px;
-    border-radius: 14px;
-    background-color: transparent;
-    text-align: center;
-}
-
-#name-box{
-	color: white;
-    position: fixed;
-    font-size: 2.5em;
-    top: 53%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 300px;
-    height: 60px;
-    border: 1px solid;
-    border-radius: 8px;
-    background-color: transparent;
-    text-align: center;
-}
-
 #canvas {
 	position: absolute;
 	width: 100%;
@@ -125,11 +94,6 @@ html,body {
 
 }
 
-
-
-
-
-
 #play-box {
     color: white;
     position: fixed;
@@ -147,7 +111,7 @@ html,body {
 }
 
 
-#play-box:hover {
+/*#play-box:hover {
   background: darken($red, 1.5%);
   border: 1px solid rgba(#000, .05);
   box-shadow: 1px 1px 2px rgba(#fff, .2);
@@ -155,13 +119,13 @@ html,body {
   text-decoration: none;
   text-shadow: -1px -1px 0 darken($red, 9.5%);
   transition: all 250ms linear;
-}
+}*/
 
 #name-box{
     color: white;
     position: fixed;
     font-size: 2.5em;
-    top: 53%;
+    top: 55%;
     left: 50%;
     transform: translate(-50%, -50%);
     width: 300px;
@@ -174,7 +138,7 @@ html,body {
 
 
 
-#rules-box {
+/*#rules-box {
     color: white;
     position: fixed;
     font-size: 2em;
@@ -188,4 +152,4 @@ html,body {
     border-radius: 14px;
     background-color: transparent;
     text-align: center;
-}
+}*/
