@@ -11,10 +11,10 @@ class App extends Component {
     let { isPlaying, error, nickname } = this.props.gameState;
     return (
       <div>
-        <div style={{fontFamily: "Quicksand", fontWeight: "bold", position: "absolute"}}>.</div>
           {!isPlaying && <Splash />}
           {isPlaying && <ControlPanel />}
           {isPlaying && <Canvas />}
+        <div style={{fontFamily: "Quicksand", fontWeight: "bold", position: "absolute"}}>.</div>
       </div>
       );
 
