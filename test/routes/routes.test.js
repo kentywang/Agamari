@@ -96,6 +96,7 @@ describe('Rooms Routes:', function () {
     let room;
 
     beforeEach(function () {
+      
 
       var creatingRooms = [{
         name: 'test room1'
@@ -108,15 +109,16 @@ describe('Rooms Routes:', function () {
 
       return Promise.all(creatingRooms)
       .then(createdRooms => {
-        room = createdRooms[1];
+        room = createdRooms[0].dataValues;
+        console.log(room);
       });
 
     });
 
-    xit('returns the JSON of the article based on the id', function () {
-      console.log("adsfasdfadsfadsf",room.id);
+    it('returns the JSON of the article based on the id', function () {
+      console.log('api/rooms/'+room.id);
       return agent
-      .get('api/rooms/'+room.id)
+      .get('api/rooms/')
       .expect(200)
       .expect(function (res) {
         if (typeof res.body === 'string') {
