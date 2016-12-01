@@ -14,6 +14,8 @@ const UPDATE_VOLUME = 'UPDATE_VOLUME';
 const ADD_FOOD_TO_DIET = 'ADD_FOOD_TO_DIET';
 const ADD_PLAYER_TO_DIET = 'ADD_PLAYER_TO_DIET';
 const CLEAR_DIET = 'CLEAR_DIET';
+const AFK = "AFK";
+const UNAFK = "UNAFK";
 
 /*----------  ACTION CREATORS  ----------*/
 
@@ -75,6 +77,15 @@ module.exports.clearDiet = id => ({
   id,
 });
 
+module.exports.afk = id => ({
+  type: AFK,
+  id,
+});
+
+module.exports.unAfk = id => ({
+  type: UNAFK,
+  id,
+});
 /*----------  THUNK CREATORS  ----------*/
 
 /*----------  REDUCER  ----------*/
@@ -128,6 +139,18 @@ const immutable = (state = initialState, action) => {
       newState = Object.assign({}, state);
       newState[action.id].diet = [];
       newState[action.id].eatenCooldown = Date.now();
+      return newState;
+    case AFK: // figure out why sometimes newState[action.id] is undefined, then remove the if statement
+      newState = Object.assign({}, state);
+      if(newState[action.id]){
+        newState[action.id].afk = true;
+      }
+      return newState;
+    case UNAFK: // figure out why sometimes newState[action.id] is undefined, then remove the if statement
+      newState = Object.assign({}, state);
+      if(newState[action.id]){
+        newState[action.id].afk = false;
+      }
       return newState;
     default:
       return state;

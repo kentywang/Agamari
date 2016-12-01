@@ -2,11 +2,15 @@ import store from '../store';
 import { attachFood, attachPlayer } from './utils';
 
 import { closeConsole, setError } from '../reducers/controlPanel';
-import { receivePlayers } from '../reducers/players';
+import {  receivePlayers,
+          removeAllPlayers } from '../reducers/players';
 import { removeFood,
          receiveFood,
-         receiveMultipleFood } from '../reducers/food';
+         receiveMultipleFood,
+         removeAllFood } from '../reducers/food';
 import { lose, fell, ateSomeone } from '../reducers/gameStatus';
+
+import {stopGame} from '../reducers/gameState';
 
 import { init,
          animate,
@@ -25,6 +29,7 @@ export default socket => {
 
     // Receive current positions for all food. Happens before start.
     socket.on('food_data', state => {
+      //console.log(state)
       store.dispatch(receiveMultipleFood(state));
     });
 
@@ -94,10 +99,14 @@ export default socket => {
         store.dispatch(lose(eater));
     });
     socket.on('you_lose', room =>{
-      console.log(room);
         store.dispatch(fell(room));
     });
 
+    socket.on('afk_leave', room =>{
+        store.dispatch(removeAllFood());
+        //store.dispatch(removeAllPlayers());
+        store.dispatch(stopGame());
+    });
 //     socket.on('remove_eaten_player', (id, playerId, playerData, eatenData) => {
 //       let playerObject = scene.getObjectByName(id);
 //       if (playerObject) {

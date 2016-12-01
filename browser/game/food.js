@@ -98,6 +98,7 @@ export class Food {
                   // player must be 12 times the volume of food to eat it, and can't be more than 500 the volume
                   if (playerVol > foodVol /** 12 && playerVol < foodVol * 500*/) {
                     // pass new volume so that server can update its store if/when food eaten goes thru
+                    //console.log("Im eating dis", this.id, foodVol + playerVol)
                     this.eaten = true;
                     socket.emit('eat_food', this.id, foodVol + playerVol);
                   }

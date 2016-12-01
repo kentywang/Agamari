@@ -24,6 +24,12 @@ let someColors = myColors();
 
 export const init = () => {
 
+// set afk status to false
+window.onfocus= ()=>socket.emit("untime_me");
+
+// start timer for player kick
+window.onblur = ()=>socket.emit("time_me");
+
   let { players, food } = store.getState();
   // initialize THREE scene, camera, renderer
   scene = new THREE.Scene();

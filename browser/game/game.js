@@ -14,13 +14,11 @@ const loadGame = () => {
   // load the environment
   loadEnvironment();
 
-  window.onunload = function() {
-    //remove self from server db here
-  };
+  // window.onunload = function() {
+  // };
 
-  window.onbeforeunload = function() {
-    //remove self from server db herew
-  };
+  // window.onbeforeunload = function() {
+  // };
 };
 
 export function loadEnvironment() {

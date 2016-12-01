@@ -49,12 +49,12 @@ class Canvas extends Component {
 			this.state.leaderboard.sort((a, b) => b.vol - a.vol);
 
 			// add self to shortlist (if necessary)
-			var me = this.state.leaderboard.find(e => e.nick === myNick)
-			me.place = this.state.leaderboard.indexOf(me) + 1;
-			this.state.leaderboard.splice(3);
-			if(me.place > 3){
-				this.state.leaderboard.push(me);
-			}
+			// var me = this.state.leaderboard.find(e => e.nick === myNick)
+			// me.place = this.state.leaderboard.indexOf(me) + 1;
+			// this.state.leaderboard.splice(3);
+			// if(me.place > 3){
+			// 	this.state.leaderboard.push(me);
+			// }
 		}
 
 		// show score
@@ -91,7 +91,7 @@ class Canvas extends Component {
 					<div ref="status" className="status">
 						{this.props.gameStatus}
 					</div>
-					<div ref="abilities" className="abilities" style={this.props.abilities && this.props.abilities.launch ? {} : {color: 'rgba(255,255,255,0.3)'}}>
+					<div ref="abilities" className="abilities" style={this.props.abilities && this.props.abilities.launch ? {} : {color: 'rgba(255,255,255,0.2)'}}>
 					<div>{this.props.players[socket.id] && this.props.abilities && this.props.abilities.meter}</div>
 						<div>{this.props.players[socket.id] && this.props.abilities && "launch ready"}</div>
 					</div>
