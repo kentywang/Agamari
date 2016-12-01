@@ -25,9 +25,9 @@ class Canvas extends Component {
 		const status = ReactDOM.findDOMNode(this.refs.status);
 		const abilities = ReactDOM.findDOMNode(this.refs.abilities);
 		const score = ReactDOM.findDOMNode(this.refs.score);
-  		TweenMax.from(leaderboard, 1, {x: "-=500", y: "-=500", ease: Power3.easeOut, delay: 1.5});
-  		TweenMax.from(abilities, 1, {x: "-=500", y: "+=500", ease: Power3.easeOut, delay: 1.5});
-  		TweenMax.from(score, 1, {x: "+=500", y: "+=500", ease: Power3.easeOut, delay: 1.5});
+  		TweenMax.from(leaderboard, 1, {x: "-=500", y: "-=500", ease: Power3.easeOut, delay: 2});
+  		TweenMax.from(abilities, 1, {x: "-=500", y: "+=500", ease: Power3.easeOut, delay: 2});
+  		TweenMax.from(score, 1, {x: "+=500", y: "+=500", ease: Power3.easeOut, delay: 2});
   	}
 
 	render = () => {
