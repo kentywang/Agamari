@@ -49,7 +49,7 @@ const spawnFood = (io, currentRoom) => {
           }
 
             // create explosive food
-            if(Math.random() > 0.6){
+            if(Math.random() > 0.98){
               type = "bomb",
               foodSize = [
                 3 + (Math.random() * 2)

@@ -47,9 +47,9 @@ export class Food {
         shape = new CANNON.Sphere(parms[0]);
         break;
       case 'bomb':
-        geometry = new THREE.IcosahedronGeometry( parms[0], 0 );
+        geometry = new THREE.IcosahedronGeometry( 50, 0);
         material = new THREE.MeshPhongMaterial( {color: "black", shininess: 100, envMaps: "reflection", specular: "grey", shading: THREE.FlatShading} );
-        shape = new CANNON.Sphere(parms[0]);
+        shape = new CANNON.Sphere(50);
         break;
       case 'sphere':
       default:
@@ -92,6 +92,9 @@ export class Food {
     if(type !== "bomb"){
       this.mesh.cannon.collisionResponse = 0;
     }
+    if (type == 'bomb') {
+      this.mesh.cannon.collisionResponse = 1;
+    }
     this.mesh.cannon.addEventListener('collide', e => {
       player = scene.getObjectByName(socket.id);
       if (!this.eaten) {
@@ -111,18 +114,18 @@ export class Food {
                   }
 
                   // eat much smaller bombs
-                  else if(type === "bomb" && playerVol > foodVol * 8) {
-                    this.eaten = true;
-                    socket.emit('eat_food', this.id, foodVol + playerVol);
-                  }
+                  // else if(type === "bomb" && playerVol > foodVol * 8) {
+                  //   this.eaten = true;
+                  //   socket.emit('eat_food', this.id, foodVol + playerVol);
+                  // }
 
                   // no effect with bigger bombs
-                  else if(type === "bomb" && playerVol < foodVol * 2) {
+                  // else if(type === "bomb" && playerVol < foodVol * 2) {
                     
-                  }
+                  // }
 
                   // all other bombs are explosive
-                  else if(type === "bomb"){
+                  else if(type === "bomb" && playerVol>10000){
                     this.eaten = true;
                     socket.emit('eat_food', this.id, foodVol + playerVol * 20);
                   }
