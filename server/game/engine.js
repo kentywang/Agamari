@@ -47,26 +47,21 @@ const spawnFood = (io, currentRoom) => {
               break;
           }
 
-            // scale food to random player
+            // create explosive food
+            // if(Math.random() > 0.6){
+            //   type = "bomb",
+            //   foodSize = [120];
+            // }
 
+            // scale food to random player
             let randomPlayerId = Object.keys(roomPlayers)[~~(Math.random() * Object.keys(roomPlayers).length)];
 
-            let playerToFeed = roomPlayers[randomPlayerId];
-
-            // check to see what is the largest scale in the game
-            let largestScale = 1;
-            for (var Pid in roomPlayers) {
-              if(roomPlayers[Pid].scale > largestScale){
-                largestScale = roomPlayers[Pid].scale;
-              }
-            }
-
-            // if player is the largest in room and he isn't alone, rechoose a player to scale food to
-            if(Object.keys(roomPlayers).length > 1 && playerToFeed.scale === largestScale){
+            while(isLargestPlayer(randomPlayerId, roomPlayers)){
               randomPlayerId = Object.keys(roomPlayers)[~~(Math.random() * Object.keys(roomPlayers).length)];
-            }
+             // console.log("rerolling")
+            }      
 
-            playerToFeed = roomPlayers[randomPlayerId];
+            let playerToFeed = roomPlayers[randomPlayerId];
 
             let parms = foodSize.map(e => ~~(e * playerToFeed.scale));
             //console.log(parms)
@@ -81,6 +76,7 @@ const spawnFood = (io, currentRoom) => {
               type = "moon",
               parms = [120];
             }
+
 
           let data = { x, y, z, type, parms, room: currentRoom };
           store.dispatch(receiveFood(id, data));
@@ -106,6 +102,25 @@ const broadcastState = (io) => {
   }, (1000 / 30));
 };
 
+function isLargestPlayer(id, roomPlayers){
+  let playerToFeed = roomPlayers[id];
+
+  // check to see what is the largest scale in the room
+  let largestScale = 1;
+  for (var Pid in roomPlayers) {
+    if(roomPlayers[Pid].scale > largestScale){
+      largestScale = roomPlayers[Pid].scale;
+    }
+  }
+
+  // if player is the largest in room and he isn't alone, rechoose a player to scale food to
+  if(Object.keys(roomPlayers).length > 1 && playerToFeed.scale === largestScale){
+    //console.log("should be rerolling")
+    return true;
+  }
+
+  return false;
+}
 // function respawn(io, store, socket, room){
 //   console.log("in respawn")
 //     io.sockets.in(room).emit('remove_player', socket.id);
