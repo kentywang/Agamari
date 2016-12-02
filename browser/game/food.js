@@ -41,7 +41,7 @@ export class Food {
         shape = new CANNON.Box(new CANNON.Vec3(parms[0] / 2, parms[1] / 2, parms[2] / 2));
         break;
       case 'moon':
-        geometry = new THREE.TetrahedronGeometry( parms[0], 3 );
+        geometry = new THREE.IcosahedronGeometry( parms[0], 1 );
         material = new THREE.MeshPhongMaterial( {color: "#F8B195", shading: THREE.FlatShading} );
         shape = new CANNON.Sphere(parms[0]);
         break;
@@ -59,11 +59,12 @@ export class Food {
     mesh.position.y = y;
     mesh.position.z = z;
     if(type === "moon"){  
-        mesh.position.normalize().multiplyScalar(820);
+      mesh.position.normalize().multiplyScalar(820);
+      mesh.position.add(mesh.position.clone().normalize().multiplyScalar(parms[0] * 2.5));
     }else{
       mesh.position.normalize().multiplyScalar(500);
+      mesh.position.add(mesh.position.clone().normalize().multiplyScalar(parms[0] * 2.5));
     }
-    mesh.position.add(mesh.position.clone().normalize().multiplyScalar(parms[0] * 2.5));
     mesh.lookAt(new THREE.Vector3(0,0,0));
 
     mesh.cannon = new CANNON.Body({ shape, mass: 0, material: groundMaterial });
