@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "nodemon --exec 'mocha --reporter spec --timeout 1000 test/**/*.test.js || true'",
+    "test-redux": "mocha --compilers js:babel-register test/frontend/**/*.test.js",
+    "test": "nodemon --exec 'mocha --reporter spec --timeout 1000 test/database/*.test.js test/routes/*.test.js || true'",
     "start": "webpack -w & nodemon server/index",
     "seed": "node server/db/seed.js"
   },
@@ -61,8 +62,11 @@
   },
   "devDependencies": {
     "chai": "3.4.1",
+    "enzyme": "^2.6.0",
     "mocha": "^2.3.3",
     "nodemon": "^1.7.1",
+    "react-addons-test-utils": "^15.4.1",
+    "sinon": "^1.17.6",
     "supertest": "^1.1.0",
     "supertest-as-promised": "^3.1.0"
   },
