@@ -6,6 +6,7 @@ const STOP_GAME = 'STOP_GAME';
 const SET_ERROR = 'SET_ERROR';
 const SET_NICKNAME = 'SET_NICKNAME';
 const RESET_ERROR = 'RESET_ERROR';
+const HIDE_INSTRUCTIONS = 'HIDE_INSTRUCTIONS';
 
 
 /*=------ACTION CREATORS-------*/
@@ -42,6 +43,10 @@ export const resetError = () => ({
   type: RESET_ERROR
 });
 
+export const hideInstructions = () => ({
+  type: HIDE_INSTRUCTIONS
+});
+
 /*----------  THUNK CREATORS  ----------*/
 
 export const startAsGuest = (nickname, socket) => dispatch => {
@@ -67,6 +72,8 @@ export default (state = initialState, action) => {
 			return Object.assign({}, state, { error: null });
     case SET_NICKNAME:
     return Object.assign({}, state, { nickname: action.text });
+    case HIDE_INSTRUCTIONS:
+    return Object.assign({}, state, { instructionsHidden: true });
    	default:
    	return state;
   }
