@@ -30,6 +30,7 @@ const spawnFood = (io, currentRoom) => {
               z = (Math.random() * 1000) - 500,
               type = types[~~(Math.random() * types.length)],
               foodSize = [];
+              parms = [];
 
           switch (type){
             case 'box':
@@ -47,21 +48,46 @@ const spawnFood = (io, currentRoom) => {
               break;
           }
 
-            // scale food to random player
-            let randomPlayerId = Object.keys(roomPlayers)[~~(Math.random() * Object.keys(roomPlayers).length)];
+            // create explosive food
+            // if(Math.random() > 0.6){
+            //   type = "bomb",
+            //   foodSize = [
+            //     3 + (Math.random() * 2)
+            //   ];
+            // }
 
-            while(isLargestPlayer(randomPlayerId, roomPlayers)){
-              randomPlayerId = Object.keys(roomPlayers)[~~(Math.random() * Object.keys(roomPlayers).length)];
-             // console.log("rerolling")
-            }      
+            // if not bomb, scale food to random player
+            if(type !== "bomb"){
+              let randomPlayerId = Object.keys(roomPlayers)[~~(Math.random() * Object.keys(roomPlayers).length)];
 
-            let playerToFeed = roomPlayers[randomPlayerId];
+              while(isLargestPlayer(randomPlayerId, roomPlayers)){
+                randomPlayerId = Object.keys(roomPlayers)[~~(Math.random() * Object.keys(roomPlayers).length)];
+               // console.log("rerolling")
+              }      
 
-            let parms = foodSize.map(e => ~~(e * playerToFeed.scale));
-            //console.log(parms)
+              let playerToFeed = roomPlayers[randomPlayerId];
+
+              parms = foodSize.map(e => ~~(e * playerToFeed.scale));
+
+            }else if(type === "bomb"){
+              //if bomb, scale to largest player
+
+              // check to see what is the largest scale in the room
+                let largestPlayer = roomPlayers[Object.keys(roomPlayers)[~~(Math.random() * Object.keys(roomPlayers).length)]];
+
+                for (var Pid in roomPlayers) {
+                  if(roomPlayers[Pid].scale > largestPlayer.scale){
+                    largestPlayer = roomPlayers[Pid];
+                  }
+                }
+
+                parms = foodSize.map(e => ~~(e * largestPlayer.scale * 3));
+                //console.log(parms, largestPlayer.scale)
+            }
+
 
             // create Moon at first, then in 10 sec increments
-            if(Date.now() - moonSpawnTime[currentRoom] > 7 * 60 * 1000){
+            if(Date.now() - moonSpawnTime[currentRoom] >= 7 * 60 * 1000){
               moonSpawnTime[currentRoom] = Date.now();
 
               x = (Math.random() * 1000) - 500,
@@ -71,7 +97,7 @@ const spawnFood = (io, currentRoom) => {
               parms = [120];
             }
 
-
+           // console.log("type", type)
           let data = { x, y, z, type, parms, room: currentRoom };
           store.dispatch(receiveFood(id, data));
           io.sockets.in(currentRoom).emit('add_food', id, data);

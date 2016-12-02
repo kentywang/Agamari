@@ -34,6 +34,7 @@ export class Food {
 
     // Pick a random shape of random dimensions and create mesh/cannon mesh
     let { type, parms, x, y, z } = this.initialData;
+    //console.log(type, parms[0])
     switch (type) {
       case 'box':
         geometry = new THREE.BoxGeometry( parms[0], parms[1], parms[2] );
@@ -43,6 +44,11 @@ export class Food {
       case 'moon':
         geometry = new THREE.IcosahedronGeometry( parms[0], 1 );
         material = new THREE.MeshPhongMaterial( {color: "#F8B195", shading: THREE.FlatShading} );
+        shape = new CANNON.Sphere(parms[0]);
+        break;
+      case 'bomb':
+        geometry = new THREE.IcosahedronGeometry( parms[0], 0 );
+        material = new THREE.MeshPhongMaterial( {color: "black", shininess: 100, envMaps: "reflection", specular: "grey", shading: THREE.FlatShading} );
         shape = new CANNON.Sphere(parms[0]);
         break;
       case 'sphere':
@@ -59,8 +65,10 @@ export class Food {
     mesh.position.y = y;
     mesh.position.z = z;
     if(type === "moon"){  
-      mesh.position.normalize().multiplyScalar(820);
-      mesh.position.add(mesh.position.clone().normalize().multiplyScalar(parms[0] * 2.5));
+        mesh.position.normalize().multiplyScalar(820);
+        mesh.position.add(mesh.position.clone().normalize().multiplyScalar(parms[0] * 2.5));
+    }else if(type === "bomb"){
+        mesh.position.normalize().multiplyScalar(500);
     }else{
       mesh.position.normalize().multiplyScalar(500);
       mesh.position.add(mesh.position.clone().normalize().multiplyScalar(parms[0] * 2.5));
@@ -81,8 +89,9 @@ export class Food {
     world.add(mesh.cannon);
 
     this.mesh = mesh;
-
-    this.mesh.cannon.collisionResponse = 0;
+    if(type !== "bomb"){
+      this.mesh.cannon.collisionResponse = 0;
+    }
     this.mesh.cannon.addEventListener('collide', e => {
       player = scene.getObjectByName(socket.id);
       if (!this.eaten) {
@@ -96,12 +105,26 @@ export class Food {
                   let playerVol = store.getState().players[socket.id].volume;
                   let foodVol = this.mesh.cannon.shapes[0].volume();
 
-                  // player must be 12 times the volume of food to eat it, and can't be more than 500 the volume
-                  if (playerVol > foodVol /** 12 && playerVol < foodVol * 500*/) {
-                    // pass new volume so that server can update its store if/when food eaten goes thru
-                    //console.log("Im eating dis", this.id, foodVol + playerVol)
+                  if (type !== "bomb" && playerVol > foodVol) {
                     this.eaten = true;
                     socket.emit('eat_food', this.id, foodVol + playerVol);
+                  }
+
+                  // eat much smaller bombs
+                  else if(type === "bomb" && playerVol > foodVol * 8) {
+                    this.eaten = true;
+                    socket.emit('eat_food', this.id, foodVol + playerVol);
+                  }
+
+                  // no effect with bigger bombs
+                  else if(type === "bomb" && playerVol < foodVol * 2) {
+                    
+                  }
+
+                  // all other bombs are explosive
+                  else if(type === "bomb"){
+                    this.eaten = true;
+                    socket.emit('eat_food', this.id, foodVol + playerVol * 20);
                   }
             }
           }
