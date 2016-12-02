@@ -72,14 +72,14 @@ THREE.PlayerControls = function ( camera, player, cannonMesh, raycastReference ,
 	 		// var cameraRot2 = new THREE.Matrix4(); 
 	 		// cameraRot2.makeRotationY(0.005);
 	 		// noClue.multiplyMatrices(noClue, cameraRot2)
-	 		cameraReferenceOrientationObj.rotation.y = 0.02;// change to rotation
+	 		cameraReferenceOrientationObj.rotation.y = 0.04;// change to rotation
 	 		this.left = false;
 	 	}
 	 	else if(this.right){
 	 		// var cameraRot2 = new THREE.Matrix4(); 
 	 		// cameraRot2.makeRotationY(-0.005);
 	 		// noClue.multiplyMatrices(noClue, cameraRot2)
-	 		cameraReferenceOrientationObj.rotation.y = -0.02;
+	 		cameraReferenceOrientationObj.rotation.y = -0.04;
 	 		this.right = false;
 	 	}
 
