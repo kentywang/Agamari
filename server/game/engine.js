@@ -47,12 +47,6 @@ const spawnFood = (io, currentRoom) => {
               break;
           }
 
-            // create explosive food
-            // if(Math.random() > 0.6){
-            //   type = "bomb",
-            //   foodSize = [120];
-            // }
-
             // scale food to random player
             let randomPlayerId = Object.keys(roomPlayers)[~~(Math.random() * Object.keys(roomPlayers).length)];
 

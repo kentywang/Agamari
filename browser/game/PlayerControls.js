@@ -52,7 +52,7 @@ THREE.PlayerControls = function ( camera, player, cannonMesh, raycastReference ,
 		//cameraReferenceOrientation.copy(cameraReferenceOrientationObj.quaternion);
 
 		//console.log(store.getState().abilities && )
-		if(!store.getState().abilities.launch && Date.now() - scope.cooldown > 12000){
+		if(!store.getState().abilities.launch && Date.now() - scope.cooldown > 9000){
 			// console.log("launchReady")
 			store.dispatch(launchReady());
 		}
