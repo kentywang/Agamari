@@ -41,7 +41,7 @@ export class Food {
         shape = new CANNON.Box(new CANNON.Vec3(parms[0] / 2, parms[1] / 2, parms[2] / 2));
         break;
       case 'moon':
-        geometry = new THREE.TetrahedronGeometry( parms[0], 3 );
+        geometry = new THREE.IcosahedronGeometry( parms[0], 1 );
         material = new THREE.MeshPhongMaterial( {color: "#F8B195", shading: THREE.FlatShading} );
         shape = new CANNON.Sphere(parms[0]);
         break;

@@ -72,7 +72,7 @@ const spawnFood = (io, currentRoom) => {
             //console.log(parms)
 
             // create Moon at first, then in 10 sec increments
-            if(Date.now() - moonSpawnTime[currentRoom] > 7 * 60 * 1000){
+            if(Date.now() - moonSpawnTime[currentRoom] >= 7 * 60 * 1000){
               moonSpawnTime[currentRoom] = Date.now();
 
               x = (Math.random() * 1000) - 500,
