@@ -15,19 +15,39 @@ class Canvas extends Component {
     	super(props);
     	this.state = {
     		leaderboard: [],
-    		displayVol : 4000
+    		displayVol : 4000,
+    		instructions: "use arrow keys to move",
+    		instructions2: "roll over smaller objects to get bigger",
+    		instructions3: "avoid larger players & dark mines",
+    		instructions4: "hold & release spacebar for speed boost"
     	}
   	}
 
   	componentDidMount(){
 		createjs.Sound.registerSound("eat.ogg", "eatSound");
+
 		const leaderboard = ReactDOM.findDOMNode(this.refs.leaderboard);
 		const status = ReactDOM.findDOMNode(this.refs.status);
+		const instructions = ReactDOM.findDOMNode(this.refs.instructions);
+		const instructions2 = ReactDOM.findDOMNode(this.refs.instructions2);
+		const instructions3 = ReactDOM.findDOMNode(this.refs.instructions3);
+		const instructions4 = ReactDOM.findDOMNode(this.refs.instructions4);
 		const abilities = ReactDOM.findDOMNode(this.refs.abilities);
 		const score = ReactDOM.findDOMNode(this.refs.score);
-  		TweenMax.from(leaderboard, 1, {x: "-=500", y: "-=500", ease: Power3.easeOut, delay: 2});
-  		TweenMax.from(abilities, 1, {x: "-=500", y: "+=500", ease: Power3.easeOut, delay: 2});
-  		TweenMax.from(score, 1, {x: "+=500", y: "+=500", ease: Power3.easeOut, delay: 2});
+  		TweenMax.from(leaderboard, 1, {x: "-=400", y: "-=400", scale: 3, opacity: 0, ease: Power3.easeOut, delay: 2});
+  		TweenMax.from(abilities, 1, {x: "-=400", y: "+=400", scale: 1.5, opacity: 0, ease: Power3.easeOut, delay: 2});
+  		TweenMax.from(score, 1, {x: "+=400", y: "+=400", scale: 1.5, opacity: 0, ease: Power3.easeOut, delay: 2});
+
+  		if(!this.props.gameState.instructionsHidden){
+  			const tl = new TimelineMax()
+			.from(instructions, 2, {scale: 1.5, opacity: 0, ease: Power3.easeOut}, "+=3.5")
+			.to(instructions, .75, {opacity: 0, ease: Power3.easeOut}, "+=3")
+			.fromTo(instructions2, 2, {scale: 1.5, opacity: 0, ease: Power3.easeOut}, {scale: 1, opacity: 1}, "+=1")
+			.to(instructions2, .75, {opacity: 0, ease: Power3.easeOut}, "+=4")
+			.fromTo(instructions3, 2, {scale: 1.5, opacity: 0, ease: Power3.easeOut}, {scale: 1, opacity: 1}, "+=1")
+			.to(instructions3, .75, {opacity: 0, ease: Power3.easeOut}, "+=5")
+			.fromTo(instructions4, 2, {scale: 1.5, opacity: 0, ease: Power3.easeOut}, {scale: 1, opacity: 1}, "+=1")
+			.to(instructions4, .75, {opacity: 0, ease: Power3.easeOut, onComplete: this.props.hideInstructions}, "+=5")
   	}
 
 	render = () => {
@@ -90,6 +110,18 @@ class Canvas extends Component {
 					</div>
 					<div ref="status" className="status">
 						{this.props.gameStatus}
+					</div>
+					<div ref="instructions" className="instructions">
+						{!this.props.gameState.instructionsHidden && this.state.instructions}
+					</div>
+					<div ref="instructions2" className="instructions">
+						{!this.props.gameState.instructionsHidden && this.state.instructions2}
+					</div>
+					<div ref="instructions3" className="instructions">
+						{!this.props.gameState.instructionsHidden && this.state.instructions3}
+					</div>
+					<div ref="instructions4" className="instructions">
+						{!this.props.gameState.instructionsHidden && this.state.instructions4}
 					</div>
 					<div ref="abilities" className="abilities" style={this.props.abilities && this.props.abilities.launch ? {} : {color: 'rgba(255,255,255,0.2)'}}>
 					<div>{this.props.players[socket.id] && this.props.abilities && this.props.abilities.meter}</div>
