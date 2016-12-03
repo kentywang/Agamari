@@ -110,7 +110,7 @@ const setUpListeners = (io, socket) => {
     socket.on('update_position', data => {
       let player = store.getState().players[socket.id];
       if (player) {
-        if ((data.x > -1400 && data.y > -1400 && data.z > -1400) && (data.x < 1400 && data.y < 1400 && data.z < 1400)) {
+        if ((data.x > -1600 && data.y > -1600 && data.z > -1600) && (data.x < 1600 && data.y < 1600 && data.z < 1600)) {
           // If player's y coordinate is greater than or equal to zero,
           // update game state with current position
           store.dispatch(updatePlayer(socket.id, data));
@@ -155,8 +155,8 @@ const setUpListeners = (io, socket) => {
         else if(numberPeople === 2){
           switch (place){
             case 1:
-              store.dispatch(updateVolume(socket.id, (volume-player.volume)/4 + player.volume));
-              store.dispatch(changePlayerScale(socket.id, ((volume - player.volume)/4) / player.volume));
+              store.dispatch(updateVolume(socket.id, (volume-player.volume)/2 + player.volume));
+              store.dispatch(changePlayerScale(socket.id, ((volume - player.volume)/2) / player.volume));
               break;
             case 2:
               store.dispatch(updateVolume(socket.id, (volume-player.volume)/1 + player.volume));
@@ -172,12 +172,12 @@ const setUpListeners = (io, socket) => {
         else if(numberPeople === 3){
           switch (place){
             case 1:
-              store.dispatch(updateVolume(socket.id, (volume-player.volume)/16 + player.volume));
-              store.dispatch(changePlayerScale(socket.id, ((volume - player.volume)/16) / player.volume));
-              break;
-            case 2:
               store.dispatch(updateVolume(socket.id, (volume-player.volume)/4 + player.volume));
               store.dispatch(changePlayerScale(socket.id, ((volume - player.volume)/4) / player.volume));
+              break;
+            case 2:
+              store.dispatch(updateVolume(socket.id, (volume-player.volume)/2 + player.volume));
+              store.dispatch(changePlayerScale(socket.id, ((volume - player.volume)/2) / player.volume));
               break;
             case 3:
               store.dispatch(updateVolume(socket.id, (volume-player.volume)/1 + player.volume));
@@ -193,16 +193,16 @@ const setUpListeners = (io, socket) => {
         else if(numberPeople >= 4){
           switch (place){
             case 1:
-              store.dispatch(updateVolume(socket.id, (volume-player.volume)/64 + player.volume));
-              store.dispatch(changePlayerScale(socket.id, ((volume - player.volume)/64) / player.volume));
+              store.dispatch(updateVolume(socket.id, (volume-player.volume)/8 + player.volume));
+              store.dispatch(changePlayerScale(socket.id, ((volume - player.volume)/8) / player.volume));
               break;
             case 2:
-              store.dispatch(updateVolume(socket.id, (volume-player.volume)/16 + player.volume));
-              store.dispatch(changePlayerScale(socket.id, ((volume - player.volume)/16) / player.volume));
-              break;
-            case 3:
               store.dispatch(updateVolume(socket.id, (volume-player.volume)/4 + player.volume));
               store.dispatch(changePlayerScale(socket.id, ((volume - player.volume)/4) / player.volume));
+              break;
+            case 3:
+              store.dispatch(updateVolume(socket.id, (volume-player.volume)/2 + player.volume));
+              store.dispatch(changePlayerScale(socket.id, ((volume - player.volume)/2) / player.volume));
               break;
             case 4:
               store.dispatch(updateVolume(socket.id, (volume-player.volume)/1 + player.volume));
