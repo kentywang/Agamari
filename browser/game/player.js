@@ -150,9 +150,8 @@ export class Player {
               let mainVol = players[socket.id].volume;
               let thisVol = players[this.id].volume;
 
-              //player must be 2 times the volume of enemy to eat it
-              if (thisVol > mainVol/* * 2*/ ){
-                //console.log("lasteaten", Date.now() - lastEaten)
+              if (thisVol > mainVol){
+    
                 lastEaten = Date.now();
                 socket.emit('got_eaten', id, thisVol + mainVol);
               }

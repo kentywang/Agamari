@@ -53,7 +53,9 @@ THREE.PlayerControls = function ( camera, player, cannonMesh, raycastReference ,
 		//cameraReferenceOrientation.copy(cameraReferenceOrientationObj.quaternion);
 
 		//console.log(store.getState().abilities && )
+
 		if(!store.getState().abilities.launch && Date.now() - scope.cooldown > 8.5 * 1000){
+
 			// console.log("launchReady")
 			store.dispatch(launchReady());
 		}
@@ -171,7 +173,7 @@ THREE.PlayerControls = function ( camera, player, cannonMesh, raycastReference ,
 	//cross2.addScalar(20 + Math.pow(this.scale, 3));
 
 
-
+	
 		if (keyState[32]) {
 			if(store.getState().abilities.launch){
 				if(this.launchMult < 6) this.launchMult += 1/(this.i++ * 1.1);

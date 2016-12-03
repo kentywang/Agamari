@@ -37,7 +37,7 @@ window.onblur = ()=>socket.emit("time_me");
   camera = new THREE.PerspectiveCamera(65,
                                        window.innerWidth / window.innerHeight,
                                        1,
-                                       2000);
+                                       2500);
 
   canvas = document.getElementById('canvas');
 
@@ -276,6 +276,13 @@ function createLevel(){
 
   // add it to the scene
   scene.add(particleSystem);
+
+   // ring creation
+ // var ring_geometry = new THREE.RingGeometry( 2350, 2450, 30, 1 );
+ // var ring_material = new THREE.MeshPhongMaterial( { color: "#F8B195", side: THREE.DoubleSide});
+ // var ring = new THREE.Mesh( ring_geometry, ring_material );
+ // scene.add(ring);
+
 }
 
 export { scene, camera, canvas, renderer, world, groundMaterial, ballMaterial, raycastReference, timeFromStart, clearTimeout };
