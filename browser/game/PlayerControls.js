@@ -187,27 +187,27 @@ THREE.PlayerControls = function ( camera, player, cannonMesh, raycastReference ,
 	    if (keyState[38] || keyState[87]) {
 	    	if(this.speedMult < 3.5) this.speedMult += 0.005;
 	        // up arrow or 'w' - move forward
-          this.cannonMesh.applyImpulse(new CANNON.Vec3(-cross2.x * 140 * (0.833 + this.scale/6) *this.speedMult /*Math.pow(scope.scale, 1 + (scope.scale * 1))*/, -cross2.z * 140 * (0.833 + this.scale/6) *this.speedMult /*Math.pow(scope.scale, 1 + (scope.scale * 1))*/, -cross2.y * 140 * (0.833 + this.scale/6) *this.speedMult /*Math.pow(scope.scale, 1 + (scope.scale * 1))*/) ,topOfBall);
+          this.cannonMesh.applyImpulse(new CANNON.Vec3(-cross2.x * 140 /** (0.985 + this.scale/64)*/ *this.speedMult /*Math.pow(scope.scale, 1 + (scope.scale * 1))*/, -cross2.z * 140 /** (0.985 + this.scale/64)*/ *this.speedMult /*Math.pow(scope.scale, 1 + (scope.scale * 1))*/, -cross2.y * 140 /** (0.985 + this.scale/64)*/ *this.speedMult /*Math.pow(scope.scale, 1 + (scope.scale * 1))*/) ,topOfBall);
 	    }
 
 	    if (keyState[40] || keyState[83]) {
 	    	if(this.speedMult < 3.5) this.speedMult += 0.005;
 	        // down arrow or 's' - move backward
-          this.cannonMesh.applyImpulse(new CANNON.Vec3(cross2.x * 140 * (0.833 + this.scale/6) *this.speedMult /*Math.pow(scope.scale, 1 + (scope.scale * 1))*/, cross2.z * 140 * (0.833 + this.scale/6) *this.speedMult /*Math.pow(scope.scale, 1 + (scope.scale * 1))*/, cross2.y * 140 * (0.833 + this.scale/6) *this.speedMult /*Math.pow(scope.scale, 1 + (scope.scale * 1))*/) ,topOfBall);
+          this.cannonMesh.applyImpulse(new CANNON.Vec3(cross2.x * 140 /** (0.985 + this.scale/64)*/ *this.speedMult /*Math.pow(scope.scale, 1 + (scope.scale * 1))*/, cross2.z * 140 /** (0.985 + this.scale/64)*/ *this.speedMult /*Math.pow(scope.scale, 1 + (scope.scale * 1))*/, cross2.y * 140 /** (0.985 + this.scale/64)*/ *this.speedMult /*Math.pow(scope.scale, 1 + (scope.scale * 1))*/) ,topOfBall);
 	    
 	    }
 
 	    if (keyState[37] || keyState[65]) {
 	    	if(this.speedMult < 3.5) this.speedMult += 0.005;
 	        // left arrow or 'a' - rotate left
-	        this.cannonMesh.applyImpulse(new CANNON.Vec3(cross1.x * 100 * (0.833 + this.scale/6) * this.speedMult /*Math.pow(scope.scale, 1 + (scope.scale * 1))*/, cross1.z * 100 * (0.833 + this.scale/6) * this.speedMult /*Math.pow(scope.scale, 1 + (scope.scale * 1))*/, cross1.y * 100 * (0.833 + this.scale/6) * this.speedMult /*Math.pow(scope.scale, 1 + (scope.scale * 1))*/) ,topOfBall);
+	        this.cannonMesh.applyImpulse(new CANNON.Vec3(cross1.x * 100 /** (0.985 + this.scale/64)*/ * this.speedMult /*Math.pow(scope.scale, 1 + (scope.scale * 1))*/, cross1.z * 100 /** (0.985 + this.scale/64)*/ * this.speedMult /*Math.pow(scope.scale, 1 + (scope.scale * 1))*/, cross1.y * 100 /** (0.985 + this.scale/64)*/ * this.speedMult /*Math.pow(scope.scale, 1 + (scope.scale * 1))*/) ,topOfBall);
 	        this.left = true;
 	    }
 
 	    if (keyState[39] || keyState[68]) {
 	    	if(this.speedMult < 3.5) this.speedMult += 0.005;
 	        // right arrow or 'd' - rotate right
-            this.cannonMesh.applyImpulse(new CANNON.Vec3(-cross1.x * 120 * (0.833 + this.scale/6) * this.speedMult /*Math.pow(scope.scale, 1 + (scope.scale * 1))*/,-cross1.z * 120 * (0.833 + this.scale/6) * this.speedMult /*Math.pow(scope.scale, 1 + (scope.scale * 1))*/,-cross1.y * 120 * (0.833 + this.scale/6) * this.speedMult /*Math.pow(scope.scale, 1 + (scope.scale * 1))*/), topOfBall);
+            this.cannonMesh.applyImpulse(new CANNON.Vec3(-cross1.x * 120 /** (0.985 + this.scale/64)*/ * this.speedMult /*Math.pow(scope.scale, 1 + (scope.scale * 1))*/,-cross1.z * 120 /** (0.985 + this.scale/64)*/ * this.speedMult /*Math.pow(scope.scale, 1 + (scope.scale * 1))*/,-cross1.y * 120 /** (0.985 + this.scale/64)*/ * this.speedMult /*Math.pow(scope.scale, 1 + (scope.scale * 1))*/), topOfBall);
             this.right = true;
 	    }
 	    if(!(keyState[38] || keyState[87] || keyState[40] || keyState[83] || keyState[37] || keyState[65] || keyState[39] || keyState[68])){

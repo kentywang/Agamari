@@ -59,7 +59,7 @@ const setUpListeners = (io, socket) => {
           let room = undefined;
           for (let i = 0; i < rooms.length && !room; i++) {
             let playerCount = size(pickBy(players, player => player.room === rooms[i]));
-            if (playerCount < 4) room = rooms[i];
+            if (playerCount < 6) room = rooms[i];
           }
           if (!room) room = addRandomRoom();
 
@@ -140,13 +140,84 @@ const setUpListeners = (io, socket) => {
         // **** store.dispatch(addFoodToDiet(eaten, socket.id, store.getState().players[socket.id]));
         //console.log("in eat food socket listener, number of diets: ", store.getState().players[socket.id].diet.length)
         store.dispatch(removeFood(id));
-        if(playerIsLeading(socket.id)){
-          store.dispatch(updateVolume(socket.id, (volume-player.volume)/4 + player.volume));
-          store.dispatch(changePlayerScale(socket.id, ((volume - player.volume)/4) / player.volume));
-        }else{
-          store.dispatch(updateVolume(socket.id, volume));
-          store.dispatch(changePlayerScale(socket.id, (volume - player.volume) / player.volume));
+
+        var place = playerIsLeading(socket.id);
+
+        let roomPlayers = pickBy(store.getState().players, ({ room }) => room === player.room);
+
+        var numberPeople = Object.keys(roomPlayers).length;
+
+        if(numberPeople === 1){
+            store.dispatch(updateVolume(socket.id, (volume-player.volume)/1 + player.volume));
+            store.dispatch(changePlayerScale(socket.id, ((volume - player.volume)/1) / player.volume));
         }
+
+        else if(numberPeople === 2){
+          switch (place){
+            case 1:
+              store.dispatch(updateVolume(socket.id, (volume-player.volume)/4 + player.volume));
+              store.dispatch(changePlayerScale(socket.id, ((volume - player.volume)/4) / player.volume));
+              break;
+            case 2:
+              store.dispatch(updateVolume(socket.id, (volume-player.volume)/1 + player.volume));
+              store.dispatch(changePlayerScale(socket.id, ((volume - player.volume)/1) / player.volume));
+              break;
+            default:
+              store.dispatch(updateVolume(socket.id, (volume-player.volume)/1 + player.volume));
+              store.dispatch(changePlayerScale(socket.id, ((volume - player.volume)/1) / player.volume));
+              break;
+          }
+        }
+
+        else if(numberPeople === 3){
+          switch (place){
+            case 1:
+              store.dispatch(updateVolume(socket.id, (volume-player.volume)/16 + player.volume));
+              store.dispatch(changePlayerScale(socket.id, ((volume - player.volume)/16) / player.volume));
+              break;
+            case 2:
+              store.dispatch(updateVolume(socket.id, (volume-player.volume)/4 + player.volume));
+              store.dispatch(changePlayerScale(socket.id, ((volume - player.volume)/4) / player.volume));
+              break;
+            case 3:
+              store.dispatch(updateVolume(socket.id, (volume-player.volume)/1 + player.volume));
+              store.dispatch(changePlayerScale(socket.id, ((volume - player.volume)/1) / player.volume));
+              break;
+            default:
+              store.dispatch(updateVolume(socket.id, (volume-player.volume)/1 + player.volume));
+              store.dispatch(changePlayerScale(socket.id, ((volume - player.volume)/1) / player.volume));
+              break;
+          }
+        }
+
+        else if(numberPeople >= 4){
+          switch (place){
+            case 1:
+              store.dispatch(updateVolume(socket.id, (volume-player.volume)/64 + player.volume));
+              store.dispatch(changePlayerScale(socket.id, ((volume - player.volume)/64) / player.volume));
+              break;
+            case 2:
+              store.dispatch(updateVolume(socket.id, (volume-player.volume)/16 + player.volume));
+              store.dispatch(changePlayerScale(socket.id, ((volume - player.volume)/16) / player.volume));
+              break;
+            case 3:
+              store.dispatch(updateVolume(socket.id, (volume-player.volume)/4 + player.volume));
+              store.dispatch(changePlayerScale(socket.id, ((volume - player.volume)/4) / player.volume));
+              break;
+            case 4:
+              store.dispatch(updateVolume(socket.id, (volume-player.volume)/1 + player.volume));
+              store.dispatch(changePlayerScale(socket.id, ((volume - player.volume)/1) / player.volume));
+              break;
+            default:
+              store.dispatch(updateVolume(socket.id, (volume-player.volume)/1 + player.volume));
+              store.dispatch(changePlayerScale(socket.id, ((volume - player.volume)/1) / player.volume));
+              break;
+          }
+        }
+        // }else{
+        //   store.dispatch(updateVolume(socket.id, volume));
+        //   store.dispatch(changePlayerScale(socket.id, (volume - player.volume) / player.volume));
+        // }
         io.sockets.in(eaten.room).emit('remove_food', id, socket.id, store.getState().players[socket.id]);
       }
     });

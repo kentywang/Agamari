@@ -12,7 +12,7 @@ let elapsedTime = {},
 const spawnFood = (io, currentRoom) => {
   if (!elapsedTime[currentRoom] || Date.now() - elapsedTime[currentRoom] > 200){
     if(!moonSpawnTime[currentRoom]){
-      moonSpawnTime[currentRoom] = Date.now() - 10 * 60 * 1000;
+      moonSpawnTime[currentRoom] = Date.now() - 15 * 60 * 1000;
     }
     //console.log('spawning food');
     elapsedTime[currentRoom] = Date.now();
@@ -69,12 +69,12 @@ const spawnFood = (io, currentRoom) => {
 
             playerToFeed = roomPlayers[randomPlayerId];
 
-            let parms = foodSize.map(e => ~~(e * Math.min(playerToFeed.scale, 1 + Math.log(playerToFeed.scale)/Math.log(1.8))));
-            console.log(playerToFeed.scale, 1 + Math.log(playerToFeed.scale)/Math.log(1.8))
+            let parms = foodSize.map(e => (e * Math.min(playerToFeed.scale, 1 + Math.log(playerToFeed.scale)/Math.log(2.5))));
+            //console.log(playerToFeed.scale, 1 + Math.log(playerToFeed.scale)/Math.log(2))
             //console.log(parms)
 
             // create Moon at first, then in 10 sec increments
-            if(Date.now() - moonSpawnTime[currentRoom] >= 10 * 60 * 1000){
+            if(Date.now() - moonSpawnTime[currentRoom] >= 15 * 60 * 1000){
               moonSpawnTime[currentRoom] = Date.now();
 
               x = (Math.random() * 1000) - 500,
@@ -117,15 +117,17 @@ function playerIsLeading(id){
 
     let roomPlayers = pickBy(players, ({ room }) => room === currentRoom);
 
+    let peopleAhead = 0;
+
     for (var Pid in roomPlayers) {
       //console.log(roomPlayers)
       if(roomPlayers[Pid].volume > player.volume){
         //console.log(id, "is not the largest volume!")
-        return false;
+        peopleAhead++;
       }
     }
-    //console.log(id, "IS the largest volume!")
-    return true;
+    //console.log(id, "is in", peopleAhead+1, "th place")
+    return peopleAhead+1;
   }
 }
 

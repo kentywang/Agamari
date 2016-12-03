@@ -44,9 +44,9 @@ export function loadEnvironment() {
         }
       }
 
-      // if (id === socket.id){
-      //   playerObject.cannon.mass = volume * 0.01;
-      // }
+      if (id === socket.id){
+        playerObject.cannon.mass = 36 + (scale * 4);
+      }
 
       // scale name text
       if (playerObject.sprite){
