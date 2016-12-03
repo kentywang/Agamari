@@ -28,6 +28,7 @@ THREE.PlayerControls = function ( camera, player, cannonMesh, raycastReference ,
 	this.speedMult = 1;
 	this.launchMult = 1;
 	this.i = 1;
+
 	// helpful dev tool, yo
 	// var geometry = new THREE.BoxGeometry( 30,3,2 );
  //    var material = new THREE.MeshPhongMaterial({ 
@@ -52,7 +53,9 @@ THREE.PlayerControls = function ( camera, player, cannonMesh, raycastReference ,
 		//cameraReferenceOrientation.copy(cameraReferenceOrientationObj.quaternion);
 
 		//console.log(store.getState().abilities && )
-		if(!store.getState().abilities.launch && Date.now() - scope.cooldown > 9000){
+
+		if(!store.getState().abilities.launch && Date.now() - scope.cooldown > 8.5 * 1000){
+
 			// console.log("launchReady")
 			store.dispatch(launchReady());
 		}
@@ -72,14 +75,14 @@ THREE.PlayerControls = function ( camera, player, cannonMesh, raycastReference ,
 	 		// var cameraRot2 = new THREE.Matrix4(); 
 	 		// cameraRot2.makeRotationY(0.005);
 	 		// noClue.multiplyMatrices(noClue, cameraRot2)
-	 		cameraReferenceOrientationObj.rotation.y = 0.04;// change to rotation
+	 		cameraReferenceOrientationObj.rotation.y = 0.05;// change to rotation
 	 		this.left = false;
 	 	}
 	 	else if(this.right){
 	 		// var cameraRot2 = new THREE.Matrix4(); 
 	 		// cameraRot2.makeRotationY(-0.005);
 	 		// noClue.multiplyMatrices(noClue, cameraRot2)
-	 		cameraReferenceOrientationObj.rotation.y = -0.04;
+	 		cameraReferenceOrientationObj.rotation.y = -0.05;
 	 		this.right = false;
 	 	}
 

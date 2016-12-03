@@ -63,18 +63,18 @@ export const startAsGuest = (nickname, socket) => dispatch => {
 export default (state = initialState, action) => {
   switch (action.type) {
     case START_GAME:
-    	return Object.assign({}, state, {isPlaying: true});
+      return Object.assign({}, state, {isPlaying: true});
     case STOP_GAME:
-    	return Object.assign({}, state, {isPlaying: false});
-		case SET_ERROR:
-			return Object.assign({}, state, { error: action.error });
-		case RESET_ERROR:
-			return Object.assign({}, state, { error: null });
+      return Object.assign({}, state, {isPlaying: false});
+    case SET_ERROR:
+      return Object.assign({}, state, { error: action.error });
+    case RESET_ERROR:
+      return Object.assign({}, state, { error: null });
     case SET_NICKNAME:
     return Object.assign({}, state, { nickname: action.text });
     case HIDE_INSTRUCTIONS:
     return Object.assign({}, state, { instructionsHidden: true });
-   	default:
-   	return state;
+    default:
+    return state;
   }
 }

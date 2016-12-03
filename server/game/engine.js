@@ -30,7 +30,6 @@ const spawnFood = (io, currentRoom) => {
               z = (Math.random() * 1000) - 500,
               type = types[~~(Math.random() * types.length)],
               foodSize = [];
-              parms = [];
 
           switch (type){
             case 'box':
@@ -48,43 +47,29 @@ const spawnFood = (io, currentRoom) => {
               break;
           }
 
-            // create explosive food
-            // if(Math.random() > 0.6){
-            //   type = "bomb",
-            //   foodSize = [
-            //     3 + (Math.random() * 2)
-            //   ];
-            // }
+            // scale food to random player
 
-            // if not bomb, scale food to random player
-            if(type !== "bomb"){
-              let randomPlayerId = Object.keys(roomPlayers)[~~(Math.random() * Object.keys(roomPlayers).length)];
+            let randomPlayerId = Object.keys(roomPlayers)[~~(Math.random() * Object.keys(roomPlayers).length)];
 
-              while(isLargestPlayer(randomPlayerId, roomPlayers)){
-                randomPlayerId = Object.keys(roomPlayers)[~~(Math.random() * Object.keys(roomPlayers).length)];
-               // console.log("rerolling")
-              }      
+            let playerToFeed = roomPlayers[randomPlayerId];
 
-              let playerToFeed = roomPlayers[randomPlayerId];
-
-              parms = foodSize.map(e => ~~(e * playerToFeed.scale));
-
-            }else if(type === "bomb"){
-              //if bomb, scale to largest player
-
-              // check to see what is the largest scale in the room
-                let largestPlayer = roomPlayers[Object.keys(roomPlayers)[~~(Math.random() * Object.keys(roomPlayers).length)]];
-
-                for (var Pid in roomPlayers) {
-                  if(roomPlayers[Pid].scale > largestPlayer.scale){
-                    largestPlayer = roomPlayers[Pid];
-                  }
-                }
-
-                parms = foodSize.map(e => ~~(e * largestPlayer.scale * 3));
-                //console.log(parms, largestPlayer.scale)
+            // check to see what is the largest scale in the game
+            let largestScale = 1;
+            for (var Pid in roomPlayers) {
+              if(roomPlayers[Pid].scale > largestScale){
+                largestScale = roomPlayers[Pid].scale;
+              }
             }
 
+            // if player is the largest in room and he isn't alone, rechoose a player to scale food to
+            if(Object.keys(roomPlayers).length > 1 && playerToFeed.scale === largestScale){
+              randomPlayerId = Object.keys(roomPlayers)[~~(Math.random() * Object.keys(roomPlayers).length)];
+            }
+
+            playerToFeed = roomPlayers[randomPlayerId];
+
+            let parms = foodSize.map(e => ~~(e * playerToFeed.scale));
+            //console.log(parms)
 
             // create Moon at first, then in 10 sec increments
             if(Date.now() - moonSpawnTime[currentRoom] >= 7 * 60 * 1000){
@@ -97,7 +82,6 @@ const spawnFood = (io, currentRoom) => {
               parms = [120];
             }
 
-           // console.log("type", type)
           let data = { x, y, z, type, parms, room: currentRoom };
           store.dispatch(receiveFood(id, data));
           io.sockets.in(currentRoom).emit('add_food', id, data);
@@ -122,25 +106,6 @@ const broadcastState = (io) => {
   }, (1000 / 30));
 };
 
-function isLargestPlayer(id, roomPlayers){
-  let playerToFeed = roomPlayers[id];
-
-  // check to see what is the largest scale in the room
-  let largestScale = 1;
-  for (var Pid in roomPlayers) {
-    if(roomPlayers[Pid].scale > largestScale){
-      largestScale = roomPlayers[Pid].scale;
-    }
-  }
-
-  // if player is the largest in room and he isn't alone, rechoose a player to scale food to
-  if(Object.keys(roomPlayers).length > 1 && playerToFeed.scale === largestScale){
-    //console.log("should be rerolling")
-    return true;
-  }
-
-  return false;
-}
 // function respawn(io, store, socket, room){
 //   console.log("in respawn")
 //     io.sockets.in(room).emit('remove_player', socket.id);
