@@ -12,7 +12,7 @@ let elapsedTime = {},
 const spawnFood = (io, currentRoom) => {
   if (!elapsedTime[currentRoom] || Date.now() - elapsedTime[currentRoom] > 200){
     if(!moonSpawnTime[currentRoom]){
-      moonSpawnTime[currentRoom] = Date.now() - 7 * 60 * 1000;
+      moonSpawnTime[currentRoom] = Date.now() - 10 * 60 * 1000;
     }
     //console.log('spawning food');
     elapsedTime[currentRoom] = Date.now();
@@ -69,11 +69,12 @@ const spawnFood = (io, currentRoom) => {
 
             playerToFeed = roomPlayers[randomPlayerId];
 
-            let parms = foodSize.map(e => ~~(e * playerToFeed.scale));
+            let parms = foodSize.map(e => ~~(e * Math.min(playerToFeed.scale, 1 + Math.log(playerToFeed.scale)/Math.log(1.8))));
+            console.log(playerToFeed.scale, 1 + Math.log(playerToFeed.scale)/Math.log(1.8))
             //console.log(parms)
 
             // create Moon at first, then in 10 sec increments
-            if(Date.now() - moonSpawnTime[currentRoom] >= 7 * 60 * 1000){
+            if(Date.now() - moonSpawnTime[currentRoom] >= 10 * 60 * 1000){
               moonSpawnTime[currentRoom] = Date.now();
 
               x = (Math.random() * 1000) - 500,
