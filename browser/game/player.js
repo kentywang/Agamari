@@ -57,7 +57,7 @@ export class Player {
       mesh.cannon = new CANNON.Body({ shape,
                                       mass: 40,
                                       material: ballMaterial });
-      mesh.cannon.linearDamping = mesh.cannon.angularDamping = 0.4;
+      mesh.cannon.linearDamping = mesh.cannon.angularDamping = 0.41;
     } else {
       mesh.cannon = new CANNON.Body({ shape, mass: 0 });
     }

@@ -42,6 +42,7 @@ const addRandomRoom = () => {
   store.dispatch(addRoom(name));
   return name;
 };
+const {playerIsLeading} = require('./engine');
 
 
 const setUpListeners = (io, socket) => {
@@ -139,8 +140,13 @@ const setUpListeners = (io, socket) => {
         // **** store.dispatch(addFoodToDiet(eaten, socket.id, store.getState().players[socket.id]));
         //console.log("in eat food socket listener, number of diets: ", store.getState().players[socket.id].diet.length)
         store.dispatch(removeFood(id));
-        store.dispatch(updateVolume(socket.id, volume));
-        store.dispatch(changePlayerScale(socket.id, (volume - player.volume) / player.volume));
+        if(playerIsLeading(socket.id)){
+          store.dispatch(updateVolume(socket.id, (volume-player.volume)/4 + player.volume));
+          store.dispatch(changePlayerScale(socket.id, ((volume - player.volume)/4) / player.volume));
+        }else{
+          store.dispatch(updateVolume(socket.id, volume));
+          store.dispatch(changePlayerScale(socket.id, (volume - player.volume) / player.volume));
+        }
         io.sockets.in(eaten.room).emit('remove_food', id, socket.id, store.getState().players[socket.id]);
       }
     });

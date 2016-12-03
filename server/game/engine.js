@@ -55,6 +55,7 @@ const spawnFood = (io, currentRoom) => {
 
             // check to see what is the largest scale in the game
             let largestScale = 1;
+
             for (var Pid in roomPlayers) {
               if(roomPlayers[Pid].scale > largestScale){
                 largestScale = roomPlayers[Pid].scale;
@@ -106,6 +107,27 @@ const broadcastState = (io) => {
   }, (1000 / 30));
 };
 
+function playerIsLeading(id){
+  let player = store.getState().players[id];
+  let { players } = store.getState();
+
+  if (player) {
+    let currentRoom = player.room;
+
+    let roomPlayers = pickBy(players, ({ room }) => room === currentRoom);
+
+    for (var Pid in roomPlayers) {
+      //console.log(roomPlayers)
+      if(roomPlayers[Pid].volume > player.volume){
+        //console.log(id, "is not the largest volume!")
+        return false;
+      }
+    }
+    //console.log(id, "IS the largest volume!")
+    return true;
+  }
+}
+
 // function respawn(io, store, socket, room){
 //   console.log("in respawn")
 //     io.sockets.in(room).emit('remove_player', socket.id);
@@ -114,4 +136,4 @@ const broadcastState = (io) => {
 //     socket.emit('you_lose', 'You died!');
 // }
 
-module.exports = { broadcastState, spawnFood };
+module.exports = { broadcastState, spawnFood, playerIsLeading };
