@@ -45,7 +45,7 @@ export function loadEnvironment() {
       }
 
       if (id === socket.id){
-        playerObject.cannon.mass = 36 + (scale * 4);
+        playerObject.cannon.mass = 35 + (scale * 2);
       }
 
       // scale name text
