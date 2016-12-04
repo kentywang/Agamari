@@ -680,36 +680,11 @@ var renderTarget = new THREE.WebGLRenderTarget( width, height, parameters );
   composer = new THREE.EffectComposer( renderer, renderTarget );
   composer.addPass( new THREE.RenderPass( scene, camera ) );
 
-shader = {
-
-          uniforms: {
-            tDiffuse: { type: 't', value: null },
-            tColor: { type: 't', value: null },
-            resolution: { type: 'v2', value: new THREE.Vector2( 1, 1 ) },
-            viewProjectionInverseMatrix: { type: 'm4', value: new THREE.Matrix4() },
-            previousViewProjectionMatrix: { type: 'm4', value: new THREE.Matrix4() },
-            velocityFactor: { type: 'f', value: 1 }
-          },
-
-          vertexShader: document.getElementById( 'vs-motionBlur' ).textContent,
-          fragmentShader: document.getElementById( 'fs-motionBlur' ).textContent
-        }
-
-        pass = new THREE.ShaderPass( shader );
-       // pass.renderToScreen = true;
-        composer.addPass( pass );
-
   var vignetteShader = new THREE.ShaderPass( THREE.VignetteShader );
   //vignetteShader.uniforms[ 'scale' ].value = 4;
   vignetteShader.renderToScreen = true;
   composer.addPass( vignetteShader );
 
-composer2 = new THREE.EffectComposer( renderer );
-  composer2.addPass( new THREE.RenderPass( scene, camera ) );
-composer.renderTarget1.format = THREE.RGBAFormat;
-composer.renderTarget2.format = THREE.RGBAFormat;
-
-renderer.autoclear=true;
   // Events
   window.addEventListener( 'resize', onWindowResize, false );
 };
@@ -773,24 +748,10 @@ export function animate() {
 function render() {
   
   renderer.clear();
-  //console.log(composer)
 
-  pass.material.uniforms.velocityFactor.value = 0.22
-  tmpArray.copy( camera.matrixWorldInverse );
-          tmpArray.multiply( camera.projectionMatrix );
-          mCurrent.getInverse( tmpArray );
-
-          pass.material.uniforms.viewProjectionInverseMatrix.value.copy( mCurrent );
-          pass.material.uniforms.previousViewProjectionMatrix.value.copy( mPrev );
-
-  composer2.render();
-
-  pass.material.uniforms.tColor.value = composer2.renderTarget2;
+  
   composer.render();
 
-
-  mPrev.copy( tmpArray );
-  //renderer.render( scene, camera );
 }
 
 function onWindowResize() {
