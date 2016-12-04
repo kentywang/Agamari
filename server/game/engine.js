@@ -52,8 +52,8 @@ const spawnFood = (io, currentRoom) => {
                 // stick
                 foodSize = [
                   9 + (Math.random() * 9),
-                  1 + (Math.random() * 3),
-                  1 + (Math.random() * 3)
+                  2 + (Math.random() * 2),
+                  2 + (Math.random() * 2)
                 ];   
               }
 

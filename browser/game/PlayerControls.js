@@ -27,6 +27,7 @@ THREE.PlayerControls = function ( camera, player, cannonMesh, raycastReference ,
 
 	this.speedMult = 1;
 	this.launchMult = 1;
+	this.launchMultSound = true;
 	this.i = 1;
 
 	// helpful dev tool, yo
@@ -177,6 +178,11 @@ THREE.PlayerControls = function ( camera, player, cannonMesh, raycastReference ,
 		if (keyState[32]) {
 			if(store.getState().abilities.launch){
 				if(this.launchMult < 6) this.launchMult += 1/(this.i++ * 1.1);
+
+				if(this.launchMult >=6 && this.launchMultSound){
+					//createjs.Sound.play('chargeSound');
+					this.launchMultSound = false;
+				}
 		
 				var buildLaunch = ~~(this.launchMult * 3 - 3);
 				//console.log(buildLaunch)
@@ -266,6 +272,7 @@ THREE.PlayerControls = function ( camera, player, cannonMesh, raycastReference ,
 
 	        this.launchMult = 1;
 	        this.i = 1;
+	        this.launchMultSound = true;
 		}
 	};
 
