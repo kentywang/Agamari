@@ -33,11 +33,30 @@ const spawnFood = (io, currentRoom) => {
 
           switch (type){
             case 'box':
-              foodSize = [
-                2 + (Math.random() * 8),
-                2 + (Math.random() * 4),
-                2 + (Math.random() * 3),
-              ];
+              let boxType = Math.random();
+              if(boxType<.6){
+                // box
+                foodSize = [
+                  2 + (Math.random() * 8),
+                  2 + (Math.random() * 4),
+                  2 + (Math.random() * 3),
+                ];    
+              }else if(boxType<.8){
+                // plane
+                foodSize = [
+                  6 + (Math.random() * 3),
+                  7 + (Math.random() * 2),
+                  1 + (Math.random() * 1)
+                ];   
+              }else{
+                // stick
+                foodSize = [
+                  9 + (Math.random() * 9),
+                  1 + (Math.random() * 3),
+                  1 + (Math.random() * 3)
+                ];   
+              }
+
               break;
             case 'sphere':
             default:
@@ -69,7 +88,16 @@ const spawnFood = (io, currentRoom) => {
 
             playerToFeed = roomPlayers[randomPlayerId];
 
-            let parms = foodSize.map(e => (e * Math.min(playerToFeed.scale, 1 + Math.log(playerToFeed.scale)/Math.log(2.5))));
+            let parms;
+            // occasionally spawn food linearly scaled to players
+            if(Math.random() > .96){
+             // console.log("big food spawn!")
+               parms = foodSize.map(e => (e * playerToFeed.scale));
+            }else{
+               parms = foodSize.map(e => (e * Math.min(playerToFeed.scale, 1 + Math.log(playerToFeed.scale)/Math.log(3.2))));
+            }
+
+
             //console.log(playerToFeed.scale, 1 + Math.log(playerToFeed.scale)/Math.log(2))
             //console.log(parms)
 
@@ -81,7 +109,7 @@ const spawnFood = (io, currentRoom) => {
               y = (Math.random() * 1000) - 500,
               z = (Math.random() * 1000) - 500,
               type = "moon",
-              parms = [120];
+              parms = [150];
             }
 
           let data = { x, y, z, type, parms, room: currentRoom };

@@ -46,7 +46,7 @@ export class Player {
     let randomColor = aFewColors[~~(Math.random() * aFewColors.length)];
 
     // THREE
-    geometry = new THREE.TetrahedronGeometry( 10, 2 );
+    geometry = new THREE.TetrahedronBufferGeometry( 10, 2 );
     material = new THREE.MeshPhongMaterial({ color: randomColor,
                                              shading: THREE.FlatShading });
     mesh = new THREE.Mesh( geometry, material );

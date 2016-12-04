@@ -36,18 +36,18 @@ export class Food {
     let { type, parms, x, y, z } = this.initialData;
     switch (type) {
       case 'box':
-        geometry = new THREE.BoxGeometry( parms[0], parms[1], parms[2] );
+        geometry = new THREE.BoxBufferGeometry( parms[0], parms[1], parms[2] );
         material = new THREE.MeshPhongMaterial( {color: someColors[color], shading: THREE.FlatShading} );
         shape = new CANNON.Box(new CANNON.Vec3(parms[0] / 2, parms[1] / 2, parms[2] / 2));
         break;
       case 'moon':
-        geometry = new THREE.IcosahedronGeometry( parms[0], 1 );
+        geometry = new THREE.IcosahedronBufferGeometry( parms[0], 1 );
         material = new THREE.MeshPhongMaterial( {color: "#F8B195", shading: THREE.FlatShading} );
         shape = new CANNON.Sphere(parms[0]);
         break;
       case 'sphere':
       default:
-        geometry = new THREE.TetrahedronGeometry( parms[0], 1 );
+        geometry = new THREE.TetrahedronBufferGeometry( parms[0], 1 );
         material = new THREE.MeshPhongMaterial( {color: someColors[color], shading: THREE.FlatShading} );
         shape = new CANNON.Sphere(parms[0]);
     }
@@ -59,7 +59,7 @@ export class Food {
     mesh.position.y = y;
     mesh.position.z = z;
     if(type === "moon"){  
-        mesh.position.normalize().multiplyScalar(800);
+        mesh.position.normalize().multiplyScalar(700);
     }else{
       mesh.position.normalize().multiplyScalar(500);
     }

@@ -10,6 +10,8 @@ import { removeFood,
          removeAllFood } from '../reducers/food';
 import { lose, fell, ateSomeone } from '../reducers/gameStatus';
 
+import {incrementRecord, incrementRecordPlayer, clearRecord} from '../reducers/record';
+
 import {stopGame} from '../reducers/gameState';
 
 import { init,
@@ -71,6 +73,7 @@ export default socket => {
         if (eaterId === socket.id){
           //console.log("hello mom")
           createjs.Sound.play('eatSound');
+          store.dispatch(incrementRecordPlayer());
           store.dispatch(ateSomeone(playerObject.nickname));// dispatch exits this function for some reason
         }
       }
@@ -92,17 +95,21 @@ export default socket => {
         if (playerId === socket.id){
           createjs.Sound.play('eatSound');
           //console.log(scene.getObjectByName(playerId).cannon.mass)
+          store.dispatch(incrementRecord());
         }
       });
 
     socket.on('you_got_eaten', eater =>{
+        store.dispatch(clearRecord());
         store.dispatch(lose(eater));
     });
     socket.on('you_lose', room =>{
+        store.dispatch(clearRecord());
         store.dispatch(fell(room));
     });
 
     socket.on('afk_leave', room =>{
+        store.dispatch(clearRecord());
         store.dispatch(removeAllFood());
         //store.dispatch(removeAllPlayers());
         store.dispatch(stopGame());

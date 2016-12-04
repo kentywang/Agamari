@@ -11,7 +11,7 @@ import { loadGame, loadEnvironment } from './game';
 import {controls, Player} from './player';
 import { Food } from './food';
 let animateTimeout;
-let scene, camera, canvas, renderer, composer, composer2, pass, shader;
+let scene, camera, canvas, renderer, composer, stats, pass, shader;
 let world, groundMaterial, ballMaterial, shadowLight;
 let geometry, material, groundShape, groundBody, hemisphereLight, ambientLight;
 let timeFromStart = Date.now();
@@ -671,11 +671,19 @@ scene.add(camera)
 
   loadGame();
 
-var width = window.innerWidth || 1;
-var height = window.innerHeight || 1;
-var parameters = { minFilter: THREE.LinearFilter, magFilter: THREE.LinearFilter, format: THREE.RGBAFormat, stencilBuffer: false };
+ stats = new Stats();
+stats.showPanel( 0 ); // 0: fps, 1: ms, 2: mb, 3+: custom
+document.body.appendChild( stats.dom );
 
-var renderTarget = new THREE.WebGLRenderTarget( width, height, parameters );
+
+
+
+
+  var width = window.innerWidth || 1;
+  var height = window.innerHeight || 1;
+  var parameters = { minFilter: THREE.LinearFilter, magFilter: THREE.LinearFilter, format: THREE.RGBAFormat, stencilBuffer: false };
+
+  var renderTarget = new THREE.WebGLRenderTarget( width, height, parameters );
 
   composer = new THREE.EffectComposer( renderer, renderTarget );
   composer.addPass( new THREE.RenderPass( scene, camera ) );
@@ -690,6 +698,11 @@ var renderTarget = new THREE.WebGLRenderTarget( width, height, parameters );
 };
 
 export function animate() {
+   //   stats.begin();
+
+    // monitored code goes here
+
+   
   animateTimeout = setTimeout( function() {
     //console.log('looping');
         requestAnimationFrame( animate );  
@@ -743,6 +756,7 @@ export function animate() {
 
   loadEnvironment();
   render();
+  // stats.end();
 }
 
 function render() {
@@ -766,7 +780,7 @@ function onWindowResize() {
 
 function createLevel(){
  // planet creation
- var planet_geometry = new THREE.TetrahedronGeometry( 500, 4 );
+ var planet_geometry = new THREE.TetrahedronBufferGeometry( 500, 4 );
  var planet_material = new THREE.MeshPhongMaterial( { color: someColors['red'], shading: THREE.FlatShading});
  var planet = new THREE.Mesh( planet_geometry, planet_material );
 

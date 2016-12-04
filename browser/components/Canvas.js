@@ -21,7 +21,7 @@ class Canvas extends Component {
     		"use arrow keys to move",
     		"roll over smaller objects to get bigger",
     		"avoid larger players",
-    		"hold & release spacebar for speed boost"]
+    		"hold & release spacebar for speed boost"],
     	}
   	}
 
@@ -29,13 +29,15 @@ class Canvas extends Component {
 		createjs.Sound.registerSound("eat.ogg", "eatSound");
 
 		const leaderboard = ReactDOM.findDOMNode(this.refs.leaderboard);
+		const record = ReactDOM.findDOMNode(this.refs.record);
 		const status = ReactDOM.findDOMNode(this.refs.status);
 		const instructions = ReactDOM.findDOMNode(this.refs.instructions);
 		const abilities = ReactDOM.findDOMNode(this.refs.abilities);
 		const score = ReactDOM.findDOMNode(this.refs.score);
   		TweenMax.from(leaderboard, 1, {x: "-=400", y: "-=400", scale: 3, opacity: 0, ease: Power3.easeOut, delay: 2});
-  		TweenMax.from(abilities, 1, {x: "-=400", y: "+=400", scale: 1.5, opacity: 0, ease: Power3.easeOut, delay: 2});
-  		TweenMax.from(score, 1, {x: "+=400", y: "+=400", scale: 1.5, opacity: 0, ease: Power3.easeOut, delay: 2});
+  		TweenMax.from(record, 1, {x: "+=400", y: "-=400", scale: 3, opacity: 0, ease: Power3.easeOut, delay: 2});
+  		TweenMax.from(abilities, 1, {x: "-=400", y: "+=400", scale: 3, opacity: 0, ease: Power3.easeOut, delay: 2});
+  		TweenMax.from(score, 1, {x: "+=400", y: "+=400", scale: 3, opacity: 0, ease: Power3.easeOut, delay: 2});
 
   		if(!this.props.gameState.instructionsHidden){
   			const tl = new TimelineMax()
@@ -108,6 +110,16 @@ class Canvas extends Component {
 							</tbody>
 						</table>
 					</div>
+					<div ref="record" className="record">
+						<div>{this.props.players[socket.id] && 'magnitude'}
+						</div>
+						<div>
+							<span>{this.props.players[socket.id] && `${this.props.record.objectEaten}`}
+							</span>
+							<span>{this.props.record.playersEaten > 0 ? ` + ${this.props.record.playersEaten}` : ''}
+							</span>
+						</div>
+					</div>
 					<div ref="status" className="status">
 						{this.props.gameStatus}
 					</div>
@@ -134,7 +146,7 @@ class Canvas extends Component {
 	}
 }
 
-const mapStateToProps = ({ players, gameStatus, gameState, abilities }) => ({ players, gameStatus, gameState, abilities });
+const mapStateToProps = ({ players, gameStatus, gameState, abilities, record }) => ({ players, gameStatus, gameState, abilities, record });
 
 const mapDispatchToProps = dispatch => ({
   keepPlaying: () => dispatch(keepPlaying()),

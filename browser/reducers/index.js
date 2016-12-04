@@ -6,6 +6,7 @@ import food from './food';
 import gameStatus from './gameStatus';
 import abilities from './abilities';
 import gameState from './gameState';
+import record from './record';
 
 
 export default combineReducers({
@@ -15,5 +16,6 @@ export default combineReducers({
   food,
   gameStatus,
   abilities,
-  gameState
+  gameState,
+  record
 });
