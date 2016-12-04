@@ -122,6 +122,8 @@ export class Player {
       }
     }
 
+    this.mesh = mesh;
+    
     // show name on player if not self
     if (!isMainPlayer) {
       let { nickname } = initialData;
@@ -129,9 +131,9 @@ export class Player {
       sprite = makeTextSprite(name, 70);
       mesh.sprite = sprite;
       scene.add(sprite); // might run into issues with children
+      this.mesh.cannon.collisionResponse = 0;
     }
 
-    this.mesh = mesh;
 
     // collision handler
     if (!isMainPlayer) {

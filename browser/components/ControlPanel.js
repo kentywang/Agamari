@@ -8,6 +8,8 @@ import { openConsole,
 import {  removeAllPlayers } from '../reducers/players';
 import {  removeAllFood } from '../reducers/food';
 
+import { clearRecord } from '../reducers/record';
+
 
 import {stopGame} from '../reducers/gameState';
 
@@ -46,8 +48,10 @@ const mapDispatchToProps = dispatch => ({
   leave: () => {
     dispatch(stopGame());
     dispatch(removeAllFood());
-    //dispatch(removeAllPlayers());
     socket.emit('leave');
+    dispatch(clearRecord());
+    //console.log("should also get")
+    //dispatch(removeAllPlayers());
   }
 });
 

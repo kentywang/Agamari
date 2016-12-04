@@ -59,7 +59,7 @@ export class Food {
     mesh.position.y = y;
     mesh.position.z = z;
     if(type === "moon"){  
-        mesh.position.normalize().multiplyScalar(700);
+        mesh.position.normalize().multiplyScalar(650);
     }else{
       mesh.position.normalize().multiplyScalar(500);
     }

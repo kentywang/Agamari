@@ -10,6 +10,14 @@ import socket from '../socket';
 import { loadGame, loadEnvironment } from './game';
 import {controls, Player} from './player';
 import { Food } from './food';
+
+import {  removeAllFood } from '../reducers/food';
+
+import { clearRecord } from '../reducers/record';
+
+
+import {stopGame} from '../reducers/gameState';
+
 let animateTimeout;
 let scene, camera, canvas, renderer, composer, stats, pass, shader;
 let world, groundMaterial, ballMaterial, shadowLight;
@@ -537,16 +545,22 @@ THREE.FXAAShader = {
 
 
 
-
+let afkCall;
 
 export const init = () => {
 
 // set afk status to false
-window.onfocus= ()=>socket.emit("untime_me");
+window.onfocus= ()=>clearTimeout(afkCall);
 
 // start timer for player kick
-window.onblur = ()=>socket.emit("time_me");
-
+window.onblur = ()=>{
+  afkCall = setTimeout(()=> {
+    store.dispatch(stopGame());
+    store.dispatch(removeAllFood());
+    socket.emit('leave');
+    store.dispatch(clearRecord());
+  }, 60*1000);
+}
   let { players, food } = store.getState();
   // initialize THREE scene, camera, renderer
   scene = new THREE.Scene();

@@ -338,33 +338,33 @@ const setUpListeners = (io, socket) => {
       }
     });
 
-    socket.on('time_me', ()=>{
+    // socket.on('time_me', ()=>{
 
-      store.dispatch(afk(socket.id));
-      // kick player in 1 min if their browser window doesn't become active again
-      setTimeout(()=>{
-        let player = store.getState().players[socket.id];
-        if (player && player.afk) {
-            let { room } = player;
+    //   //store.dispatch(afk(socket.id));
+    //   // kick player in 1 min if their browser window doesn't become active again
+    // //  setTimeout(()=>{
+    //     let player = store.getState().players[socket.id];
+    //     if (player && player.afk) {
+    //         let { room } = player;
 
-            socket.emit("afk_leave");
-            // Remove player from server game state and tell players to remove player object
-            store.dispatch(removePlayer(socket.id));
-            io.sockets.in(room).emit('remove_player', socket.id);
+    //         socket.emit("afk_leave");
+    //         // Remove player from server game state and tell players to remove player object
+    //         store.dispatch(removePlayer(socket.id));
+    //         io.sockets.in(room).emit('remove_player', socket.id);
 
-            console.log(`${player.nickname} has left ${room}.`);
-        }
-      },60*1000)
-    })
+    //         console.log(`${player.nickname} has left ${room}.`);
+    //     }
+    // //  },60*1000)
+    // })
 
-    socket.on('untime_me', ()=>{
+    // socket.on('untime_me', ()=>{
 
-      // set afk status to false
-      let player = store.getState().players[socket.id];
-      if(player){
-        store.dispatch(unAfk(socket.id));
-      }
-    });
+    //   // set afk status to false
+    //   let player = store.getState().players[socket.id];
+    //   if(player){
+    //     store.dispatch(unAfk(socket.id));
+    //   }
+    // });
 }
 
 module.exports = setUpListeners;

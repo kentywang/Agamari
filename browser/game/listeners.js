@@ -58,9 +58,14 @@ export default socket => {
     // Remove player object when player leaves or dies
     socket.on('remove_player', (id, eaterId, eaterData, eatenData) => {
       let playerObject = scene.getObjectByName(id);
+        if (eaterId === socket.id){
+          store.dispatch(incrementRecordPlayer());
+          store.dispatch(ateSomeone(playerObject.nickname));// dispatch exits this function for some reason
+        }
       if (playerObject) {
         if(eaterId){
           // attach player if this was a eat event
+          createjs.Sound.play('eatSound');
           attachPlayer(id, eaterId, eaterData, eatenData);
         }
         world.remove(playerObject.cannon);
@@ -70,12 +75,6 @@ export default socket => {
         for (let child of children) scene.remove(child);
         //playerObject.dispose(); // this isn't working yet
         //console.log(eaterId, socket.id)
-        if (eaterId === socket.id){
-          //console.log("hello mom")
-          createjs.Sound.play('eatSound');
-          store.dispatch(incrementRecordPlayer());
-          store.dispatch(ateSomeone(playerObject.nickname));// dispatch exits this function for some reason
-        }
       }
     });
 
@@ -91,7 +90,7 @@ export default socket => {
     socket.on('remove_food', (id, playerId, playerData) => {
         attachFood(id, playerId, playerData);
         store.dispatch(removeFood(id));
-
+        
         if (playerId === socket.id){
           createjs.Sound.play('eatSound');
           //console.log(scene.getObjectByName(playerId).cannon.mass)

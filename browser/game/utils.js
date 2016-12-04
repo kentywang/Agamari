@@ -78,7 +78,7 @@ export const attachFood = (id, playerId, playerData) => {
     world.remove(foodObject.cannon);
 
     var scaled = Math.min(.45 + player.scale.x/20, .8);
-    console.log(scaled)
+    //console.log(scaled)
 
     let vec1 = new CANNON.Vec3((foodObject.position.x - playerData.x) * scaled,
                                (foodObject.position.z - playerData.z) * scaled,
@@ -128,7 +128,7 @@ export const attachPlayer = (id, playerId, eaterData, eatenData) => {
     world.remove(foodObject.cannon);
 
     var scaled = Math.min(.45 + player.scale.x/20, .8);
-    console.log(scaled)
+    //console.log(scaled)
 
     let vec1 = new CANNON.Vec3((eatenData.x - eaterData.x) * scaled,
                                (eatenData.z - eaterData.z) * scaled,
