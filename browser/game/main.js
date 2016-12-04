@@ -11,7 +11,7 @@ import { loadGame, loadEnvironment } from './game';
 import {controls, Player} from './player';
 import { Food } from './food';
 let animateTimeout;
-let scene, camera, canvas, renderer;
+let scene, camera, canvas, renderer, composer, composer2, pass, shader;
 let world, groundMaterial, ballMaterial, shadowLight;
 let geometry, material, groundShape, groundBody, hemisphereLight, ambientLight;
 let timeFromStart = Date.now();
@@ -21,6 +21,523 @@ let time, lastTime;
 let raycastReference, raycastHeight;
 
 let someColors = myColors();
+
+
+
+
+
+var mCurrent = new THREE.Matrix4();
+      var mPrev = new THREE.Matrix4();
+      var tmpArray = new THREE.Matrix4();
+      var camTranslateSpeed = new THREE.Vector3();
+      var prevCamPos = new THREE.Vector3();
+
+
+
+
+
+/**
+ * @author alteredq / http://alteredqualia.com/
+ *
+ * Full-screen textured quad shader
+ */
+
+THREE.CopyShader = {
+
+  uniforms: {
+
+    "tDiffuse": { value: null },
+    "opacity":  { value: 1.0 }
+
+  },
+
+  vertexShader: [
+
+    "varying vec2 vUv;",
+
+    "void main() {",
+
+      "vUv = uv;",
+      "gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );",
+
+    "}"
+
+  ].join( "\n" ),
+
+  fragmentShader: [
+
+    "uniform float opacity;",
+
+    "uniform sampler2D tDiffuse;",
+
+    "varying vec2 vUv;",
+
+    "void main() {",
+
+      "vec4 texel = texture2D( tDiffuse, vUv );",
+      "gl_FragColor = opacity * texel;",
+
+    "}"
+
+  ].join( "\n" )
+
+};
+/**
+ * @author alteredq / http://alteredqualia.com/
+ */
+
+THREE.EffectComposer = function ( renderer, renderTarget ) {
+
+  this.renderer = renderer;
+
+  if ( renderTarget === undefined ) {
+
+    var parameters = {
+      minFilter: THREE.LinearFilter,
+      magFilter: THREE.LinearFilter,
+      format: THREE.RGBAFormat,
+      stencilBuffer: false
+    };
+    var size = renderer.getSize();
+    renderTarget = new THREE.WebGLRenderTarget( size.width, size.height, parameters );
+
+  }
+
+  this.renderTarget1 = renderTarget;
+  this.renderTarget2 = renderTarget.clone();
+
+  this.writeBuffer = this.renderTarget1;
+  this.readBuffer = this.renderTarget2;
+
+  this.passes = [];
+
+  if ( THREE.CopyShader === undefined )
+    console.error( "THREE.EffectComposer relies on THREE.CopyShader" );
+
+  this.copyPass = new THREE.ShaderPass( THREE.CopyShader );
+
+};
+
+Object.assign( THREE.EffectComposer.prototype, {
+
+  swapBuffers: function() {
+
+    var tmp = this.readBuffer;
+    this.readBuffer = this.writeBuffer;
+    this.writeBuffer = tmp;
+
+  },
+
+  addPass: function ( pass ) {
+
+    this.passes.push( pass );
+
+    var size = this.renderer.getSize();
+    pass.setSize( size.width, size.height );
+
+  },
+
+  insertPass: function ( pass, index ) {
+
+    this.passes.splice( index, 0, pass );
+
+  },
+
+  render: function ( delta ) {
+
+    var maskActive = false;
+
+    var pass, i, il = this.passes.length;
+
+    for ( i = 0; i < il; i ++ ) {
+
+      pass = this.passes[ i ];
+
+      if ( pass.enabled === false ) continue;
+
+      pass.render( this.renderer, this.writeBuffer, this.readBuffer, delta, maskActive );
+
+      if ( pass.needsSwap ) {
+
+        if ( maskActive ) {
+
+          var context = this.renderer.context;
+
+          context.stencilFunc( context.NOTEQUAL, 1, 0xffffffff );
+
+          this.copyPass.render( this.renderer, this.writeBuffer, this.readBuffer, delta );
+
+          context.stencilFunc( context.EQUAL, 1, 0xffffffff );
+
+        }
+
+        this.swapBuffers();
+
+      }
+
+      if ( THREE.MaskPass !== undefined ) {
+
+        if ( pass instanceof THREE.MaskPass ) {
+
+          maskActive = true;
+
+        } else if ( pass instanceof THREE.ClearMaskPass ) {
+
+          maskActive = false;
+
+        }
+
+      }
+
+    }
+
+  },
+
+  reset: function ( renderTarget ) {
+
+    if ( renderTarget === undefined ) {
+
+      var size = this.renderer.getSize();
+
+      renderTarget = this.renderTarget1.clone();
+      renderTarget.setSize( size.width, size.height );
+
+    }
+
+    this.renderTarget1.dispose();
+    this.renderTarget2.dispose();
+    this.renderTarget1 = renderTarget;
+    this.renderTarget2 = renderTarget.clone();
+
+    this.writeBuffer = this.renderTarget1;
+    this.readBuffer = this.renderTarget2;
+
+  },
+
+  setSize: function ( width, height ) {
+
+    this.renderTarget1.setSize( width, height );
+    this.renderTarget2.setSize( width, height );
+
+    for ( var i = 0; i < this.passes.length; i ++ ) {
+
+      this.passes[i].setSize( width, height );
+
+    }
+
+  }
+
+} );
+
+
+THREE.Pass = function () {
+
+  // if set to true, the pass is processed by the composer
+  this.enabled = true;
+
+  // if set to true, the pass indicates to swap read and write buffer after rendering
+  this.needsSwap = true;
+
+  // if set to true, the pass clears its buffer before rendering
+  this.clear = false;
+
+  // if set to true, the result of the pass is rendered to screen
+  this.renderToScreen = false;
+
+};
+
+Object.assign( THREE.Pass.prototype, {
+
+  setSize: function( width, height ) {},
+
+  render: function ( renderer, writeBuffer, readBuffer, delta, maskActive ) {
+
+    console.error( "THREE.Pass: .render() must be implemented in derived pass." );
+
+  }
+
+} );
+
+/**
+ * @author alteredq / http://alteredqualia.com/
+ */
+
+THREE.RenderPass = function ( scene, camera, overrideMaterial, clearColor, clearAlpha ) {
+
+  THREE.Pass.call( this );
+
+  this.scene = scene;
+  this.camera = camera;
+
+  this.overrideMaterial = overrideMaterial;
+
+  this.clearColor = clearColor;
+  this.clearAlpha = ( clearAlpha !== undefined ) ? clearAlpha : 0;
+
+  this.clear = true;
+  this.needsSwap = false;
+
+};
+
+THREE.RenderPass.prototype = Object.assign( Object.create( THREE.Pass.prototype ), {
+
+  constructor: THREE.RenderPass,
+
+  render: function ( renderer, writeBuffer, readBuffer, delta, maskActive ) {
+
+    var oldAutoClear = renderer.autoClear;
+    renderer.autoClear = false;
+
+    this.scene.overrideMaterial = this.overrideMaterial;
+
+    var oldClearColor, oldClearAlpha;
+
+    if ( this.clearColor ) {
+
+      oldClearColor = renderer.getClearColor().getHex();
+      oldClearAlpha = renderer.getClearAlpha();
+
+      renderer.setClearColor( this.clearColor, this.clearAlpha );
+
+    }
+
+    renderer.render( this.scene, this.camera, this.renderToScreen ? null : readBuffer, this.clear );
+
+    if ( this.clearColor ) {
+
+      renderer.setClearColor( oldClearColor, oldClearAlpha );
+
+    }
+
+    this.scene.overrideMaterial = null;
+    renderer.autoClear = oldAutoClear;
+  }
+
+} );
+
+/**
+ * @author alteredq / http://alteredqualia.com/
+ */
+
+THREE.ShaderPass = function ( shader, textureID ) {
+
+  THREE.Pass.call( this );
+
+  this.textureID = ( textureID !== undefined ) ? textureID : "tDiffuse";
+
+  if ( shader instanceof THREE.ShaderMaterial ) {
+
+    this.uniforms = shader.uniforms;
+
+    this.material = shader;
+
+  } else if ( shader ) {
+
+    this.uniforms = THREE.UniformsUtils.clone( shader.uniforms );
+
+    this.material = new THREE.ShaderMaterial( {
+
+      defines: shader.defines || {},
+      uniforms: this.uniforms,
+      vertexShader: shader.vertexShader,
+      fragmentShader: shader.fragmentShader
+
+    } );
+
+  }
+
+  this.camera = new THREE.OrthographicCamera( - 1, 1, 1, - 1, 0, 1 );
+  this.scene = new THREE.Scene();
+
+  this.quad = new THREE.Mesh( new THREE.PlaneBufferGeometry( 2, 2 ), null );
+  this.scene.add( this.quad );
+
+};
+
+THREE.ShaderPass.prototype = Object.assign( Object.create( THREE.Pass.prototype ), {
+
+  constructor: THREE.ShaderPass,
+
+  render: function( renderer, writeBuffer, readBuffer, delta, maskActive ) {
+
+    if ( this.uniforms[ this.textureID ] ) {
+
+      this.uniforms[ this.textureID ].value = readBuffer.texture;
+
+    }
+
+    this.quad.material = this.material;
+
+    if ( this.renderToScreen ) {
+
+      renderer.render( this.scene, this.camera );
+
+    } else {
+
+      renderer.render( this.scene, this.camera, writeBuffer, this.clear );
+
+    }
+
+  }
+
+} );
+
+/**
+ * @author alteredq / http://alteredqualia.com/
+ *
+ * Vignette shader
+ * based on PaintEffect postprocess from ro.me
+ * http://code.google.com/p/3-dreams-of-black/source/browse/deploy/js/effects/PaintEffect.js
+ */
+
+THREE.VignetteShader = {
+
+  uniforms: {
+
+    "tDiffuse": { value: null },
+    "offset":   { value: 1.0 },
+    "darkness": { value: 1.0 }
+
+  },
+
+  vertexShader: [
+
+    "varying vec2 vUv;",
+
+    "void main() {",
+
+      "vUv = uv;",
+      "gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );",
+
+    "}"
+
+  ].join( "\n" ),
+
+  fragmentShader: [
+
+    "uniform float offset;",
+    "uniform float darkness;",
+
+    "uniform sampler2D tDiffuse;",
+
+    "varying vec2 vUv;",
+
+    "void main() {",
+
+      // Eskil's vignette
+
+      "vec4 texel = texture2D( tDiffuse, vUv );",
+      "vec2 uv = ( vUv - vec2( 0.5 ) ) * vec2( offset );",
+      "gl_FragColor = vec4( mix( texel.rgb, vec3( 1.0 - darkness ), dot( uv, uv ) ), texel.a );",
+
+      /*
+      // alternative version from glfx.js
+      // this one makes more "dusty" look (as opposed to "burned")
+
+      "vec4 color = texture2D( tDiffuse, vUv );",
+      "float dist = distance( vUv, vec2( 0.5 ) );",
+      "color.rgb *= smoothstep( 0.8, offset * 0.799, dist *( darkness + offset ) );",
+      "gl_FragColor = color;",
+      */
+
+    "}"
+
+  ].join( "\n" )
+
+};
+
+/**
+ * @author alteredq / http://alteredqualia.com/
+ * @author davidedc / http://www.sketchpatch.net/
+ *
+ * NVIDIA FXAA by Timothy Lottes
+ * http://timothylottes.blogspot.com/2011/06/fxaa3-source-released.html
+ * - WebGL port by @supereggbert
+ * http://www.glge.org/demos/fxaa/
+ */
+
+THREE.FXAAShader = {
+
+  uniforms: {
+
+    "tDiffuse":   { value: null },
+    "resolution": { value: new THREE.Vector2( 1 / 1024, 1 / 512 ) }
+
+  },
+
+  vertexShader: [
+
+    "void main() {",
+
+      "gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );",
+
+    "}"
+
+  ].join( "\n" ),
+
+  fragmentShader: [
+
+    "uniform sampler2D tDiffuse;",
+    "uniform vec2 resolution;",
+
+    "#define FXAA_REDUCE_MIN   (1.0/128.0)",
+    "#define FXAA_REDUCE_MUL   (1.0/8.0)",
+    "#define FXAA_SPAN_MAX     8.0",
+
+    "void main() {",
+
+      "vec3 rgbNW = texture2D( tDiffuse, ( gl_FragCoord.xy + vec2( -1.0, -1.0 ) ) * resolution ).xyz;",
+      "vec3 rgbNE = texture2D( tDiffuse, ( gl_FragCoord.xy + vec2( 1.0, -1.0 ) ) * resolution ).xyz;",
+      "vec3 rgbSW = texture2D( tDiffuse, ( gl_FragCoord.xy + vec2( -1.0, 1.0 ) ) * resolution ).xyz;",
+      "vec3 rgbSE = texture2D( tDiffuse, ( gl_FragCoord.xy + vec2( 1.0, 1.0 ) ) * resolution ).xyz;",
+      "vec4 rgbaM  = texture2D( tDiffuse,  gl_FragCoord.xy  * resolution );",
+      "vec3 rgbM  = rgbaM.xyz;",
+      "vec3 luma = vec3( 0.299, 0.587, 0.114 );",
+
+      "float lumaNW = dot( rgbNW, luma );",
+      "float lumaNE = dot( rgbNE, luma );",
+      "float lumaSW = dot( rgbSW, luma );",
+      "float lumaSE = dot( rgbSE, luma );",
+      "float lumaM  = dot( rgbM,  luma );",
+      "float lumaMin = min( lumaM, min( min( lumaNW, lumaNE ), min( lumaSW, lumaSE ) ) );",
+      "float lumaMax = max( lumaM, max( max( lumaNW, lumaNE) , max( lumaSW, lumaSE ) ) );",
+
+      "vec2 dir;",
+      "dir.x = -((lumaNW + lumaNE) - (lumaSW + lumaSE));",
+      "dir.y =  ((lumaNW + lumaSW) - (lumaNE + lumaSE));",
+
+      "float dirReduce = max( ( lumaNW + lumaNE + lumaSW + lumaSE ) * ( 0.25 * FXAA_REDUCE_MUL ), FXAA_REDUCE_MIN );",
+
+      "float rcpDirMin = 1.0 / ( min( abs( dir.x ), abs( dir.y ) ) + dirReduce );",
+      "dir = min( vec2( FXAA_SPAN_MAX,  FXAA_SPAN_MAX),",
+          "max( vec2(-FXAA_SPAN_MAX, -FXAA_SPAN_MAX),",
+            "dir * rcpDirMin)) * resolution;",
+      "vec4 rgbA = (1.0/2.0) * (",
+          "texture2D(tDiffuse,  gl_FragCoord.xy  * resolution + dir * (1.0/3.0 - 0.5)) +",
+      "texture2D(tDiffuse,  gl_FragCoord.xy  * resolution + dir * (2.0/3.0 - 0.5)));",
+        "vec4 rgbB = rgbA * (1.0/2.0) + (1.0/4.0) * (",
+      "texture2D(tDiffuse,  gl_FragCoord.xy  * resolution + dir * (0.0/3.0 - 0.5)) +",
+          "texture2D(tDiffuse,  gl_FragCoord.xy  * resolution + dir * (3.0/3.0 - 0.5)));",
+        "float lumaB = dot(rgbB, vec4(luma, 0.0));",
+
+      "if ( ( lumaB < lumaMin ) || ( lumaB > lumaMax ) ) {",
+
+        "gl_FragColor = rgbA;",
+
+      "} else {",
+        "gl_FragColor = rgbB;",
+
+      "}",
+
+    "}"
+
+  ].join( "\n" )
+
+};
+
+
+
+
 
 export const init = () => {
 
@@ -43,8 +560,8 @@ window.onblur = ()=>socket.emit("time_me");
 
   renderer = new THREE.WebGLRenderer({alpha: true, canvas});
   renderer.setPixelRatio( window.devicePixelRatio );
-  renderer.setSize(window.innerWidth / 1.5,
-                   window.innerHeight / 1.5,
+  renderer.setSize(window.innerWidth / 1,
+                   window.innerHeight / 1,
                    false);
 
   //This is the object that follows the ball and keeps its z/y rotation
@@ -154,8 +671,45 @@ scene.add(camera)
 
   loadGame();
 
-  //botInit();
+var width = window.innerWidth || 1;
+var height = window.innerHeight || 1;
+var parameters = { minFilter: THREE.LinearFilter, magFilter: THREE.LinearFilter, format: THREE.RGBAFormat, stencilBuffer: false };
 
+var renderTarget = new THREE.WebGLRenderTarget( width, height, parameters );
+
+  composer = new THREE.EffectComposer( renderer, renderTarget );
+  composer.addPass( new THREE.RenderPass( scene, camera ) );
+
+shader = {
+
+          uniforms: {
+            tDiffuse: { type: 't', value: null },
+            tColor: { type: 't', value: null },
+            resolution: { type: 'v2', value: new THREE.Vector2( 1, 1 ) },
+            viewProjectionInverseMatrix: { type: 'm4', value: new THREE.Matrix4() },
+            previousViewProjectionMatrix: { type: 'm4', value: new THREE.Matrix4() },
+            velocityFactor: { type: 'f', value: 1 }
+          },
+
+          vertexShader: document.getElementById( 'vs-motionBlur' ).textContent,
+          fragmentShader: document.getElementById( 'fs-motionBlur' ).textContent
+        }
+
+        pass = new THREE.ShaderPass( shader );
+       // pass.renderToScreen = true;
+        composer.addPass( pass );
+
+  var vignetteShader = new THREE.ShaderPass( THREE.VignetteShader );
+  //vignetteShader.uniforms[ 'scale' ].value = 4;
+  vignetteShader.renderToScreen = true;
+  composer.addPass( vignetteShader );
+
+composer2 = new THREE.EffectComposer( renderer );
+  composer2.addPass( new THREE.RenderPass( scene, camera ) );
+composer.renderTarget1.format = THREE.RGBAFormat;
+composer.renderTarget2.format = THREE.RGBAFormat;
+
+renderer.autoclear=true;
   // Events
   window.addEventListener( 'resize', onWindowResize, false );
 };
@@ -217,8 +771,26 @@ export function animate() {
 }
 
 function render() {
+  
   renderer.clear();
-  renderer.render( scene, camera );
+  //console.log(composer)
+
+  pass.material.uniforms.velocityFactor.value = 0.22
+  tmpArray.copy( camera.matrixWorldInverse );
+          tmpArray.multiply( camera.projectionMatrix );
+          mCurrent.getInverse( tmpArray );
+
+          pass.material.uniforms.viewProjectionInverseMatrix.value.copy( mCurrent );
+          pass.material.uniforms.previousViewProjectionMatrix.value.copy( mPrev );
+
+  composer2.render();
+
+  pass.material.uniforms.tColor.value = composer2.renderTarget2;
+  composer.render();
+
+
+  mPrev.copy( tmpArray );
+  //renderer.render( scene, camera );
 }
 
 function onWindowResize() {
@@ -226,8 +798,8 @@ function onWindowResize() {
   camera.updateProjectionMatrix();
 
   renderer.setPixelRatio( window.devicePixelRatio );
-  renderer.setSize(window.innerWidth / 1.5,
-                   window.innerHeight / 1.5,
+  renderer.setSize(window.innerWidth / 1,
+                   window.innerHeight / 1,
                    false);
 }
 
@@ -252,7 +824,7 @@ function createLevel(){
     particles = new THREE.Geometry(),
     pMaterial = new THREE.PointsMaterial({
       color: 0xFFFFFF,
-      size: 3
+      size: 2
     });
 
   // now create the individual particles
