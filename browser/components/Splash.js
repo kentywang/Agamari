@@ -10,8 +10,8 @@ class Splash extends Component {
     let { nickname } = gameState;
 
     return (
-        <div>
-         <div id="title" style={{color:"white"}}>AGAMARI</div>
+        <div id="splash">
+         <div id="title">AGAMARI</div>
            <div className="input-field">
             <input value={nickname}
                    onChange={updateNickname}
