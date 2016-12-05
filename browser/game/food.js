@@ -127,7 +127,8 @@ export class Food {
                   // all other bombs are explosive
                   else if(type === "bomb" && playerVol>10000){
                     this.eaten = true;
-                    socket.emit('eat_food', this.id, foodVol + playerVol * 20);
+                    socket.emit('eat_bomb', this.id, playerVol/2);
+                    // socket.emit('eat_food', this.id, foodVol + playerVol * 20);
                   }
             }
           }

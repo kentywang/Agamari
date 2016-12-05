@@ -153,6 +153,7 @@ export class Player {
               if (thisVol > mainVol){
     
                 lastEaten = Date.now();
+                //socket.emit('reduce_volume', id, thisVol/2)
                 socket.emit('got_eaten', id, thisVol + mainVol);
               }
             }

@@ -105,6 +105,8 @@ const setUpListeners = (io, socket) => {
         });
     });
 
+    //socket.on('reduce_volume', data=>{  })
+
     // For every frame of animation, players are emitting their current position
     socket.on('update_position', data => {
       let player = store.getState().players[socket.id];
@@ -125,6 +127,27 @@ const setUpListeners = (io, socket) => {
         }
       }
     });
+
+
+    //when players collide with landmines
+    socket.on('eat_bomb', (id, volume) => {
+     // console.log("sss")
+      let { food } = store.getState();
+      let eaten = food[id];
+      let player = store.getState().players[socket.id];
+      // First, verify that food still exists.
+      // Then increase player size and tell other players to remove food object
+     // console.log(id, food[id])
+      if (eaten) {
+        // **** store.dispatch(addFoodToDiet(eaten, socket.id, store.getState().players[socket.id]));
+        //console.log("in eat food socket listener, number of diets: ", store.getState().players[socket.id].diet.length)
+        store.dispatch(removeFood(id));
+        store.dispatch(updateVolume(socket.id, volume));
+        store.dispatch(changePlayerScale(socket.id, volume/4000));
+        io.sockets.in(eaten.room).emit('remove_bomb', id, socket.id, store.getState().players[socket.id]);
+      }
+    });
+
 
     // When players collide with food objects, they emit the food's id
     socket.on('eat_food', (id, volume) => {

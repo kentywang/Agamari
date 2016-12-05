@@ -1,5 +1,5 @@
 import store from '../store';
-import { attachFood, attachPlayer } from './utils';
+import { attachFood, attachPlayer, detonateBomb } from './utils';
 
 import { closeConsole, setError } from '../reducers/controlPanel';
 import {  receivePlayers,
@@ -18,6 +18,8 @@ import { init,
          world } from '../game/main';
 import { Player } from '../game/player';
 import {Food} from '../game/food';
+
+
 
 
 export default socket => {
@@ -93,6 +95,18 @@ export default socket => {
           createjs.Sound.play('eatSound');
           //console.log(scene.getObjectByName(playerId).cannon.mass)
         }
+      });
+
+    socket.on('remove_bomb', (id, playerId, playerData) => {
+   
+
+        if (playerId === socket.id){
+          //different sound here
+          createjs.Sound.play('eatSound');      
+          //console.log(scene.getObjectByName(playerId).cannon.mass)
+        }
+        detonateBomb(id, playerId, playerData)   
+        store.dispatch(removeFood(id));
       });
 
     socket.on('you_got_eaten', eater =>{

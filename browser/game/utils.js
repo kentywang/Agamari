@@ -153,3 +153,14 @@ export const attachPlayer = (id, playerId, eaterData, eatenData) => {
      }
   }
 };
+
+
+export const detonateBomb = (id, playerId, playerData)     => {
+  let foodObject = scene.getObjectByName(id);
+  let player = scene.getObjectByName(playerId);
+   world.remove(foodObject.cannon);
+   scene.remove(foodObject);
+
+};
+
+
