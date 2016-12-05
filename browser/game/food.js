@@ -24,7 +24,7 @@ export class Food {
     count = 0;
 
     // never allow food to be same color as planet or players
-    someColors["pink"] = null;
+    someColors["red"] = null;
     for (var prop in someColors){
       if (Math.random() < 1 / ++count){
         color = prop;
