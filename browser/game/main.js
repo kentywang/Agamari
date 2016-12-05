@@ -151,11 +151,11 @@ export function animate() {
    //   stats.begin();
    
   animateTimeout = setTimeout( function() {
-        requestAnimationFrame( animate );  
+    requestAnimationFrame( animate );  
 
-        // emit positional data to server
-        socket.emit('update_position', getMeshData(playerMesh));
-    }, 1000 / 30 );
+    // emit positional data to server
+    socket.emit('update_position', getMeshData(playerMesh));
+  }, 1000 / 30 );
 
   let { gameState, players } = store.getState();
 
