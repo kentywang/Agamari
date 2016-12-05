@@ -9,7 +9,6 @@ class Splash extends Component {
     let { updateNickname, gameState, play } = this.props;
     let { nickname } = gameState;
 
-
     return (
         <div>
          <div id="title" style={{color:"white"}}>AGAMARI</div>
@@ -18,20 +17,14 @@ class Splash extends Component {
                    onChange={updateNickname}
                    type="text"
                    id="name-box"
-                   placeholder="nickname" 
-                   className="validate"
-                   autoFocus
-                   required/>
-                   {/* <label htmlFor="name-box" data-error="Please enter nickname" data-success="right">Please enter nickname</label>*/}
+                   placeholder="nickname"
+                   autoFocus/>
             <button className="Buttons" type="submit" style={nickname.trim()? {color: "white"} : {color: "grey"}} onClick={()=>{
-              if(nickname.trim())
+              if(nickname.trim()){
                 play();
+              }
             }} id="play-box">play</button>
-          </div>
-         {/* <div>
-            <button className="buttons" onClick={play} id="rules-box">Rules</button>
-          </div>*/}
-         
+          </div>      
         </div>
 
       );
@@ -41,7 +34,6 @@ class Splash extends Component {
 const mapStateToProps = ({players, gameState}) => ({players, gameState});
 
 const mapDispatchToProps = dispatch => ({
-  // play: () => dispatch(startGame()),
   leave: () => dispatch(stopGame()),
   updateNickname: e => dispatch(setNickname(e.target.value)),
   signInAsGuest: (nickname, socket) => {

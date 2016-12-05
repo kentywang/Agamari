@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import ReactDOM from 'react-dom';
+
 import socket from '../socket';
 import { scene } from '../game/main';
 
@@ -7,9 +9,6 @@ import { keepPlaying } from '../reducers/gameStatus';
 import { hideInstructions } from '../reducers/gameState';
 
 import BugReportForm from './BugReportForm';
-
-import ReactDOM from 'react-dom';
-import { TimelineMax } from '../../public/TweenMax.min'
 
 class Canvas extends Component {
 	constructor(props){
@@ -21,22 +20,28 @@ class Canvas extends Component {
     		"use arrow keys to move",
     		"roll over smaller objects to get bigger",
     		"avoid larger players",
-    		"hold & release spacebar for speed boost"]
+    		"hold & release spacebar for speed boost"],
     	}
   	}
 
   	componentDidMount(){
+  		// load sound(s)
 		createjs.Sound.registerSound("eat.ogg", "eatSound");
 
 		const leaderboard = ReactDOM.findDOMNode(this.refs.leaderboard);
+		const record = ReactDOM.findDOMNode(this.refs.record);
 		const status = ReactDOM.findDOMNode(this.refs.status);
 		const instructions = ReactDOM.findDOMNode(this.refs.instructions);
 		const abilities = ReactDOM.findDOMNode(this.refs.abilities);
 		const score = ReactDOM.findDOMNode(this.refs.score);
-  		TweenMax.from(leaderboard, 1, {x: "-=400", y: "-=400", scale: 3, opacity: 0, ease: Power3.easeOut, delay: 2});
-  		TweenMax.from(abilities, 1, {x: "-=400", y: "+=400", scale: 1.5, opacity: 0, ease: Power3.easeOut, delay: 2});
-  		TweenMax.from(score, 1, {x: "+=400", y: "+=400", scale: 1.5, opacity: 0, ease: Power3.easeOut, delay: 2});
 
+		// animate HUD fly-in
+  		TweenMax.from(leaderboard, 1, {x: "-=400", y: "-=400", scale: 3, opacity: 0, ease: Power3.easeOut, delay: 2});
+  		TweenMax.from(record, 1, {x: "+=400", y: "-=400", scale: 3, opacity: 0, ease: Power3.easeOut, delay: 2});
+  		TweenMax.from(abilities, 1, {x: "-=400", y: "+=400", scale: 3, opacity: 0, ease: Power3.easeOut, delay: 2});
+  		TweenMax.from(score, 1, {x: "+=400", y: "+=400", scale: 3, opacity: 0, ease: Power3.easeOut, delay: 2});
+
+  		// show instructions
   		if(!this.props.gameState.instructionsHidden){
   			const tl = new TimelineMax()
 			.from(instructions, 1.5, { opacity: 0, ease: Power3.easeOut}, "+=3.5")
@@ -51,13 +56,18 @@ class Canvas extends Component {
   	}
 
 	render = () => {
+
+		// populate this.state.leaderboard 
 		if(this.props.players[socket.id] && scene){
 			this.state.leaderboard = [];
+
+			// shorten own nickname
 			var myNick = scene.getObjectByName(socket.id).nickname;
 			if (myNick.length > 15){
 				myNick = myNick.slice(0,14) + "...";
 			}
 
+			// shorten all other nicknames
 			for(let id in this.props.players){
 				var nick = scene.getObjectByName(id).nickname;
 				if (nick.length > 15){
@@ -65,21 +75,14 @@ class Canvas extends Component {
 				}
 				this.state.leaderboard.push({nick, vol: this.props.players[id].volume});
 			}
-			// sort leaders
-			this.state.leaderboard.sort((a, b) => b.vol - a.vol);
 
-			// add self to shortlist (if necessary)
-			// var me = this.state.leaderboard.find(e => e.nick === myNick)
-			// me.place = this.state.leaderboard.indexOf(me) + 1;
-			// this.state.leaderboard.splice(3);
-			// if(me.place > 3){
-			// 	this.state.leaderboard.push(me);
-			// }
+			// order by volume
+			this.state.leaderboard.sort((a, b) => b.vol - a.vol);
 		}
 
 		// show score
 		if(this.props.players[socket.id] && this.state.displayVol < this.props.players[socket.id].volume){
-			this.state.displayVol = ~~(this.state.displayVol * 1.0011);
+			this.state.displayVol = ~~(this.state.displayVol * 1.01);
 		}
 		if(this.props.players[socket.id] && this.state.displayVol > this.props.players[socket.id].volume){
 			this.state.displayVol = this.props.players[socket.id].volume;
@@ -89,7 +92,6 @@ class Canvas extends Component {
 		if(this.props.gameStatus.length){
 			setTimeout(()=>this.props.keepPlaying(), 3000);
 		}
-
 
 		return (
 			<div className="in-game">
@@ -107,6 +109,16 @@ class Canvas extends Component {
 							}
 							</tbody>
 						</table>
+					</div>
+					<div ref="record" className="record">
+						<div>{this.props.players[socket.id] && 'magnitude'}
+						</div>
+						<div>
+							<span>{this.props.players[socket.id] && `${this.props.record.objectEaten}`}
+							</span>
+							<span>{this.props.record.playersEaten > 0 ? ` + ${this.props.record.playersEaten}` : ''}
+							</span>
+						</div>
 					</div>
 					<div ref="status" className="status">
 						{this.props.gameStatus}
@@ -134,17 +146,11 @@ class Canvas extends Component {
 	}
 }
 
-const mapStateToProps = ({ players, gameStatus, gameState, abilities }) => ({ players, gameStatus, gameState, abilities });
+const mapStateToProps = ({ players, gameStatus, gameState, abilities, record }) => ({ players, gameStatus, gameState, abilities, record });
 
 const mapDispatchToProps = dispatch => ({
   keepPlaying: () => dispatch(keepPlaying()),
   hideInstructions: () => dispatch(hideInstructions())
-  // close: () => dispatch(closeConsole()),
-  // updateNickname: e => dispatch(setNickname(e.target.value)),
-  // clearNickname: () => dispatch(resetNickname()),
-  // updateError: error => dispatch(setError(error)),
-  // clearError: () => dispatch(resetError()),
-  // signInAsGuest: (nickname, socket) => dispatch(startAsGuest(nickname, socket))
 });
 
 export default connect(

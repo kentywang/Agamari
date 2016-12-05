@@ -11,7 +11,6 @@ export const authenticated = user => ({
   user
 });
 
-
 export const logout = () => ({
   type: LOGOUT
 });

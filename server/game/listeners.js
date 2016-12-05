@@ -1,6 +1,6 @@
 let Promise = require('bluebird');
 
-
+// player spawn function
 function initPos(){
   let x = Math.random() * 1000 - 500;
   let y = Math.random() * 1000 - 500;
@@ -31,9 +31,7 @@ const { updatePlayer,
         changePlayerScale,
         addFoodToDiet,
         addPlayerToDiet,
-        clearDiet,
-        afk,
-        unAfk } = require('../reducers/players');
+        clearDiet } = require('../reducers/players');
 
 const addRandomRoom = () => {
   let { rooms } = store.getState();
@@ -42,6 +40,7 @@ const addRandomRoom = () => {
   store.dispatch(addRoom(name));
   return name;
 };
+const {playerIsLeading} = require('./engine');
 
 
 const setUpListeners = (io, socket) => {
@@ -58,7 +57,7 @@ const setUpListeners = (io, socket) => {
           let room = undefined;
           for (let i = 0; i < rooms.length && !room; i++) {
             let playerCount = size(pickBy(players, player => player.room === rooms[i]));
-            if (playerCount < 4) room = rooms[i];
+            if (playerCount < 6) room = rooms[i];
           }
           if (!room) room = addRandomRoom();
 
@@ -77,15 +76,14 @@ const setUpListeners = (io, socket) => {
           // Tell all players in room to create object for new player
           io.sockets.in(room).emit('add_player', socket.id, player);
 
-             console.log('adding player to game', players[socket.id]);
+          console.log('adding player to game', players[socket.id]);
+
           Promise.all(leavePromises)
             .then(() => {
               // Find all players in room and tell new player to add to game state
-                console.log('current player', player);
               let roomPlayers = pickBy(players, currentPlayer => currentPlayer.room === room);
               roomPlayers[socket.id] = player;
-              //console.log('roomPlayers', roomPlayers)
-              // let roomPlayers = players.filter(({ room }) => room === room);
+
               // here we pass the entire players store (incl. diet arrays)
               socket.emitAsync('player_data', roomPlayers);
             })
@@ -109,18 +107,15 @@ const setUpListeners = (io, socket) => {
     socket.on('update_position', data => {
       let player = store.getState().players[socket.id];
       if (player) {
-        if ((data.x > -1400 && data.y > -1400 && data.z > -1400) && (data.x < 1400 && data.y < 1400 && data.z < 1400)) {
-          // If player's y coordinate is greater than or equal to zero,
+        if ((data.x > -1600 && data.y > -1600 && data.z > -1600) && (data.x < 1600 && data.y < 1600 && data.z < 1600)) {
           // update game state with current position
           store.dispatch(updatePlayer(socket.id, data));
         } else{
-          // If y coordinate is below zero, tell players to remove player object.
-          // For now, we are automatically respawning player
+          // if player's coordinates are too far from planet center, they are respawned
           io.sockets.in(player.room).emit('remove_player', socket.id);
           store.dispatch(updatePlayer(socket.id, initPos()));
           store.dispatch(clearDiet(socket.id));
           io.sockets.in(player.room).emit('add_player', socket.id, Object.assign({}, initPos(), {nickname: player.nickname}), true);
-          console.log(player.room)
           socket.emit('you_lose', player.room);
         }
       }
@@ -128,19 +123,151 @@ const setUpListeners = (io, socket) => {
 
     // When players collide with food objects, they emit the food's id
     socket.on('eat_food', (id, volume) => {
-     // console.log("sss")
       let { food } = store.getState();
       let eaten = food[id];
       let player = store.getState().players[socket.id];
       // First, verify that food still exists.
       // Then increase player size and tell other players to remove food object
-     // console.log(id, food[id])
       if (eaten) {
-        // **** store.dispatch(addFoodToDiet(eaten, socket.id, store.getState().players[socket.id]));
-        //console.log("in eat food socket listener, number of diets: ", store.getState().players[socket.id].diet.length)
         store.dispatch(removeFood(id));
-        store.dispatch(updateVolume(socket.id, volume));
-        store.dispatch(changePlayerScale(socket.id, (volume - player.volume) / player.volume));
+
+        var place = playerIsLeading(socket.id);
+
+        let roomPlayers = pickBy(store.getState().players, ({ room }) => room === player.room);
+
+        var numberPeople = Object.keys(roomPlayers).length;
+
+        // increase vol and scale of player based on number of people in room and position in leaderboard
+        if(numberPeople === 1){
+            store.dispatch(updateVolume(socket.id, (volume-player.volume)/1 + player.volume));
+            store.dispatch(changePlayerScale(socket.id, ((volume - player.volume)/1) / player.volume));
+        }
+
+        else if(numberPeople === 2){
+          switch (place){
+            case 1:
+              store.dispatch(updateVolume(socket.id, (volume-player.volume)/3 + player.volume));
+              store.dispatch(changePlayerScale(socket.id, ((volume - player.volume)/3) / player.volume));
+              break;
+            case 2:
+              store.dispatch(updateVolume(socket.id, (volume-player.volume)/1 + player.volume));
+              store.dispatch(changePlayerScale(socket.id, ((volume - player.volume)/1) / player.volume));
+              break;
+            default:
+              store.dispatch(updateVolume(socket.id, (volume-player.volume)/1 + player.volume));
+              store.dispatch(changePlayerScale(socket.id, ((volume - player.volume)/1) / player.volume));
+              break;
+          }
+        }
+
+        else if(numberPeople === 3){
+          switch (place){
+            case 1:
+              store.dispatch(updateVolume(socket.id, (volume-player.volume)/9 + player.volume));
+              store.dispatch(changePlayerScale(socket.id, ((volume - player.volume)/9) / player.volume));
+              break;
+            case 2:
+              store.dispatch(updateVolume(socket.id, (volume-player.volume)/3 + player.volume));
+              store.dispatch(changePlayerScale(socket.id, ((volume - player.volume)/3) / player.volume));
+              break;
+            case 3:
+              store.dispatch(updateVolume(socket.id, (volume-player.volume)/1 + player.volume));
+              store.dispatch(changePlayerScale(socket.id, ((volume - player.volume)/1) / player.volume));
+              break;
+            default:
+              store.dispatch(updateVolume(socket.id, (volume-player.volume)/1 + player.volume));
+              store.dispatch(changePlayerScale(socket.id, ((volume - player.volume)/1) / player.volume));
+              break;
+          }
+        }
+
+        else if(numberPeople === 4){
+          switch (place){
+            case 1:
+              store.dispatch(updateVolume(socket.id, (volume-player.volume)/27 + player.volume));
+              store.dispatch(changePlayerScale(socket.id, ((volume - player.volume)/27) / player.volume));
+              break;
+            case 2:
+              store.dispatch(updateVolume(socket.id, (volume-player.volume)/9 + player.volume));
+              store.dispatch(changePlayerScale(socket.id, ((volume - player.volume)/9) / player.volume));
+              break;
+            case 3:
+              store.dispatch(updateVolume(socket.id, (volume-player.volume)/3 + player.volume));
+              store.dispatch(changePlayerScale(socket.id, ((volume - player.volume)/3) / player.volume));
+              break;
+            case 4:
+              store.dispatch(updateVolume(socket.id, (volume-player.volume)/1 + player.volume));
+              store.dispatch(changePlayerScale(socket.id, ((volume - player.volume)/1) / player.volume));
+              break;
+            default:
+              store.dispatch(updateVolume(socket.id, (volume-player.volume)/1 + player.volume));
+              store.dispatch(changePlayerScale(socket.id, ((volume - player.volume)/1) / player.volume));
+              break;
+          }
+        }
+
+        else if(numberPeople === 5){
+          switch (place){
+            case 1:
+              store.dispatch(updateVolume(socket.id, (volume-player.volume)/(27*3) + player.volume));
+              store.dispatch(changePlayerScale(socket.id, ((volume - player.volume)/(27*3)) / player.volume));
+              break;
+            case 2:
+              store.dispatch(updateVolume(socket.id, (volume-player.volume)/27 + player.volume));
+              store.dispatch(changePlayerScale(socket.id, ((volume - player.volume)/27) / player.volume));
+              break;
+            case 3:
+              store.dispatch(updateVolume(socket.id, (volume-player.volume)/9 + player.volume));
+              store.dispatch(changePlayerScale(socket.id, ((volume - player.volume)/9) / player.volume));
+              break;
+            case 4:
+              store.dispatch(updateVolume(socket.id, (volume-player.volume)/3 + player.volume));
+              store.dispatch(changePlayerScale(socket.id, ((volume - player.volume)/3) / player.volume));
+              break;
+            case 5:
+              store.dispatch(updateVolume(socket.id, (volume-player.volume)/1 + player.volume));
+              store.dispatch(changePlayerScale(socket.id, ((volume - player.volume)/1) / player.volume));
+              break;
+            default:
+              store.dispatch(updateVolume(socket.id, (volume-player.volume)/1 + player.volume));
+              store.dispatch(changePlayerScale(socket.id, ((volume - player.volume)/1) / player.volume));
+              break;
+          }
+        }
+
+        else if(numberPeople >= 6){
+          switch (place){
+            case 1:
+              store.dispatch(updateVolume(socket.id, (volume-player.volume)/(27*9) + player.volume));
+              store.dispatch(changePlayerScale(socket.id, ((volume - player.volume)/(27*9)) / player.volume));
+              break;
+            case 2:
+              store.dispatch(updateVolume(socket.id, (volume-player.volume)/(27*3) + player.volume));
+              store.dispatch(changePlayerScale(socket.id, ((volume - player.volume)/(27*3)) / player.volume));
+              break;
+            case 3:
+              store.dispatch(updateVolume(socket.id, (volume-player.volume)/27 + player.volume));
+              store.dispatch(changePlayerScale(socket.id, ((volume - player.volume)/27) / player.volume));
+              break;
+            case 4:
+              store.dispatch(updateVolume(socket.id, (volume-player.volume)/9 + player.volume));
+              store.dispatch(changePlayerScale(socket.id, ((volume - player.volume)/9) / player.volume));
+              break;
+            case 5:
+              store.dispatch(updateVolume(socket.id, (volume-player.volume)/3 + player.volume));
+              store.dispatch(changePlayerScale(socket.id, ((volume - player.volume)/3) / player.volume));
+              break;
+            case 6:
+              store.dispatch(updateVolume(socket.id, (volume-player.volume)/1 + player.volume));
+              store.dispatch(changePlayerScale(socket.id, ((volume - player.volume)/1) / player.volume));
+              break;
+            default:
+              store.dispatch(updateVolume(socket.id, (volume-player.volume)/1 + player.volume));
+              store.dispatch(changePlayerScale(socket.id, ((volume - player.volume)/1) / player.volume));
+              break;
+          }
+        }
+      
         io.sockets.in(eaten.room).emit('remove_food', id, socket.id, store.getState().players[socket.id]);
       }
     });
@@ -149,13 +276,13 @@ const setUpListeners = (io, socket) => {
     socket.on('disconnect', () => {
       let player = store.getState().players[socket.id];
       if (player) {
-        let { room } = player;
+      let { room } = player;
 
-        // Remove player from server game state and tell players to remove player object
-        store.dispatch(removePlayer(socket.id));
-        io.sockets.in(room).emit('remove_player', socket.id);
+      // Remove player from server game state and tell players to remove player object
+      store.dispatch(removePlayer(socket.id));
+      io.sockets.in(room).emit('remove_player', socket.id);
 
-        console.log(`socket id ${socket.id} has disconnected.`);
+      console.log(`socket id ${socket.id} has disconnected.`);
       }
     });
 
@@ -163,67 +290,32 @@ const setUpListeners = (io, socket) => {
     socket.on('leave', () => {
       let player = store.getState().players[socket.id];
       if (player) {
-        let { room } = player;
+      let { room } = player;
 
-        // Remove player from server game state and tell players to remove player object
-        store.dispatch(removePlayer(socket.id));
-        io.sockets.in(room).emit('remove_player', socket.id);
+      // Remove player from server game state and tell players to remove player object
+      store.dispatch(removePlayer(socket.id));
+      io.sockets.in(room).emit('remove_player', socket.id);
 
-        console.log(`${player.nickname} has left ${room}.`);
+      console.log(`${player.nickname} has left ${room}.`);
       }
     });
 
     socket.on('got_eaten', (id, volume) => {
-      //console.log('this guy ate!', id);
       let { players } = store.getState();
       let eaten = players[socket.id];
       let eater = players[id];
 
-
       if (eaten && eater && Date.now() - (eaten.eatenCooldown || 0) > 3000) {
-        let { room } = eaten;
-        io.sockets.in(room).emit('remove_player', socket.id, id, eater, eaten);
-        // *** store.dispatch(addPlayerToDiet(eaten, id, store.getState().players[id]));
-        //console.log(store.getState().players[id].diet);
-
-        // disabled because bouncing bug
-        //store.dispatch(changePlayerScale(id, (volume - eater.volume) / eater.volume));
-
-        // io.sockets.in(room).emit('remove_eaten_player', socket.id, id, store.getState().players[id], store.getState().players[socket.id]);
-        store.dispatch(updateVolume(id, volume));
-        store.dispatch(updatePlayer(socket.id, initPos()));
-        store.dispatch(clearDiet(socket.id));
-        io.sockets.in(room).emit('add_player', socket.id, Object.assign({}, initPos(), {nickname: eaten.nickname}), true);
-        socket.emit('you_got_eaten', eater.nickname);
-        io.sockets.in(room).emit('casualty_report', eater.nickname, eaten.nickname);
-      }
-    });
-
-    socket.on('time_me', ()=>{
-
-      store.dispatch(afk(socket.id));
-      // kick player in 1 min if their browser window doesn't become active again
-      setTimeout(()=>{
-        let player = store.getState().players[socket.id];
-        if (player && player.afk) {
-            let { room } = player;
-
-            socket.emit("afk_leave");
-            // Remove player from server game state and tell players to remove player object
-            store.dispatch(removePlayer(socket.id));
-            io.sockets.in(room).emit('remove_player', socket.id);
-
-            console.log(`${player.nickname} has left ${room}.`);
-        }
-      },60*1000)
-    })
-
-    socket.on('untime_me', ()=>{
-
-      // set afk status to false
-      let player = store.getState().players[socket.id];
-      if(player){
-        store.dispatch(unAfk(socket.id));
+      let { room } = eaten;
+      io.sockets.in(room).emit('remove_player', socket.id, id, eater, eaten);
+      // disabled because bouncing bug
+      //store.dispatch(changePlayerScale(id, (volume - eater.volume) / eater.volume));
+      store.dispatch(updateVolume(id, volume));
+      store.dispatch(updatePlayer(socket.id, initPos()));
+      store.dispatch(clearDiet(socket.id));
+      io.sockets.in(room).emit('add_player', socket.id, Object.assign({}, initPos(), {nickname: eaten.nickname}), true);
+      socket.emit('you_got_eaten', eater.nickname);
+      io.sockets.in(room).emit('casualty_report', eater.nickname, eaten.nickname);
       }
     });
 }

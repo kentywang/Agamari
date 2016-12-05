@@ -7,6 +7,7 @@ import Splash from './Splash';
 
 
 class App extends Component {
+
   render() {
     let { isPlaying, error, nickname } = this.props.gameState;
     return (
@@ -14,7 +15,7 @@ class App extends Component {
           {!isPlaying && <Splash />}
           {isPlaying && <ControlPanel />}
           {isPlaying && <Canvas />}
-        <div style={{fontFamily: "Quicksand", fontWeight: "bold", position: "absolute"}}>.</div>
+        <div style={{fontFamily: "Quicksand", fontWeight: "bold", position: "absolute", opacity: 0}}>.</div>
       </div>
       );
 
