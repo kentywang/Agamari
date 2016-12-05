@@ -18,8 +18,8 @@ class Canvas extends Component {
     		displayVol : 4000,
     		instructions: [
     		"use arrow keys to move",
-    		"roll over smaller objects to get bigger",
-    		"avoid larger players",
+    		"roll over smaller objects to grow",
+    		"avoid being rolled up by larger players",
     		"hold & release spacebar for speed boost"],
     	}
   	}

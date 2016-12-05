@@ -85,7 +85,7 @@ class BugReportForm extends Component {
                 </div>
                 <div className="row" style={{margin: '0'}}>
                     <div className="input-field col s6">
-                      <input placeholder="Name"
+                      <input placeholder="name"
                              value={name}
                              onChange={updateName}
                              id="name"
@@ -94,7 +94,7 @@ class BugReportForm extends Component {
                              style={{padding: '0', fontSize: '1em'}}/>
                     </div>
                     <div className="input-field col s6">
-                      <input placeholder="Email"
+                      <input placeholder="email"
                              value={email}
                              onChange={updateEmail}
                              id="email"
@@ -105,7 +105,7 @@ class BugReportForm extends Component {
                   </div>
                 <div className="row" style={{margin: '0'}}>
                   <div className="col s12" style={{margin: '0'}}>
-                    <input placeholder="Subject"
+                    <input placeholder="subject"
                            value={subject}
                            onChange={updateSubject}
                            id="subject"
@@ -117,7 +117,7 @@ class BugReportForm extends Component {
                   <div className="row">
                     <div className="input-field col s12"
                          style={{border: '#aaa solid 1px', borderRadius: '5px', padding: '0 5% 0'}}>
-                      <textarea placeholder="Details"
+                      <textarea placeholder="details"
                                 value={details}
                                 onChange={updateDetails}
                                 id="details"

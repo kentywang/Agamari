@@ -14,7 +14,7 @@
   },
   "keywords": [],
   "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/quirkycorgi/agamari/issues"
   },
@@ -52,11 +52,9 @@
     "redux": "^3.6.0",
     "redux-logger": "^2.7.4",
     "redux-thunk": "^2.1.0",
-    "reshake": "^1.0.4",
     "sequelize": "^3.26.0",
     "socket.io": "^1.5.1",
     "three": "^0.82.1",
-    "three-vignette-background": "^1.0.3",
     "webpack": "^1.13.3"
   },
   "devDependencies": {
