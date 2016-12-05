@@ -1,7 +1,8 @@
-const THREE = require('three');
-const CANNON = require('../../public/cannon.min.js');
 import { scene,
          world } from '../game/main';
+
+const THREE = require('three');
+const CANNON = require('../../public/cannon.min.js');
 
 export const setCannonPosition = mesh => {
   mesh.cannon.position.x = mesh.position.x;
@@ -72,14 +73,14 @@ export const attachFood = (id, playerId, playerData) => {
                                        playerData.qz,
                                        playerData.qw);
 
-
   // attach food to player
   if (foodObject) {
     world.remove(foodObject.cannon);
 
+    // scale attachment point according to scale (larger players have farther attachment point)
     var scaled = Math.min(.45 + player.scale.x/20, .8);
-    //console.log(scaled)
 
+    // figure out where and in what orientation to attach object to player
     let vec1 = new CANNON.Vec3((foodObject.position.x - playerData.x) * scaled,
                                (foodObject.position.z - playerData.z) * scaled,
                                (foodObject.position.y - playerData.y) * scaled);
@@ -95,7 +96,7 @@ export const attachFood = (id, playerId, playerData) => {
     foodObject.position.set(vecRot.x, vecRot.y, vecRot.z);
     foodObject.quaternion.set(invQuat.x, invQuat.y, invQuat.z, invQuat.w);
 
-    // add to pivot obj of player
+    // add food to pivot obj of player
     player.children[0].add(foodObject);
 
     // throw out older food
@@ -109,7 +110,6 @@ export const attachFood = (id, playerId, playerData) => {
 };
 
 export const attachPlayer = (id, playerId, eaterData, eatenData) => {
- // console.log("attaching")
   let foodObject = scene.getObjectByName(id);
   let player = scene.getObjectByName(playerId);
   let newQuat = new CANNON.Quaternion(-eaterData.qx,
@@ -127,9 +127,10 @@ export const attachPlayer = (id, playerId, eaterData, eatenData) => {
   if (foodObject) {
     world.remove(foodObject.cannon);
 
+    // scale attachment point according to scale (larger players have farther attachment point)
     var scaled = Math.min(.45 + player.scale.x/20, .8);
-    //console.log(scaled)
 
+    // figure out where and in what orientation to attach object to player
     let vec1 = new CANNON.Vec3((eatenData.x - eaterData.x) * scaled,
                                (eatenData.z - eaterData.z) * scaled,
                                (eatenData.y - eaterData.y) * scaled);

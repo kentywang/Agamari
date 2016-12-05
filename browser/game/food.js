@@ -2,26 +2,25 @@ import { scene, world, groundMaterial } from './main';
 import { myColors } from './config';
 import socket from '../socket';
 import store from '../store';
+
 const THREE = require('three');
 const CANNON = require('../../public/cannon.min.js');
 
-
-// let controls, ball_geometry, ball_material, sphereShape;
 let count, color, geometry, material, shape, mesh, player, controls;
 
 export class Food {
   constructor(id, data) {
     this.id = id;
     this.initialData = data;
-    this.eaten = false;
     this.mesh;
+    this.eaten = false;
 
     this.init = this.init.bind(this);
   }
 
   init() {
     let someColors = myColors();
-    // Pick a random color
+    // Pick a color
     count = 0;
 
     // never allow food to be same color as planet or players
@@ -32,7 +31,7 @@ export class Food {
       }
     }
 
-    // Pick a random shape of random dimensions and create mesh/cannon mesh
+    // Create THREE object based on initial data parameters
     let { type, parms, x, y, z } = this.initialData;
     switch (type) {
       case 'box':
@@ -54,18 +53,24 @@ export class Food {
 
     mesh = new THREE.Mesh( geometry, material );
     mesh.name = this.id;
+
     mesh.castShadow = true;
+
     mesh.position.x = x;
     mesh.position.y = y;
     mesh.position.z = z;
+
+    // position object on planet
     if(type === "moon"){  
         mesh.position.normalize().multiplyScalar(650);
     }else{
       mesh.position.normalize().multiplyScalar(500);
     }
     mesh.position.add(mesh.position.clone().normalize().multiplyScalar(parms[0] * 2.5));
+
     mesh.lookAt(new THREE.Vector3(0,0,0));
 
+    // Create Cannon object based on initial data parameters
     mesh.cannon = new CANNON.Body({ shape, mass: 0, material: groundMaterial });
 
     mesh.cannon.position.x = mesh.position.x;
@@ -82,8 +87,11 @@ export class Food {
     this.mesh = mesh;
 
     this.mesh.cannon.collisionResponse = 0;
+
     this.mesh.cannon.addEventListener('collide', e => {
       player = scene.getObjectByName(socket.id);
+
+      // ensure food has not already been eaten and that collision was between own player and food
       if (!this.eaten) {
         if (player) {
           for (let contact of world.contacts) {
@@ -92,15 +100,14 @@ export class Food {
             let playerHits = contact.bi === player.cannon;
             let foodIsHit = contact.bj === this.mesh.cannon;
             if (foodHits && playerIsHit || playerHits && foodIsHit) {
-                  let playerVol = store.getState().players[socket.id].volume;
-                  let foodVol = this.mesh.cannon.shapes[0].volume();
+              let playerVol = store.getState().players[socket.id].volume;
+              let foodVol = this.mesh.cannon.shapes[0].volume();
 
-            
-                  if (playerVol > foodVol ) {
-              
-                    this.eaten = true;
-                    socket.emit('eat_food', this.id, foodVol + playerVol);
-                  }
+              // eat food if larger
+              if (playerVol > foodVol ) {
+                this.eaten = true;
+                socket.emit('eat_food', this.id, foodVol + playerVol);
+              }
             }
           }
         }

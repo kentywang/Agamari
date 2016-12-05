@@ -1,5 +1,5 @@
 {
-  "name": "capstone",
+  "name": "Agamari",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -10,15 +10,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/quirkycorgi/capstone.git"
+    "url": "git+https://github.com/quirkycorgi/agamari.git"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/quirkycorgi/capstone/issues"
+    "url": "https://github.com/quirkycorgi/agamari/issues"
   },
-  "homepage": "https://github.com/quirkycorgi/capstone#readme",
+  "homepage": "https://github.com/quirkycorgi/agamari#readme",
   "dependencies": {
     "axios": "^0.15.2",
     "babel": "^6.5.2",

@@ -1,33 +1,27 @@
-const THREE = require('three');
-
 import store from '../store';
 import socket from '../socket';
 
 import { scene, camera } from './main';
 import { forOwn } from 'lodash';
 
+const THREE = require('three');
 
 let player;
-let color = 'red';
 
 const loadGame = () => {
   // load the environment
   loadEnvironment();
-
-  // window.onunload = function() {
-  // };
-
-  // window.onbeforeunload = function() {
-  // };
 };
 
 export function loadEnvironment() {
   let { players } = store.getState();
 
-  // set location and rotation for other players
   forOwn(players, (data, id) => {
     let playerObject = scene.getObjectByName(id);
+
     let { x, y, z, qx, qy, qz, qw, scale, volume} = data;
+
+    // set location and rotation for other players based on server socket message
     if (playerObject && playerObject.cannon) {
        if (id !== socket.id) {
         playerObject.position.x = x;
@@ -38,12 +32,14 @@ export function loadEnvironment() {
         playerObject.quaternion.z = qz;
         playerObject.quaternion.w = qw;
 
+        // position name text according to scale
         if (playerObject.sprite) {
           playerObject.sprite.position.copy(playerObject.position);
           playerObject.sprite.position.add(playerObject.sprite.position.clone().normalize().multiplyScalar(scale * 12))
         }
       }
 
+      // add mass to self according to scale
       if (id === socket.id){
         playerObject.cannon.mass = 40 + (scale);
       }
@@ -62,7 +58,7 @@ export function loadEnvironment() {
         playerObject.children[0].scale.y =
         playerObject.children[0].scale.z = 1 / scale;
 
-      // grow just ball physics body
+      // grow just players' ball physics body
       playerObject.cannon.shapes[0].radius = scale * 10;
 
       // camera sees more further out, less closer
@@ -70,12 +66,6 @@ export function loadEnvironment() {
     }
 
   });
-  //makeFood();
 }
-
-// function initMainPlayer() {
-//   player = new Player( playerID, true);
-//   player.init();
-// }
 
 export { loadGame, player };

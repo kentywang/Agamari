@@ -8,7 +8,6 @@ import abilities from './abilities';
 import gameState from './gameState';
 import record from './record';
 
-
 export default combineReducers({
   auth,
   controlPanel,

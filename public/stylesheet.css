@@ -20,6 +20,9 @@ body, html {
     font-size: 1em;
     font-family: "Quicksand", sans-serif;
     overflow: hidden;
+
+    background: url('./images/background.jpg') no-repeat top center fixed;
+    background-size: cover;
 }
 
 #title {
@@ -27,7 +30,7 @@ body, html {
 	font-weight: lighter;
 	font-size: 9em;
 	letter-spacing: 0.4em;
-	position: fixed; /* or absolute */
+	position: fixed;
 	top: 40%;
 	left: 50%;
 	transform: translate(-50%, -50%);
@@ -65,7 +68,7 @@ body, html {
 .instructions {
     font-size: 2em;
     z-index: 1;
-    position: fixed; /* or absolute */
+    position: fixed;
       top: 78%;
       left: 50%;
       transform: translate(-50%, -50%);
@@ -76,7 +79,7 @@ body, html {
 .status {
 	font-size: 3em;
 	z-index: 1;
-	position: fixed; /* or absolute */
+	position: fixed;
 	  top: 20%;
 	  left: 50%;
 	  transform: translate(-50%, -50%);
@@ -107,17 +110,6 @@ body, html {
     margin-left: auto;
 }
 
-
-@import url(http://oss.maxcdn.com/libs/animate.css/2.0/animate.min.css);
-@import url(//netdna.bootstrapcdn.com/bootstrap/3.0.2/css/bootstrap.min.css);
-
-html,body {
-
-    background: url('./images/background.jpg') no-repeat top center fixed;
-  background-size: cover;
-
-}
-
 #play-box {
     color: white;
     position: fixed;
@@ -134,17 +126,6 @@ html,body {
     text-align: center;
 }
 
-
-/*#play-box:hover {
-  background: darken($red, 1.5%);
-  border: 1px solid rgba(#000, .05);
-  box-shadow: 1px 1px 2px rgba(#fff, .2);
-  color: lighten($red, 18%); 
-  text-decoration: none;
-  text-shadow: -1px -1px 0 darken($red, 9.5%);
-  transition: all 250ms linear;
-}*/
-
 #name-box{
     color: white;
     position: fixed;
@@ -159,19 +140,3 @@ html,body {
     background-color: transparent;
     text-align: center;
 }
-
-/*#rules-box {
-    color: white;
-    position: fixed;
-    font-size: 2em;
-    top: 73%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 100px;
-    height: 30px;
-    border: 1px solid;
-    padding-bottom: 50px;
-    border-radius: 14px;
-    background-color: transparent;
-    text-align: center;
-}*/

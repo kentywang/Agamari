@@ -4,13 +4,9 @@ import socket from '../socket';
 
 import { openConsole,
          closeConsole } from '../reducers/controlPanel';
-
 import {  removeAllPlayers } from '../reducers/players';
 import {  removeAllFood } from '../reducers/food';
-
 import { clearRecord } from '../reducers/record';
-
-
 import {stopGame} from '../reducers/gameState';
 
 class ControlPanel extends Component {
@@ -50,8 +46,6 @@ const mapDispatchToProps = dispatch => ({
     dispatch(removeAllFood());
     socket.emit('leave');
     dispatch(clearRecord());
-    //console.log("should also get")
-    //dispatch(removeAllPlayers());
   }
 });
 
