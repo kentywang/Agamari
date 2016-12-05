@@ -107,7 +107,7 @@ const spawnFood = (io, currentRoom) => {
             y = (Math.random() * 1000) - 500,
             z = (Math.random() * 1000) - 500,
             type = "moon",
-            parms = [150];
+            parms = [100];
           }
 
           // add food to room
