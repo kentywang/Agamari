@@ -152,4 +152,13 @@ body, html {
     left: 50%;
     transform: translate(-50%,0%);
     text-align: center;
+    
+}
+
+.icon-github {
+  color: white;
+}
+
+.fa-github {
+  color: white;
 }
