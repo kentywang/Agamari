@@ -128,7 +128,7 @@ export const attachPlayer = (id, playerId, eaterData, eatenData) => {
     world.remove(foodObject.cannon);
 
     // scale attachment point according to scale (larger players have farther attachment point)
-    var scaled = Math.min(.4 + player.scale.x/20, .75);
+    var scaled = Math.min(.3 + player.scale.x/20, .6);
 
     // figure out where and in what orientation to attach object to player
     let vec1 = new CANNON.Vec3((eatenData.x - eaterData.x) * scaled,
