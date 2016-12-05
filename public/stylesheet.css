@@ -26,9 +26,10 @@ body, html {
 }
 
 #title {
+    color: white;
 	font-family: "Quicksand", sans-serif;
 	font-weight: lighter;
-	font-size: 9em;
+	font-size: 7vw;
 	letter-spacing: 0.4em;
 	position: fixed;
 	top: 40%;
@@ -111,30 +112,31 @@ body, html {
 }
 
 #play-box {
-    color: white;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
     position: fixed;
-    font-size: 2em;
+    font-size: 3.5vh;
     top: 65%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 100px;
-    height: 30px;
     border: 1px solid;
-    padding-bottom: 50px;
     border-radius: 14px;
     background-color: transparent;
     text-align: center;
+    padding: 1vh 1vw;
 }
 
 #name-box{
+    font-weight: bold;
     color: white;
     position: fixed;
-    font-size: 2.5em;
+    font-size: 4vh;
     top: 55%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 300px;
-    height: 60px;
+    width: 25vw;
+    height: 7vh;
     border: 1px solid;
     border-radius: 8px;
     background-color: transparent;
