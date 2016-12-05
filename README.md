@@ -1,6 +1,6 @@
 ##Agamari
 
-[![Live Demo](https://img.shields.io/badge/demo-online-green.svg)](http://agamari.herokuapp.com)[![Jenkins](https://img.shields.io/jenkins/s/https/jenkins.qa.ubuntu.com/precise-desktop-amd64_default.svg)]()[![license](https://img.shields.io/github/license/mashape/apistatus.svg)]()
+[![Live Demo](https://img.shields.io/badge/demo-online-green.svg)](http://agamari.herokuapp.com)[![Jenkins](https://img.shields.io/jenkins/s/https/jenkins.qa.ubuntu.com/precise-desktop-amd64_default.svg)]()[![license](https://img.shields.io/github/license/mashape/apistatus.svg)](https://github.com/quirkycorgi/Agamari/blob/master/LICENSE)
 
 ### Physics-based 3D Multiplayer Browser Game 
 Inspired by [Katamari Damacy](https://en.wikipedia.org/wiki/Katamari_Damacy) and [Agar.io](http://agar.io), this is Agamari, an online multiplayer game where players compete to roll up the largest ball on a tiny planet. Along the way they might roll up each other, or even the moon.

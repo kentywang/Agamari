@@ -61,13 +61,13 @@ export default socket => {
     socket.on('remove_player', (id, eaterId, eaterData, eatenData) => {
       let playerObject = scene.getObjectByName(id);
         if (eaterId === socket.id){
+          createjs.Sound.play('eatSound');
           store.dispatch(incrementRecordPlayer());
           store.dispatch(ateSomeone(playerObject.nickname));
         }
       if (playerObject) {
         if(eaterId){
           // attach player if this was a eat event
-          createjs.Sound.play('eatSound');
           attachPlayer(id, eaterId, eaterData, eatenData);
         }
         world.remove(playerObject.cannon);
