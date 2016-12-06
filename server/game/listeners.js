@@ -146,8 +146,8 @@ const setUpListeners = (io, socket) => {
         else if(numberPeople === 2){
           switch (place){
             case 1:
-              store.dispatch(updateVolume(socket.id, (volume-player.volume)/3 + player.volume));
-              store.dispatch(changePlayerScale(socket.id, ((volume - player.volume)/3) / player.volume));
+              store.dispatch(updateVolume(socket.id, (volume-player.volume)/4 + player.volume));
+              store.dispatch(changePlayerScale(socket.id, ((volume - player.volume)/4) / player.volume));
               break;
             case 2:
               store.dispatch(updateVolume(socket.id, (volume-player.volume)/1 + player.volume));
@@ -163,12 +163,12 @@ const setUpListeners = (io, socket) => {
         else if(numberPeople === 3){
           switch (place){
             case 1:
-              store.dispatch(updateVolume(socket.id, (volume-player.volume)/9 + player.volume));
-              store.dispatch(changePlayerScale(socket.id, ((volume - player.volume)/9) / player.volume));
+              store.dispatch(updateVolume(socket.id, (volume-player.volume)/16 + player.volume));
+              store.dispatch(changePlayerScale(socket.id, ((volume - player.volume)/16) / player.volume));
               break;
             case 2:
-              store.dispatch(updateVolume(socket.id, (volume-player.volume)/3 + player.volume));
-              store.dispatch(changePlayerScale(socket.id, ((volume - player.volume)/3) / player.volume));
+              store.dispatch(updateVolume(socket.id, (volume-player.volume)/4 + player.volume));
+              store.dispatch(changePlayerScale(socket.id, ((volume - player.volume)/4) / player.volume));
               break;
             case 3:
               store.dispatch(updateVolume(socket.id, (volume-player.volume)/1 + player.volume));
@@ -184,16 +184,16 @@ const setUpListeners = (io, socket) => {
         else if(numberPeople === 4){
           switch (place){
             case 1:
-              store.dispatch(updateVolume(socket.id, (volume-player.volume)/27 + player.volume));
-              store.dispatch(changePlayerScale(socket.id, ((volume - player.volume)/27) / player.volume));
+              store.dispatch(updateVolume(socket.id, (volume-player.volume)/64 + player.volume));
+              store.dispatch(changePlayerScale(socket.id, ((volume - player.volume)/64) / player.volume));
               break;
             case 2:
-              store.dispatch(updateVolume(socket.id, (volume-player.volume)/9 + player.volume));
-              store.dispatch(changePlayerScale(socket.id, ((volume - player.volume)/9) / player.volume));
+              store.dispatch(updateVolume(socket.id, (volume-player.volume)/16 + player.volume));
+              store.dispatch(changePlayerScale(socket.id, ((volume - player.volume)/16) / player.volume));
               break;
             case 3:
-              store.dispatch(updateVolume(socket.id, (volume-player.volume)/3 + player.volume));
-              store.dispatch(changePlayerScale(socket.id, ((volume - player.volume)/3) / player.volume));
+              store.dispatch(updateVolume(socket.id, (volume-player.volume)/4 + player.volume));
+              store.dispatch(changePlayerScale(socket.id, ((volume - player.volume)/4) / player.volume));
               break;
             case 4:
               store.dispatch(updateVolume(socket.id, (volume-player.volume)/1 + player.volume));
@@ -209,20 +209,20 @@ const setUpListeners = (io, socket) => {
         else if(numberPeople === 5){
           switch (place){
             case 1:
-              store.dispatch(updateVolume(socket.id, (volume-player.volume)/(27*3) + player.volume));
-              store.dispatch(changePlayerScale(socket.id, ((volume - player.volume)/(27*3)) / player.volume));
+              store.dispatch(updateVolume(socket.id, (volume-player.volume)/(64*4) + player.volume));
+              store.dispatch(changePlayerScale(socket.id, ((volume - player.volume)/(64*4)) / player.volume));
               break;
             case 2:
-              store.dispatch(updateVolume(socket.id, (volume-player.volume)/27 + player.volume));
-              store.dispatch(changePlayerScale(socket.id, ((volume - player.volume)/27) / player.volume));
+              store.dispatch(updateVolume(socket.id, (volume-player.volume)/64 + player.volume));
+              store.dispatch(changePlayerScale(socket.id, ((volume - player.volume)/64) / player.volume));
               break;
             case 3:
-              store.dispatch(updateVolume(socket.id, (volume-player.volume)/9 + player.volume));
-              store.dispatch(changePlayerScale(socket.id, ((volume - player.volume)/9) / player.volume));
+              store.dispatch(updateVolume(socket.id, (volume-player.volume)/16 + player.volume));
+              store.dispatch(changePlayerScale(socket.id, ((volume - player.volume)/16) / player.volume));
               break;
             case 4:
-              store.dispatch(updateVolume(socket.id, (volume-player.volume)/3 + player.volume));
-              store.dispatch(changePlayerScale(socket.id, ((volume - player.volume)/3) / player.volume));
+              store.dispatch(updateVolume(socket.id, (volume-player.volume)/4 + player.volume));
+              store.dispatch(changePlayerScale(socket.id, ((volume - player.volume)/4) / player.volume));
               break;
             case 5:
               store.dispatch(updateVolume(socket.id, (volume-player.volume)/1 + player.volume));
@@ -238,24 +238,24 @@ const setUpListeners = (io, socket) => {
         else if(numberPeople >= 6){
           switch (place){
             case 1:
-              store.dispatch(updateVolume(socket.id, (volume-player.volume)/(27*9) + player.volume));
-              store.dispatch(changePlayerScale(socket.id, ((volume - player.volume)/(27*9)) / player.volume));
+              store.dispatch(updateVolume(socket.id, (volume-player.volume)/(64*16) + player.volume));
+              store.dispatch(changePlayerScale(socket.id, ((volume - player.volume)/(64*16)) / player.volume));
               break;
             case 2:
-              store.dispatch(updateVolume(socket.id, (volume-player.volume)/(27*3) + player.volume));
-              store.dispatch(changePlayerScale(socket.id, ((volume - player.volume)/(27*3)) / player.volume));
+              store.dispatch(updateVolume(socket.id, (volume-player.volume)/(64*4) + player.volume));
+              store.dispatch(changePlayerScale(socket.id, ((volume - player.volume)/(64*4)) / player.volume));
               break;
             case 3:
-              store.dispatch(updateVolume(socket.id, (volume-player.volume)/27 + player.volume));
-              store.dispatch(changePlayerScale(socket.id, ((volume - player.volume)/27) / player.volume));
+              store.dispatch(updateVolume(socket.id, (volume-player.volume)/64 + player.volume));
+              store.dispatch(changePlayerScale(socket.id, ((volume - player.volume)/64) / player.volume));
               break;
             case 4:
-              store.dispatch(updateVolume(socket.id, (volume-player.volume)/9 + player.volume));
-              store.dispatch(changePlayerScale(socket.id, ((volume - player.volume)/9) / player.volume));
+              store.dispatch(updateVolume(socket.id, (volume-player.volume)/16 + player.volume));
+              store.dispatch(changePlayerScale(socket.id, ((volume - player.volume)/16) / player.volume));
               break;
             case 5:
-              store.dispatch(updateVolume(socket.id, (volume-player.volume)/3 + player.volume));
-              store.dispatch(changePlayerScale(socket.id, ((volume - player.volume)/3) / player.volume));
+              store.dispatch(updateVolume(socket.id, (volume-player.volume)/4 + player.volume));
+              store.dispatch(changePlayerScale(socket.id, ((volume - player.volume)/4) / player.volume));
               break;
             case 6:
               store.dispatch(updateVolume(socket.id, (volume-player.volume)/1 + player.volume));
