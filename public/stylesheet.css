@@ -44,8 +44,7 @@ body, html {
 }
 
 .leaderboard {
-	transform: skewX(10deg); 
-	transform: skewY(2deg);
+	transform: skewX(3deg) skewY(2deg);
 	font-size: 1.5em;
 	z-index: 1;
 	position: fixed;
@@ -54,8 +53,7 @@ body, html {
 }
 
 .record {
-    transform: skewX(-10deg); 
-    transform: skewY(-2deg);
+    transform: skewX(-3deg) skewY(-2deg);
     position: fixed;
     text-align: right;
     width: 93%;
@@ -89,8 +87,7 @@ body, html {
 }
 
 .abilities {
-	transform: skewX(10deg); 
-	transform: skewY(-5deg); 
+	transform: skewX(-2deg) skewY(-5deg); 
 	font-size: 3em;
 	z-index: 1;
 	position: fixed;
@@ -99,8 +96,7 @@ body, html {
 }
 
 .score {
-	transform: skewX(-10deg); 
-	transform: skewY(5deg); 
+	transform: skewX(2deg) skewY(5deg); 
 	position: fixed;
     text-align: right;
     width: 93%;
