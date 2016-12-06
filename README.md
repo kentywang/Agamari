@@ -53,4 +53,4 @@ The game will then be accessible at `http://localhost:8000`.
 Create an [issue](https://github.com/quirkycorgi/Agamari/issues) if you need help.
 
 ### Credits
-Thank you to [p0ss](http://opengameart.org/users/p0ss) for the "eating" asound.
+Thank you to [p0ss](http://opengameart.org/users/p0ss) for the "eating" sound.
