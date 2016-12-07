@@ -6,29 +6,31 @@ import { startGame, stopGame, setNickname, resetNickname, startAsGuest } from '.
 
 class Splash extends Component {
   render () {
-    let { updateNickname, gameState, play } = this.props;
+    let { updateNickname, gameState, play, playEnter } = this.props;
     let { nickname } = gameState;
 
     return (
         <div id="splash">
          <div id="title">AGAMARI</div>
-           <div className="input-field">
+          <div className="input-field">
             <input value={nickname}
                    onChange={updateNickname}
+                   onKeyPress={playEnter}
                    type="text"
                    id="name-box"
                    placeholder="nickname"
                    autoFocus/>
-            <button className="Buttons" type="submit" style={nickname.trim()? {color: "white"} : {color: "grey"}} onClick={()=>{
-              if(nickname.trim()){
-                play();
-              }
-            }} id="play-box">play</button>
+            <button className="Buttons"
+                    type="submit"
+                    style={nickname.trim() ? {color: "white"} : {color: "grey"}}
+                    onClick={play}
+                    id="play-box">play</button>
           </div>
-        <div id="github">
-          <a href="https://github.com/quirkycorgi/agamari">
-            <i className="fa fa-github fa-lg"></i>
-          </a></div>      
+          <div id="github">
+            <a href="https://github.com/quirkycorgi/agamari">
+              <i className="fa fa-github fa-lg"></i>
+            </a>
+          </div>
         </div>
 
       );
@@ -48,7 +50,16 @@ const mapDispatchToProps = dispatch => ({
 
 const mergeProps = (stateProps, dispatchProps, ownProps) => (
   Object.assign({}, stateProps, dispatchProps, ownProps, {
-    play: () => dispatchProps.signInAsGuest(stateProps.gameState.nickname, socket)
+    play: () => {
+      let { nickname } = stateProps.gameState;
+      if (nickname.trim()) dispatchProps.signInAsGuest(nickname, socket);
+    },
+    playEnter: evt => {
+      let { nickname } = stateProps.gameState;
+      if (evt.key === 'Enter' && nickname.trim()) {
+        dispatchProps.signInAsGuest(nickname, socket);
+      }
+    }
   }));
 
 export default connect(
