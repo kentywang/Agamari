@@ -57,7 +57,7 @@ const setUpListeners = (io, socket) => {
           let room = undefined;
           for (let i = 0; i < rooms.length && !room; i++) {
             let playerCount = size(pickBy(players, player => player.room === rooms[i]));
-            if (playerCount < 6) room = rooms[i];
+            if (playerCount < 10) room = rooms[i];
           }
           if (!room) room = addRandomRoom();
 
