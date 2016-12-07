@@ -6,4 +6,5 @@ api.use('/users', require('./userRoutes'));
 api.use('/rooms', require('./roomRoutes'));
 api.use('/scores', require('./scoreRoutes'));
 api.use('/bugs', require('./bugRoutes'));
+api.use('/state', require('./stateRoutes'));
 api.get('/whoami', (req, res) => res.send(req.cookie.user));
