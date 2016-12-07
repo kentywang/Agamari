@@ -5,6 +5,8 @@
 ### Physics-based 3D Multiplayer Browser Game 
 Inspired by [Katamari Damacy](https://en.wikipedia.org/wiki/Katamari_Damacy) and [Agar.io](http://agar.io), this is Agamari, an online multiplayer game where players compete to roll up the largest ball on a tiny planet. Along the way they might roll up each other, or even the moon.
 
+![](https://github.com/quirkycorgi/Agamari/blob/master/public/gameplay.gif)
+
 ### Live Demo
 A playable online build of Agamari can be found [here](https://agamari.herokuapp.com).
 
