@@ -28,8 +28,8 @@ THREE.PlayerControls = function ( camera, player, cannonMesh , id) {
 
 	var keyState = {};
 	
-	var curCamZoom = 62;
-	var curCamHeight = 72;
+	var curCamZoom = 70;
+	var curCamHeight = 80;
 
 	var cameraReferenceOrientation = new THREE.Quaternion();
 	var cameraReferenceOrientationObj = new THREE.Object3D();
@@ -91,7 +91,7 @@ THREE.PlayerControls = function ( camera, player, cannonMesh , id) {
 	 	this.camera.matrixAutoUpdate = false;
 
 		var cameraPlace = new THREE.Matrix4();
-	    cameraPlace.makeTranslation ( 0, curCamHeight * scope.scale * .8, curCamZoom * scope.scale * .8) 
+	    cameraPlace.makeTranslation ( 0, curCamHeight * scope.scale * .65, curCamZoom * scope.scale * .65) 
 	  
 	    var cameraRot = new THREE.Matrix4();
 	    cameraRot.makeRotationX(-0.32 - (playerPosition.length()/1200));
