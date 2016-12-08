@@ -16,6 +16,7 @@ import {  incrementRecord,
           incrementRecordPlayer, 
           clearRecord } from '../reducers/record';
 import {  stopGame } from '../reducers/gameState';
+import {  casualtyReport } from '../reducers/casualty';
 
 import { init,
          animate,
@@ -106,4 +107,10 @@ export default socket => {
         store.dispatch(clearRecord());
         store.dispatch(fell(room));
     });
+
+    socket.on('casualty_report', (eaterNick, eatenNick) => {
+      eaterNick = eaterNick.slice(0,11);
+      eatenNick = eatenNick.slice(0,11);
+      store.dispatch(casualtyReport(eaterNick, eatenNick));
+    })
 };

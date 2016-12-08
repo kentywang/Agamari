@@ -111,13 +111,7 @@ class Canvas extends Component {
 						</table>
 					</div>
 					<div ref="record" className="record">
-						<div>{this.props.players[socket.id] && 'magnitude'}
-						</div>
-						<div>
-							<span>{this.props.players[socket.id] && `${this.props.record.objectEaten}`}
-							</span>
-							<span>{this.props.record.playersEaten > 0 ? ` + ${this.props.record.playersEaten}` : ''}
-							</span>
+						<div>{this.props.casualty && this.props.casualty.map((e, i) => <div key={i}>{e}</div>)}
 						</div>
 					</div>
 					<div ref="status" className="status">
@@ -131,6 +125,14 @@ class Canvas extends Component {
 						<div>{this.props.players[socket.id] && this.props.abilities && "launch ready"}</div>
 					</div>
 					<div ref="score" className="score">
+						<div>{this.props.players[socket.id] && 'régime'}
+						</div>
+						<div>
+							<span>{this.props.players[socket.id] && `${this.props.record.objectEaten}`}
+							</span>
+							<span>{this.props.record.playersEaten > 0 ? ` + ${this.props.record.playersEaten}` : ''}
+							</span>
+						</div>
 						<div>{this.props.players[socket.id] && 'volume'}
 						</div>
 						<div>{this.props.players[socket.id] &&this.state.displayVol}
@@ -146,7 +148,7 @@ class Canvas extends Component {
 	}
 }
 
-const mapStateToProps = ({ players, gameStatus, gameState, abilities, record }) => ({ players, gameStatus, gameState, abilities, record });
+const mapStateToProps = ({ players, gameStatus, gameState, abilities, record, casualty }) => ({ players, gameStatus, gameState, abilities, record, casualty });
 
 const mapDispatchToProps = dispatch => ({
   keepPlaying: () => dispatch(keepPlaying()),
@@ -157,3 +159,14 @@ export default connect(
   mapStateToProps,
   mapDispatchToProps
 )(Canvas);
+
+/*
+<div>{this.props.players[socket.id] && 'magnitude'}
+						</div>
+						<div>
+							<span>{this.props.players[socket.id] && `${this.props.record.objectEaten}`}
+							</span>
+							<span>{this.props.record.playersEaten > 0 ? ` + ${this.props.record.playersEaten}` : ''}
+							</span>
+						</div>
+*/

@@ -57,7 +57,7 @@ body, html {
     position: fixed;
     text-align: right;
     width: 93%;
-    font-size: 2.5em;
+    font-size: 1.1em;
     z-index: 1;
     margin-top: 5%;
     float: right;
@@ -100,11 +100,15 @@ body, html {
 	position: fixed;
     text-align: right;
     width: 93%;
-    font-size: 3em;
+    font-size: 2em;
     z-index: 1;
     bottom: 10%;
     float: right;
     margin-left: auto;
+}
+
+.score-row{
+    text-align: right;
 }
 
 #play-box {
