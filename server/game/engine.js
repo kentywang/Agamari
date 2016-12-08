@@ -28,7 +28,7 @@ const spawnFood = (io, currentRoom) => {
     // spawn food if room populated
     if (size(roomPlayers)) {
 
-        if (size(roomFood) < 150) {
+        if (size(roomFood) < 200) {
           let x = (Math.random() * 1000) - 500,
               y = (Math.random() * 1000) - 500,
               z = (Math.random() * 1000) - 500,

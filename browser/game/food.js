@@ -86,7 +86,12 @@ export class Food {
 
     this.mesh = mesh;
 
-    this.mesh.cannon.collisionResponse = 0;
+
+    if(type==="moon"){
+      this.mesh.cannon.collisionResponse = 1;
+    }else{
+      this.mesh.cannon.collisionResponse = 0;
+    }
 
     this.mesh.cannon.addEventListener('collide', e => {
       player = scene.getObjectByName(socket.id);
