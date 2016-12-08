@@ -28,8 +28,8 @@ THREE.PlayerControls = function ( camera, player, cannonMesh , id) {
 
 	var keyState = {};
 	
-	var curCamZoom = 62;
-	var curCamHeight = 72;
+	var curCamZoom = 60;
+	var curCamHeight = 70;
 
 	var cameraReferenceOrientation = new THREE.Quaternion();
 	var cameraReferenceOrientationObj = new THREE.Object3D();
