@@ -28,7 +28,7 @@ const spawnFood = (io, currentRoom) => {
     // spawn food if room populated
     if (size(roomPlayers)) {
 
-        if (size(roomFood) < 220) {
+        if (size(roomFood) < 150) {
           let x = (Math.random() * 1000) - 500,
               y = (Math.random() * 1000) - 500,
               z = (Math.random() * 1000) - 500,
@@ -55,7 +55,7 @@ const spawnFood = (io, currentRoom) => {
               }else{
                 // stick
                 foodSize = [
-                  6 + (Math.random() * 6),
+                  9 + (Math.random() * 9),
                   2 + (Math.random() * 2),
                   2 + (Math.random() * 2)
                 ];   
@@ -93,7 +93,7 @@ const spawnFood = (io, currentRoom) => {
 
           let parms;
           // occasionally spawn food linearly scaled to players
-          if(Math.random() > .0){
+          if(Math.random() > .95){
              parms = foodSize.map(e => (e * playerToFeed.scale));
           }else{
              parms = foodSize.map(e => (e * Math.min(playerToFeed.scale, 1 + Math.log(playerToFeed.scale)/Math.log(5))));
