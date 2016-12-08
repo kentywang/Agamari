@@ -14,8 +14,6 @@ class BugReportForm extends Component {
       subject: '',
       details: ''
     };
-    this.open = this.open.bind(this);
-    this.close = this.close.bind(this);
     this.updateName = this.updateName.bind(this);
     this.updateEmail = this.updateEmail.bind(this);
     this.updateSubject = this.updateSubject.bind(this);
