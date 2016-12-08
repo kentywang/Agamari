@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 
-import Canvas from './Canvas';
+import Game from './Game';
 import ControlPanel from './ControlPanel';
 import Splash from './Splash';
 
@@ -14,7 +14,7 @@ class App extends Component {
       <div>
           {!isPlaying && <Splash />}
           {isPlaying && <ControlPanel />}
-          {isPlaying && <Canvas />}
+          {isPlaying && <Game />}
         <div style={{fontFamily: "Quicksand", fontWeight: "bold", position: "absolute", opacity: 0}}>.</div>
       </div>
       );

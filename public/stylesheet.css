@@ -87,7 +87,7 @@ body, html {
 }
 
 .abilities {
-	transform: skewX(-2deg) skewY(-5deg); 
+	transform: skewX(-2deg) skewY(-5deg);
 	font-size: 3em;
 	z-index: 1;
 	position: fixed;
@@ -96,7 +96,7 @@ body, html {
 }
 
 .score {
-	transform: skewX(2deg) skewY(5deg); 
+	transform: skewX(2deg) skewY(5deg);
 	position: fixed;
     text-align: right;
     width: 93%;
@@ -148,7 +148,7 @@ body, html {
     left: 50%;
     transform: translate(-50%,0%);
     text-align: center;
-    
+
 }
 
 .icon-github {
@@ -157,4 +157,45 @@ body, html {
 
 .fa-github {
   color: white;
+}
+
+#chat-button {
+    position: fixed;
+    bottom: 10px;
+    left: 10px;
+    margin: auto;
+}
+#chat-box {
+    position: fixed;
+    text-align: left;
+    width: 40%;
+    font-size: 3em;
+    z-index: 1;
+    bottom: 2.5%;
+    left: 30%;
+    float: right;
+    background-color: rgba(0,0,0,0.3);
+    margin: 0;
+}
+
+.message-item {
+    font-size: 0.4em;
+    padding: 0 2.5%;
+    word-wrap: break-word;
+}
+
+#new-message {
+    padding-left: 2.5%;
+    margin: 0;
+}
+
+#message-box {
+    margin: 0 0 -0.5em;
+    min-height: 2em;
+}
+
+#close-chat {
+    float: right;
+    margin-left: -2.5em;
+    font-size: 0.4em;
 }

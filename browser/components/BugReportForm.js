@@ -133,8 +133,10 @@ class BugReportForm extends Component {
               </div> }
           </div> :
         <div>
-          <button className="btn-floating" onClick={open}><i className="material-icons">bug_report</i></button>
-        </div>}
+          <button className="btn-floating" onClick={open}>
+            <i className="material-icons">bug_report</i>
+          </button>
+        </div> }
         </div>
       );
   }
