@@ -15,7 +15,7 @@ const spawnFood = (io, currentRoom) => {
 
     // moon spawn cooldown
     if(!moonSpawnTime[currentRoom]){
-      moonSpawnTime[currentRoom] = Date.now() - 30 * 60 * 1000;
+      moonSpawnTime[currentRoom] = Date.now() - 60 * 60 * 1000;
     }
 
     elapsedTime[currentRoom] = Date.now();
@@ -100,7 +100,7 @@ const spawnFood = (io, currentRoom) => {
           }
 
           // create Moon at first, then in increments based on moon spawn time
-          if(Date.now() - moonSpawnTime[currentRoom] >= 30 * 60 * 1000){
+          if(Date.now() - moonSpawnTime[currentRoom] >= 60 * 60 * 1000){
             moonSpawnTime[currentRoom] = Date.now();
 
             x = (Math.random() * 1000) - 500,
