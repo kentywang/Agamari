@@ -1,29 +1,20 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import socket from '../socket';
+import { startChat, stopChat } from '../reducers/gameState';
 
 class Chat extends Component {
   constructor(props){
     super(props);
     this.state = {
-      isOpen: false,
+      isOpen: true,
+      active: false,
       message: '',
+      started: false
     };
-    this.open = this.open.bind(this);
-    this.close = this.close.bind(this);
     this.updateMessage = this.updateMessage.bind(this);
     this.sendMessage = this.sendMessage.bind(this);
   }
-
-  open() {
-    this.setState({isOpen: true});
-  }
-
-  close() {
-    this.setState({isOpen: false});
-    if (this.state.message) this.setState({message: ''});
-  }
-
 
   updateMessage(evt) {
     this.setState({ message: evt.target.value });
@@ -37,10 +28,27 @@ class Chat extends Component {
     }
   }
 
+  componentDidMount() {
+    let input = this.refs.chatInput;
+
+    window.addEventListener("keydown", evt => {
+      let { isChatting } = this.props.gameState;
+      if (this.state.started) {
+        if (!isChatting && evt.keyCode == 13) input.focus();
+        if (isChatting && evt.keyCode == 27) input.blur();
+      }
+    });
+    this.setState({ started: true });
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    console.log(this.props.gameState.isChatting);
+  }
+
   render() {
     let { updateMessage, sendMessage, open, close } = this;
     let { isOpen, message } = this.state;
-    let { messages } = this.props;
+    let { messages, start, stop, gameState } = this.props;
 
     return (
       <div id={isOpen ? "chat-box" : "chat-button"}
@@ -55,13 +63,15 @@ class Chat extends Component {
                     </li>
                 ))}
               </ul>
-              <input value={message}
+              <input ref="chatInput"
+                     value={message}
                      onChange={updateMessage}
                      onKeyPress={evt => { if (evt.key === 'Enter') sendMessage(); }}
+                     onFocus={start}
+                     onBlur={stop}
                      type="text"
                      id="new-message"
-                     placeholder="chat..."
-                     autoFocus/>
+                     placeholder={gameState.isChatting ? "chat..." : "press 'Enter' to chat..."}/>
             </div> :
             <button id="chat-button" className="btn-floating" onClick={open}>
               <i className="material-icons">chat</i>
@@ -71,9 +81,11 @@ class Chat extends Component {
   }
 }
 
-const mapStateToProps = ({messages}) => ({messages});
+const mapStateToProps = ({ messages, gameState }) => ({ messages, gameState });
 
 const mapDispatchToProps = dispatch => ({
+  start: () => dispatch(startChat()),
+  stop: () => dispatch(stopChat())
 });
 
 export default connect(

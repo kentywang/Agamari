@@ -220,7 +220,6 @@ class Game extends Component {
         <div>
           <canvas id="canvas" style={{background: 'linear-gradient(#004570,#00ABD6)'}}></canvas>
         </div>
-        <BugReportForm/>
         <Chat />
       </div>
     )
