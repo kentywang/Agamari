@@ -127,10 +127,11 @@ class Canvas extends Component {
 
     // show score
     if(player && displayVol < player.volume){
-      displayVol = ~~(displayVol * 1.01);
+      console.log(displayVol, player.volume)
+      this.state.displayVol = ~~(this.state.displayVol * 1.01);
     }
     if(player && displayVol > player.volume){
-      displayVol = player.volume;
+      this.state.displayVol = player.volume;
     }
 
     // show eater/eaten status for 3 seconds before fading
