@@ -127,7 +127,6 @@ class Canvas extends Component {
 
     // show score
     if(player && displayVol < player.volume){
-      console.log(displayVol, player.volume)
       this.state.displayVol = ~~(this.state.displayVol * 1.01);
     }
     if(player && displayVol > player.volume){
