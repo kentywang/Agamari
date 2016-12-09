@@ -100,7 +100,7 @@ export const attachFood = (id, playerId, playerData) => {
     player.children[0].add(foodObject);
 
     // throw out older food
-    while (player.cannon.shapes.length > 100) {
+    while (player.cannon.shapes.length > 80) {
        player.cannon.shapes.splice(1, 1);
        player.cannon.shapeOffsets.splice(1, 1);
        player.cannon.shapeOrientations.splice(1, 1);
@@ -154,7 +154,7 @@ export const attachPlayer = (id, playerId, eaterData, eatenData) => {
     player.children[0].add(clone);
 
     // throw out older food
-    if (player.cannon.shapes.length > 100) {
+    if (player.cannon.shapes.length > 80) {
        player.cannon.shapes.splice(1, 1);
        player.cannon.shapeOffsets.splice(1, 1);
        player.cannon.shapeOrientations.splice(1, 1);

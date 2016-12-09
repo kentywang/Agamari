@@ -75,7 +75,7 @@ class Game extends Component {
       // show instructions
       if(!this.props.gameState.instructionsHidden){
         const tl = new TimelineMax()
-      .from(instructions, 1.5, { opacity: 0, ease: Power3.easeOut}, "+=3.5")
+      .from(instructions, 1.5, { opacity: 0,ease: Power3.easeOut}, "+=3.5")
       .to(instructions, .5, {
                               opacity: 0,
                               ease: Power3.easeOut,
@@ -108,6 +108,7 @@ class Game extends Component {
           gameState,
           keepPlaying,
           record,
+          casualty,
           abilities,
           messages } = this.props;
     let { leaderboard,
@@ -129,9 +130,9 @@ class Game extends Component {
       }
 
       // shorten all other nicknames
-      for(let id in players){
+      for (let id in players) {
         var nick = scene.getObjectByName(id).nickname;
-        if (nick.length > 15){
+        if (nick.length > 15) {
           nick = nick.slice(0,14) + "...";
         }
         leaderboard.push({nick, vol: players[id].volume});
@@ -181,19 +182,11 @@ class Game extends Component {
           </div>
           <div ref="record" className="record">
             <div>
-              {player && 'magnitude'}
-            </div>
-            <div>
-              <span>
-                {player && `${record.objectEaten}`}
-              </span>
-              <span>
-                {record.playersEaten > 0 ? ` + ${record.playersEaten}` : ''}
-              </span>
+              { casualty && casualty.map((e, i) => <div key={i}>{e}</div>) }
             </div>
           </div>
           <div ref="status" className="status">
-            {gameStatus}
+            { gameStatus }
           </div>
           <div ref="instructions" className="instructions">
             {!gameState.instructionsHidden && instructions[0]}
@@ -210,6 +203,17 @@ class Game extends Component {
           </div>
           <div ref="score" className="score">
             <div>
+              {player && 'régime'}
+            </div>
+            <div>
+              <span>
+                {player && `${record.objectEaten}`}
+              </span>
+              <span>{
+                record.playersEaten > 0 ? ` + ${record.playersEaten}` : ''}
+              </span>
+            </div>
+            <div>
               {player && 'volume'}
             </div>
             <div>
@@ -218,10 +222,13 @@ class Game extends Component {
           </div>
         </div>
         <div>
-          <canvas id="canvas" style={{background: 'linear-gradient(#004570,#00ABD6)'}}></canvas>
+          <canvas id="canvas"
+                  style={{background: 'linear-gradient(#004570,#00ABD6)'}}>
+          </canvas>
         </div>
         <Chat />
       </div>
+
     )
   }
 }
@@ -230,11 +237,13 @@ const mapStateToProps = ({ players,
                            gameStatus,
                            gameState,
                            abilities,
-                           record }) => ({ players,
+                           record,
+                           casualty }) => ({ players,
                                            gameStatus,
                                            gameState,
                                            abilities,
-                                           record });
+                                           record,
+                                           casualty });
 
 const mapDispatchToProps = dispatch => ({
   keepPlaying: () => dispatch(keepPlaying()),

@@ -18,6 +18,7 @@ import {  incrementRecord,
 import {  stopGame } from '../reducers/gameState';
 import { receiveMessage,
          removeMessage } from '../reducers/messages';
+import {  casualtyReport } from '../reducers/casualty';
 
 import { init,
          animate,
@@ -114,5 +115,10 @@ export default socket => {
       let { messages } = store.getState();
       if (messages.length > 2) store.dispatch(removeMessage(0));
       store.dispatch(receiveMessage(message));
+    });
+    socket.on('casualty_report', (eaterNick, eatenNick) => {
+      eaterNick = eaterNick.slice(0, 11);
+      eatenNick = eatenNick.slice(0, 11);
+      store.dispatch(casualtyReport(eaterNick, eatenNick));
     });
 };
