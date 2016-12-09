@@ -17,7 +17,7 @@ Rocks are able to only pick up objects smaller than themselves. However, each ob
 ### Architecture
 Agamari is built on [Node.js](https://nodejs.org/) using [Socket.IO](http://socket.io/) for client-server interaction, [Three.js](https://threejs.org/) for 3D graphics rendering, [Cannon.js](http://www.cannonjs.org/) for the physics engine, [React](https://facebook.github.io/react/) for HTML rendering, and [Redux](http://redux.js.org/) for both client and server app state and game state management.
 
-![alt text](http://i.giphy.com/Bex8B0C6ISPCM "Agamari Architecture")
+![alt text](https://github.com/quirkycorgi/Agamari/blob/master/public/architecture.gif)
 
 Handling of the game logic is distributed between the client and the server. Clients run their own physics calculations to compute their next position and orientation, while the server manages and modifies the master game state according to game logic and client events such as collisions with objects or other players.
 
