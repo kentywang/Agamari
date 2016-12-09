@@ -306,7 +306,7 @@ const setUpListeners = (io, socket) => {
       let eaten = players[socket.id];
       let eater = players[id];
 
-      if (eaten && eater && Date.now() - (eaten.eatenCooldown || 0) > 3000) {
+      if (eaten && eater && Date.now() - (eaten.eatenCooldown || 0) > 5000) {
         let { room } = eaten;
         io.sockets.in(room).emit('remove_player', socket.id, id, eater, eaten);
         // disabled because bouncing bug
