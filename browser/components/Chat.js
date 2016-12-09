@@ -79,14 +79,14 @@ class Chat extends Component {
                    placeholder="press 'esc' to close"/>
           </div> :
           <div>
-            <div id="open-message">
-              press 'enter' to chat
-            </div>
             <div id="last-message"
                  onClick={start}>
                 { lastMessage &&
                     `${lastMessage.nickname}: ${lastMessage.text}`
                 }
+            </div>
+            <div id="open-message">
+              press 'enter' to chat
             </div>
           </div>
       }
