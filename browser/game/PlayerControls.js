@@ -23,11 +23,11 @@ THREE.PlayerControls = function ( camera, player, cannonMesh , id) {
  	this.playerRotation = new THREE.Quaternion();
 	this.left = false;
 	this.right = false;
-	
+
 	var scope = this;
 
 	var keyState = {};
-	
+
 	var curCamZoom = 60;
 	var curCamHeight = 70;
 
@@ -35,7 +35,7 @@ THREE.PlayerControls = function ( camera, player, cannonMesh , id) {
 	var cameraReferenceOrientationObj = new THREE.Object3D();
 	var poleDir = new THREE.Vector3(1,0,0);
 
-	this.update = function() { 
+	this.update = function() {
 
 		// fov scales according to scale and speedMult
 		scope.scale = store.getState().players[scope.id].scale;
@@ -72,13 +72,13 @@ THREE.PlayerControls = function ( camera, player, cannonMesh , id) {
 		var cameraPoru = new THREE.Vector3(0,-1,0);
 
 		cameraReferenceOrientationObj.quaternion.setFromAxisAngle(cameraPoru,correctionAngle);
-		poleDir.applyAxisAngle(localUp,correctionAngle).normalize(); 
+		poleDir.applyAxisAngle(localUp,correctionAngle).normalize();
 
 		cameraReferenceOrientationObj.quaternion.copy(cameraReferenceOrientation);
-		
+
 		var cross = new THREE.Vector3();
-		cross.crossVectors(poleDir,localUp);	
-		
+		cross.crossVectors(poleDir,localUp);
+
 		var dot = localUp.dot(poleDir);
 		poleDir.subVectors(poleDir , localUp.clone().multiplyScalar(dot));
 
@@ -91,8 +91,8 @@ THREE.PlayerControls = function ( camera, player, cannonMesh , id) {
 	 	this.camera.matrixAutoUpdate = false;
 
 		var cameraPlace = new THREE.Matrix4();
-	    cameraPlace.makeTranslation ( 0, curCamHeight * scope.scale * .8, curCamZoom * scope.scale * .8) 
-	  
+	    cameraPlace.makeTranslation ( 0, curCamHeight * scope.scale * .8, curCamZoom * scope.scale * .8)
+
 	    var cameraRot = new THREE.Matrix4();
 	    cameraRot.makeRotationX(-0.32 - (playerPosition.length()/1200));
 
@@ -107,6 +107,7 @@ THREE.PlayerControls = function ( camera, player, cannonMesh , id) {
 
 
 	this.checkKeyStates = function () {
+		let { isChatting } = store.getState().gameState;
 
 		if(this.speedMult < 1){ this.speedMult = 1}
 
@@ -146,8 +147,8 @@ THREE.PlayerControls = function ( camera, player, cannonMesh , id) {
 		// front/back vector
 		var cross2 = new THREE.Vector3();
 		cross2.crossVectors(playerPosition, cross1);
-	
-		if (keyState[32]) {
+
+		if (keyState[32] && !isChatting) {
 			if(store.getState().abilities.launch){
 				// build up launchMult if spacebar down
 				if(this.launchMult < 6) this.launchMult += 1/(this.i++ * 1.1);
@@ -156,39 +157,39 @@ THREE.PlayerControls = function ( camera, player, cannonMesh , id) {
 			}
 	    }
 
-	    if (keyState[38] || keyState[87]) {
+	    if (keyState[38] || keyState[87] && !isChatting) {
 	    	if(this.speedMult < 3.5) this.speedMult += 0.005;
 	        // up arrow or 'w' - move forward
           this.cannonMesh.applyImpulse(new CANNON.Vec3(-cross2.x * 150 * (0.833 + this.scale/6) *this.speedMult, -cross2.z * 150 * (0.833 + this.scale/6) *this.speedMult, -cross2.y * 150 * (0.833 + this.scale/6) *this.speedMult) ,topOfBall);
 	    }
 
-	    if (keyState[40] || keyState[83]) {
+	    if (keyState[40] || keyState[83] && !isChatting) {
 	    	if(this.speedMult < 3.5) this.speedMult += 0.005;
 	        // down arrow or 's' - move backward
           this.cannonMesh.applyImpulse(new CANNON.Vec3(cross2.x * 150 * (0.833 + this.scale/6) *this.speedMult, cross2.z * 150 * (0.833 + this.scale/6) *this.speedMult, cross2.y * 150 * (0.833 + this.scale/6) *this.speedMult) ,topOfBall);
 	    }
 
-	    if (keyState[37] || keyState[65]) {
+	    if (keyState[37] || keyState[65] && !isChatting) {
 	    	if(this.speedMult < 3.5) this.speedMult += 0.005;
 	        // left arrow or 'a' - rotate left
 	        this.cannonMesh.applyImpulse(new CANNON.Vec3(cross1.x * 100 * (0.833 + this.scale/6) * this.speedMult, cross1.z * 100 * (0.833 + this.scale/6) * this.speedMult, cross1.y * 100 * (0.833 + this.scale/6) * this.speedMult) ,topOfBall);
 	        this.left = true;
 	    }
 
-	    if (keyState[39] || keyState[68]) {
+	    if (keyState[39] || keyState[68] && !isChatting) {
 	    	if(this.speedMult < 3.5) this.speedMult += 0.005;
 	        // right arrow or 'd' - rotate right
             this.cannonMesh.applyImpulse(new CANNON.Vec3(-cross1.x * 100 * (0.833 + this.scale/6) * this.speedMult,-cross1.z * 100 * (0.833 + this.scale/6) * this.speedMult,-cross1.y * 100 * (0.833 + this.scale/6) * this.speedMult), topOfBall);
             this.right = true;
 	    }
-	    if(!(keyState[38] || keyState[87] || keyState[40] || keyState[83] || keyState[37] || keyState[65] || keyState[39] || keyState[68])){
+	    if(!(keyState[38] || keyState[87] && !isChatting || keyState[40] || keyState[83] && !isChatting || keyState[37] || keyState[65] && !isChatting || keyState[39] || keyState[68] && !isChatting)){
 	    	// decrement speedMult when no keys down
 	    	this.speedMult -= .06;
 	    }
 
 	    // launch if spacebar up and launchMult greater than 1
-	    if (!keyState[32] && this.launchMult > 1) {
-			
+	    if (!keyState[32] && this.launchMult > 1  && !isChatting) {
+
 			var camVec2 = new THREE.Vector3();
 		    camera.getWorldDirection( camVec2 );
 		    camVec2.normalize();

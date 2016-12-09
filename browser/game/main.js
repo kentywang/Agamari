@@ -29,17 +29,17 @@ let afkCall;
 export const init = () => {
 
   // set afk status to false
-  window.onfocus= ()=>clearTimeout(afkCall);
+  window.onfocus = () => clearTimeout(afkCall);
 
   // start timer for player kick
-  window.onblur = ()=>{
+  window.onblur = () => {
     afkCall = setTimeout(()=> {
       store.dispatch(stopGame());
       store.dispatch(removeAllFood());
       socket.emit('leave');
       store.dispatch(clearRecord());
-    }, 60*1000);
-  }
+    }, 60 * 1000);
+  };
 
   let { players, food } = store.getState();
 
@@ -55,7 +55,7 @@ export const init = () => {
   renderer.setSize(window.innerWidth / 1,
                    window.innerHeight / 1,
                    false);
-  scene.add(camera)
+  scene.add(camera);
 
   // shading
   renderer.shadowMap.enabled = true;
@@ -102,9 +102,9 @@ export const init = () => {
   createLevel();
 
   // lighting
-  hemisphereLight = new THREE.HemisphereLight("#004570", someColors["pink"], 0.8);
+  hemisphereLight = new THREE.HemisphereLight('#004570', someColors['pink'], 0.8);
 
-  shadowLight = new THREE.DirectionalLight("#4ECDC4", 0.3);
+  shadowLight = new THREE.DirectionalLight('#4ECDC4', 0.3);
 
   shadowLight.castShadow = true;
 
@@ -149,9 +149,9 @@ export const init = () => {
 
 export function animate() {
    //   stats.begin();
-   
+
   animateTimeout = setTimeout( function() {
-    requestAnimationFrame( animate );  
+    requestAnimationFrame( animate );
 
     // emit positional data to server
     socket.emit('update_position', getMeshData(playerMesh));

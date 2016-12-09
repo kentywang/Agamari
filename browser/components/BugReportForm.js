@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import { closeBugReport } from '../reducers/controlPanel';
 import socket from '../socket';
 import axios from 'axios';
 
@@ -7,30 +8,18 @@ class BugReportForm extends Component {
   constructor(props){
     super(props);
     this.state = {
-      isOpen: false,
       message: '',
       name: '',
       email: '',
       subject: '',
       details: ''
     };
-    this.open = this.open.bind(this);
-    this.close = this.close.bind(this);
     this.updateName = this.updateName.bind(this);
     this.updateEmail = this.updateEmail.bind(this);
     this.updateSubject = this.updateSubject.bind(this);
     this.updateDetails = this.updateDetails.bind(this);
     this.resetForm = this.resetForm.bind(this);
     this.submitForm = this.submitForm.bind(this);
-  }
-
-  open() {
-    this.setState({isOpen: true});
-  }
-
-  close() {
-    this.setState({isOpen: false});
-    if (this.state.message) this.setState({message: ''});
   }
 
   updateEmail(evt) {
@@ -65,11 +54,20 @@ class BugReportForm extends Component {
   }
 
   render() {
-    let { open, close, updateName, updateEmail, updateSubject, updateDetails, submitForm} = this;
-    let { name, isOpen, email, subject, details, message } = this.state;
+    let { updateName,
+          updateEmail,
+          updateSubject,
+          updateDetails,
+          submitForm } = this;
+    let { name,
+          email,
+          subject,
+          details,
+          message } = this.state;
+    let { close } = this.props;
+
     return (
-      <div style={{position: 'absolute', zIndex: 1, right: '10px', bottom: '10px'}}>
-      {isOpen ?
+      <div style={{position: 'fixed', zIndex: 1, right: '10px', bottom: '10px'}}>
           <div className="card-panel grey lighten-5" style={{ border: '#ccc solid 2px', borderRadius: '5px'}}>
                   <div className="" style={{float: 'right'}}>
                     <button className="btn-floating" onClick={close}>X</button>
@@ -128,21 +126,19 @@ class BugReportForm extends Component {
                     </div>
                   </div>
                 <div>
-                  <button className="btn" style={{float: 'right'}}onClick={submitForm}>submit</button>
+                  <button className="btn" style={{ float: 'right' }}onClick={submitForm}>submit</button>
                 </div>
               </div> }
-          </div> :
-        <div>
-          <button className="btn-floating" onClick={open}><i className="material-icons">bug_report</i></button>
-        </div>}
+          </div>
         </div>
       );
   }
 }
 
-const mapStateToProps = ({}) => ({});
+const mapStateToProps = ({ controlPanel }) => ({ controlPanel });
 
 const mapDispatchToProps = dispatch => ({
+  close: () => dispatch(closeBugReport())
 });
 
 export default connect(

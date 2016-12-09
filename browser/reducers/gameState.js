@@ -3,6 +3,8 @@
 //const IS_DISPLAYED = 'IS_DISPLAYED';
 const START_GAME ='START_GAME';
 const STOP_GAME = 'STOP_GAME';
+const START_CHAT = 'START_CHAT';
+const STOP_CHAT = 'STOP_CHAT';
 const SET_ERROR = 'SET_ERROR';
 const SET_NICKNAME = 'SET_NICKNAME';
 const RESET_ERROR = 'RESET_ERROR';
@@ -13,8 +15,10 @@ const HIDE_INSTRUCTIONS = 'HIDE_INSTRUCTIONS';
 
 const initialState = {
   isPlaying: false,
+  isChatting: false,
   nickname: '',
-  error: null };
+  error: null
+};
 
 
 export const startGame = () => ({
@@ -23,6 +27,14 @@ export const startGame = () => ({
 
 export const stopGame = () => ({
   type: STOP_GAME
+});
+
+export const startChat = () => ({
+  type: START_CHAT
+});
+
+export const stopChat = () => ({
+  type: STOP_CHAT
 });
 
 export const setNickname = text => ({
@@ -58,6 +70,16 @@ export const startAsGuest = (nickname, socket) => dispatch => {
   }
 };
 
+export const focusOnChat = node => dispatch => {
+  node.focus();
+  dispatch(startChat());
+};
+
+export const unfocusChat = node => dispatch => {
+  node.blur();
+  dispatch(stopChat());
+};
+
 /*-------REDUCER------------*/
 
 export default (state = initialState, action) => {
@@ -66,6 +88,10 @@ export default (state = initialState, action) => {
       return Object.assign({}, state, {isPlaying: true});
     case STOP_GAME:
       return Object.assign({}, state, {isPlaying: false});
+    case START_CHAT:
+      return Object.assign({}, state, {isChatting: true});
+    case STOP_CHAT:
+      return Object.assign({}, state, {isChatting: false});
     case SET_ERROR:
       return Object.assign({}, state, { error: action.error });
     case RESET_ERROR:
@@ -77,4 +103,4 @@ export default (state = initialState, action) => {
     default:
     return state;
   }
-}
+};

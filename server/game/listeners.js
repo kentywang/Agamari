@@ -91,7 +91,7 @@ const setUpListeners = (io, socket) => {
               // Find all food in room and tell new player to add to game state
               let roomFood = pickBy(food, currentFood => currentFood.room === room);
               // let roomFood = food.filter(({ room }) => room === room);
-             
+
               socket.emitAsync('food_data', roomFood);
             })
             .then(() => socket.joinAsync(room)) // Join room
@@ -267,7 +267,7 @@ const setUpListeners = (io, socket) => {
               break;
           }
         }
-      
+
         io.sockets.in(eaten.room).emit('remove_food', id, socket.id, store.getState().players[socket.id]);
       }
     });
@@ -306,18 +306,26 @@ const setUpListeners = (io, socket) => {
       let eater = players[id];
 
       if (eaten && eater && Date.now() - (eaten.eatenCooldown || 0) > 3000) {
-      let { room } = eaten;
-      io.sockets.in(room).emit('remove_player', socket.id, id, eater, eaten);
-      // disabled because bouncing bug
-      //store.dispatch(changePlayerScale(id, (volume - eater.volume) / eater.volume));
-      store.dispatch(updateVolume(id, volume));
-      store.dispatch(updatePlayer(socket.id, initPos()));
-      store.dispatch(clearDiet(socket.id));
-      io.sockets.in(room).emit('add_player', socket.id, Object.assign({}, initPos(), {nickname: eaten.nickname}), true);
-      socket.emit('you_got_eaten', eater.nickname);
-      io.sockets.in(room).emit('casualty_report', eater.nickname, eaten.nickname);
+        let { room } = eaten;
+        io.sockets.in(room).emit('remove_player', socket.id, id, eater, eaten);
+        // disabled because bouncing bug
+        //store.dispatch(changePlayerScale(id, (volume - eater.volume) / eater.volume));
+        store.dispatch(updateVolume(id, volume));
+        store.dispatch(updatePlayer(socket.id, initPos()));
+        store.dispatch(clearDiet(socket.id));
+        io.sockets.in(room).emit('add_player', socket.id, Object.assign({}, initPos(), {nickname: eaten.nickname}), true);
+        socket.emit('you_got_eaten', eater.nickname);
+        io.sockets.in(room).emit('casualty_report', eater.nickname, eaten.nickname);
       }
     });
-}
+
+    socket.on('new_message', text => {
+      let player = store.getState().players[socket.id];
+        if (player) {
+        let { room, nickname } = player;
+        io.sockets.in(room).emit('add_message', { nickname, text });
+      }
+    });
+};
 
 module.exports = setUpListeners;
