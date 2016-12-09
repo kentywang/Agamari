@@ -117,8 +117,8 @@ export default socket => {
     });
 
     socket.on('casualty_report', (eaterNick, eatenNick) => {
-      eaterNick = eaterNick.slice(0, 11);
-      eatenNick = eatenNick.slice(0, 11);
+      eaterNick = eaterNick.slice(0, 14);
+      eatenNick = eatenNick.slice(0, 14);
       store.dispatch(casualtyReport(eaterNick, eatenNick));
     });
 };

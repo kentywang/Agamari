@@ -330,4 +330,18 @@ const setUpListeners = (io, socket) => {
     });
 };
 
+// override swearjar asterisks with rice balls
+swearjar.censor = function (text) {
+  var censored = text;
+
+  this.scan(text, function (word, index, categories) {
+    censored = censored.substr(0, index) + 
+                word.replace(/\S/g, '🍙') +
+                censored.substr(index + word.length);
+  });
+
+  return censored;
+}
+
+
 module.exports = setUpListeners;
