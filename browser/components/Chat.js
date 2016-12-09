@@ -9,8 +9,7 @@ class Chat extends Component {
     this.state = {
       isOpen: true,
       active: false,
-      message: '',
-      started: false
+      message: ''
     };
     this.updateMessage = this.updateMessage.bind(this);
     this.sendMessage = this.sendMessage.bind(this);
@@ -28,54 +27,69 @@ class Chat extends Component {
     }
   }
 
-  componentDidMount() {
-    let input = this.refs.chatInput;
+  componentDidUpdate(prevProps) {
+    let { messages, gameState } = this.props;
 
-    window.addEventListener("keydown", evt => {
-      let { isChatting } = this.props.gameState;
-      if (this.state.started) {
-        if (!isChatting && evt.keyCode == 13) input.focus();
-        if (isChatting && evt.keyCode == 27) input.blur();
-      }
-    });
-    this.setState({ started: true });
+    if (gameState.isChatting && prevProps.messages !== messages) {
+      let { messageBox }  = this.refs;
+      messageBox.scrollTop = messageBox.scrollHeight;
+    }
+
+    if (!prevProps.gameState.isChatting && gameState.isChatting) {
+      this.refs.chatInput.focus();
+    }
   }
 
-  componentDidUpdate(prevProps, prevState) {
-    console.log(this.props.gameState.isChatting);
+  componentDidMount() {
+    let { start, stop } = this.props;
+
+    window.addEventListener('keydown', evt => {
+      let { isChatting } = this.props.gameState;
+      if (!isChatting && evt.keyCode == 13) start();
+      if (isChatting && evt.keyCode == 27) stop();
+    });
   }
 
   render() {
-    let { updateMessage, sendMessage, open, close } = this;
-    let { isOpen, message } = this.state;
+    let { updateMessage, sendMessage } = this;
+    let { message } = this.state;
     let { messages, start, stop, gameState } = this.props;
-
+    let lastMessage = messages[messages.length - 1];
     return (
-      <div id={isOpen ? "chat-box" : "chat-button"}
-           className={isOpen ? "card" : ""}>
-        { isOpen ?
-            <div>
-              <button id="close-chat" className="btn-floating" onClick={close}>X</button>
-              <ul id="message-box" className="collection">
-                { messages && messages.map((message, i) => (
-                    <li key={i} className="message-item">
-                      {`${message.nickname}: ${message.text}`}
-                    </li>
-                ))}
-              </ul>
-              <input ref="chatInput"
-                     value={message}
-                     onChange={updateMessage}
-                     onKeyPress={evt => { if (evt.key === 'Enter') sendMessage(); }}
-                     onFocus={start}
-                     onBlur={stop}
-                     type="text"
-                     id="new-message"
-                     placeholder={gameState.isChatting ? "chat..." : "press 'Enter' to chat..."}/>
-            </div> :
-            <button id="chat-button" className="btn-floating" onClick={open}>
-              <i className="material-icons">chat</i>
-            </button> }
+      <div id="chat-box">
+      { gameState.isChatting ?
+          <div id="message-box">
+            <ul ref="messageBox"
+                id="message-list"
+                className="collection">
+              { messages && messages.map((message, i) => (
+                  <li key={i} className="message-item">
+                    {`${message.nickname}: ${message.text}`}
+                  </li>
+              ))}
+            </ul>
+            <input ref="chatInput"
+                   value={message}
+                   onChange={updateMessage}
+                   onBlur={stop}
+                   onKeyPress={evt => { if (evt.key === 'Enter') sendMessage(); }}
+                   maxLength={70}
+                   type="text"
+                   id="new-message"
+                   placeholder="press 'esc' to close"/>
+          </div> :
+          <div>
+            <div id="open-message">
+              press 'enter' to chat
+            </div>
+            <div id="last-message"
+                 onClick={start}>
+                { lastMessage &&
+                    `${lastMessage.nickname}: ${lastMessage.text}`
+                }
+            </div>
+          </div>
+      }
       </div>
       );
   }

@@ -113,7 +113,6 @@ export default socket => {
 
     socket.on('add_message', message => {
       let { messages } = store.getState();
-      if (messages.length > 2) store.dispatch(removeMessage(0));
       store.dispatch(receiveMessage(message));
     });
 

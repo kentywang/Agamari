@@ -169,33 +169,50 @@ body, html {
     left: 10px;
     margin: auto;
 }
+
 #chat-box {
     position: fixed;
     text-align: left;
     width: 40%;
-    font-size: 3em;
+    max-width: 20em;
     z-index: 1;
-    bottom: 2.5%;
-    left: 30%;
+    bottom: 10px;
+    left: 10px;
     float: right;
-    background-color: rgba(0,0,0,0.3);
     margin: 0;
 }
 
 .message-item {
-    font-size: 0.4em;
-    padding: 0 2.5%;
+    font-size: 0.85em;
+    padding: 1% 2.5%;
     word-wrap: break-word;
+    border-bottom: 1px solid #555;
 }
 
 #new-message {
+    height: 3rem;
+    box-sizing: inherit;
+    padding-top: 0.5em;
+    padding-left: 2.5%;
+    border-left: 1px solid #aaa;
+    border-bottom: 1px solid #aaa;
+    border-right: 1px solid #aaa;
+}
+
+#new-message, #last-message {
     padding-left: 2.5%;
     margin: 0;
 }
 
-#message-box {
+#message-box, #last-message {
+    background-color: rgba(0,0,0,0.4);
+}
+
+#message-list {
+    border: 1px solid #aaa;
     margin: 0 0 -0.5em;
-    min-height: 2em;
+    overflow: scroll;
+    height: 8em;
 }
 
 #close-chat {
