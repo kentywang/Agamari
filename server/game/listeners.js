@@ -1,4 +1,5 @@
-let Promise = require('bluebird');
+const Promise = require('bluebird');
+const swearjar = require('swearjar');
 
 // player spawn function
 function initPos(){
@@ -17,7 +18,7 @@ function initPos(){
     scale: 1,
     volume: 4000
   }
-};
+}
 
 const { User } = require('../db');
 const store = require('../store');
@@ -110,7 +111,7 @@ const setUpListeners = (io, socket) => {
         if ((data.x > -1600 && data.y > -1600 && data.z > -1600) && (data.x < 1600 && data.y < 1600 && data.z < 1600)) {
           // update game state with current position
           store.dispatch(updatePlayer(socket.id, data));
-        } else{
+        } else {
           // if player's coordinates are too far from planet center, they are respawned
           io.sockets.in(player.room).emit('remove_player', socket.id);
           store.dispatch(updatePlayer(socket.id, initPos()));
@@ -319,10 +320,11 @@ const setUpListeners = (io, socket) => {
       }
     });
 
-    socket.on('new_message', text => {
+    socket.on('new_message', message => {
       let player = store.getState().players[socket.id];
         if (player) {
         let { room, nickname } = player;
+        let text = swearjar.censor(message);
         io.sockets.in(room).emit('add_message', { nickname, text });
       }
     });
