@@ -8,97 +8,84 @@ import { scene } from '../game/main';
 import { keepPlaying } from '../reducers/gameStatus';
 import { hideInstructions } from '../reducers/gameState';
 
-import BugReportForm from './BugReportForm';
 import Chat from './Chat';
 
-class Game extends Component {
+class Canvas extends Component {
   constructor(props){
       super(props);
       this.state = {
         leaderboard: [],
         displayVol : 4000,
         instructions: [
-          "use arrow keys to move",
-          "roll over smaller objects to grow",
-          "avoid being rolled up by larger players",
-          "hold & release spacebar for speed boost"
-        ]
+        "use arrow keys to move",
+        "roll over smaller objects to grow",
+        "avoid being rolled up by larger players",
+        "hold & release spacebar for speed boost"],
       }
     }
 
     componentDidMount(){
-      // load sound(s)
-      createjs.Sound.registerSound("eat.ogg", "eatSound");
+    let { gameState } = this.props;
 
-      const leaderboard = ReactDOM.findDOMNode(this.refs.leaderboard);
-      const record = ReactDOM.findDOMNode(this.refs.record);
-      const status = ReactDOM.findDOMNode(this.refs.status);
-      const instructions = ReactDOM.findDOMNode(this.refs.instructions);
-      const abilities = ReactDOM.findDOMNode(this.refs.abilities);
-      const score = ReactDOM.findDOMNode(this.refs.score);
+    // load sound(s)
+    createjs.Sound.registerSound("eat.ogg", "eatSound");
 
-      // animate HUD fly-in
-      TweenMax.from(leaderboard, 1, {
-                                      x: "-=400",
+    const leaderboard = ReactDOM.findDOMNode(this.refs.leaderboard);
+    const record = ReactDOM.findDOMNode(this.refs.record);
+    const status = ReactDOM.findDOMNode(this.refs.status);
+    const instructions = ReactDOM.findDOMNode(this.refs.instructions);
+    const abilities = ReactDOM.findDOMNode(this.refs.abilities);
+    const score = ReactDOM.findDOMNode(this.refs.score);
+
+    // animate HUD fly-in
+      TweenMax.from(leaderboard, 1, { x: "-=400",
                                       y: "-=400",
                                       scale: 3,
                                       opacity: 0,
                                       ease: Power3.easeOut,
-                                      delay: 2
-                                    });
-
-      TweenMax.from(record, 1, {
-                                 x: "+=400",
+                                      delay: 2 });
+      TweenMax.from(record, 1, { x: "+=400",
                                  y: "-=400",
                                  scale: 3,
                                  opacity: 0,
                                  ease: Power3.easeOut,
-                                 delay: 2
-                               });
-      TweenMax.from(abilities, 1, {
-                                    x: "-=400",
+                                 delay: 2 });
+      TweenMax.from(abilities, 1, { x: "-=400",
                                     y: "+=400",
                                     scale: 3,
                                     opacity: 0,
                                     ease: Power3.easeOut,
-                                    delay: 2
-                                  });
-      TweenMax.from(score, 1, {
-                                x: "+=400",
+                                    delay: 2 });
+      TweenMax.from(score, 1, { x: "+=400",
                                 y: "+=400",
                                 scale: 3,
                                 opacity: 0,
                                 ease: Power3.easeOut,
-                                delay: 2
-                              });
+                                delay: 2 });
 
       // show instructions
-      if(!this.props.gameState.instructionsHidden){
+      if(!gameState.instructionsHidden){
         const tl = new TimelineMax()
-      .from(instructions, 1.5, { opacity: 0,ease: Power3.easeOut}, "+=3.5")
-      .to(instructions, .5, {
-                              opacity: 0,
-                              ease: Power3.easeOut,
-                              onComplete: ( )=> this.state.instructions.shift()
-                            }, "+=3")
-      .fromTo(instructions, 1.5, { opacity: 0, ease: Power3.easeOut}, {opacity: 1}, "+=1")
-      .to(instructions, .5, {
-                              opacity: 0,
-                              ease: Power3.easeOut,
-                              onComplete: () => this.state.instructions.shift()
-                            }, "+=4")
-      .fromTo(instructions, 1.5, { opacity: 0, ease: Power3.easeOut}, {opacity: 1}, "+=1")
-      .to(instructions, .5, {
-                              opacity: 0,
-                              ease: Power3.easeOut,
-                              onComplete: () => this.state.instructions.shift()
-                            }, "+=5")
-      .fromTo(instructions, 1.5, { opacity: 0, ease: Power3.easeOut}, {opacity: 1}, "+=1")
-      .to(instructions, .5, {
-                              opacity: 0,
-                              ease: Power3.easeOut,
-                              onComplete: this.props.hideInstructions
-                            }, "+=5")
+      .from(instructions, 1.5, { opacity: 0,
+                                 ease: Power3.easeOut }, "+=3.5")
+      .to(instructions, 0.5, { opacity: 0,
+                               ease: Power3.easeOut,
+                               onComplete: () => this.state.instructions.shift() }, "+=3")
+      .fromTo(instructions, 1.5, { opacity: 0,
+                                   ease: Power3.easeOut }, { opacity: 1 }, "+=1")
+      .to(instructions, 0.5, { opacity: 0,
+                               ease: Power3.easeOut,
+                               onComplete: () => this.state.instructions.shift() }, "+=4")
+      .fromTo(instructions, 1.5, { opacity: 0,
+                                   ease: Power3.easeOut }, { opacity: 1 }, "+=1")
+      .to(instructions, 0.5, { opacity: 0,
+                               ease: Power3.easeOut,
+                               onComplete: () => this.state.instructions.shift() }, "+=5")
+      .fromTo(instructions, 1.5, { opacity: 0,
+                                   ease: Power3.easeOut }, { opacity: 1 }, "+=1")
+      .to(instructions, 0.5, { opacity: 0,
+                               ease: Power3.easeOut,
+                               onComplete: this.props.hideInstructions }, "+=5")
       }
     }
 
@@ -109,18 +96,14 @@ class Game extends Component {
           keepPlaying,
           record,
           casualty,
-          abilities,
-          messages } = this.props;
+          abilities } = this.props;
     let { leaderboard,
           displayVol,
-          instructions,
-          message } = this.state;
-    let { sendMessage,
-          updateMessage } = this;
+          instructions } = this.state;
     let player = players[socket.id];
 
-    // populate this.state.leaderboard
-    if (player && scene){
+    // populate leaderboard
+    if(player && scene){
       leaderboard = [];
 
       // shorten own nickname
@@ -130,12 +113,12 @@ class Game extends Component {
       }
 
       // shorten all other nicknames
-      for (let id in players) {
+      for(let id in players){
         var nick = scene.getObjectByName(id).nickname;
-        if (nick.length > 15) {
+        if (nick.length > 15){
           nick = nick.slice(0,14) + "...";
         }
-        leaderboard.push({nick, vol: players[id].volume});
+        leaderboard.push({ nick, vol: players[id].volume });
       }
 
       // order by volume
@@ -162,18 +145,10 @@ class Game extends Component {
             <table>
               <tbody>
               {player && leaderboard && leaderboard.map((person, index) => (
-                  <tr key={`leaderboard-row-${index+1}`}
-                      style={myNick === person.nick ?
-                              { backgroundColor: 'rgba(0,0,0,0.3)'} : {}}>
-                    <td style={{padding: '0px 10px', borderRadius:'0px'}}>
-                      {person.place || index + 1}
-                    </td>
-                    <td style={{padding: '0px 10px',borderRadius:'0px'}}>
-                      {person.nick}
-                    </td>
-                    <td style={{padding: '0px 10px',borderRadius:'0px'}}>
-                      {person.vol}
-                    </td>
+                  <tr key={`leaderboard-row-${index+1}`} style={myNick === person.nick ? {backgroundColor: 'rgba(0,0,0,0.3)'} : {}}>
+                    <td style={{padding: '0px 10px', borderRadius:'0px'}}>{person.place || index + 1}</td>
+                    <td style={{padding: '0px 10px',borderRadius:'0px'}}>{person.nick}</td>
+                    <td style={{padding: '0px 10px',borderRadius:'0px'}}>{person.vol}</td>
                   </tr>
                 ))
               }
@@ -181,8 +156,7 @@ class Game extends Component {
             </table>
           </div>
           <div ref="record" className="record">
-            <div>
-              { casualty && casualty.map((e, i) => <div key={i}>{e}</div>) }
+            <div>{ casualty && casualty.map((e, i) => <div key={i}>{e}</div>) }
             </div>
           </div>
           <div ref="status" className="status">
@@ -193,13 +167,13 @@ class Game extends Component {
           </div>
           <div ref="abilities"
                className="abilities"
-               style={abilities && abilities.launch ? {} : {color: 'rgba(255,255,255,0.2)'}}>
-            <div>
-              {player && abilities && abilities.meter}
-            </div>
-            <div>
-              {player && abilities && "launch ready"}
-            </div>
+               style={ abilities && abilities.launch ? {} : {color: 'rgba(255,255,255,0.2)'}}>
+          <div>
+            { player && abilities && abilities.meter }
+          </div>
+          <div>
+            { player && abilities && "launch ready" }
+          </div>
           </div>
           <div ref="score" className="score">
             <div>
@@ -207,43 +181,30 @@ class Game extends Component {
             </div>
             <div>
               <span>
-                {player && `${record.objectEaten}`}
+                { player && `${record.objectEaten}` }
               </span>
-              <span>{
-                record.playersEaten > 0 ? ` + ${record.playersEaten}` : ''}
+              <span>
+                {record.playersEaten > 0 ? ` + ${record.playersEaten}` : ''}
               </span>
             </div>
             <div>
-              {player && 'volume'}
+              { player && 'volume' }
             </div>
             <div>
-              {player && displayVol}
+              { player && displayVol }
             </div>
           </div>
         </div>
         <div>
-          <canvas id="canvas"
-                  style={{background: 'linear-gradient(#004570,#00ABD6)'}}>
-          </canvas>
+          <canvas id="canvas" style={{background: 'linear-gradient(#004570,#00ABD6)'}}></canvas>
         </div>
-        <Chat />
+        <Chat/>
       </div>
-
     )
   }
 }
 
-const mapStateToProps = ({ players,
-                           gameStatus,
-                           gameState,
-                           abilities,
-                           record,
-                           casualty }) => ({ players,
-                                           gameStatus,
-                                           gameState,
-                                           abilities,
-                                           record,
-                                           casualty });
+const mapStateToProps = ({ players, gameStatus, gameState, abilities, record, casualty }) => ({ players, gameStatus, gameState, abilities, record, casualty });
 
 const mapDispatchToProps = dispatch => ({
   keepPlaying: () => dispatch(keepPlaying()),
@@ -253,4 +214,15 @@ const mapDispatchToProps = dispatch => ({
 export default connect(
   mapStateToProps,
   mapDispatchToProps
-)(Game);
+)(Canvas);
+
+/*
+<div>{this.props.players[socket.id] && 'magnitude'}
+            </div>
+            <div>
+              <span>{this.props.players[socket.id] && `${record.objectEaten}`}
+              </span>
+              <span>{this.props.record.playersEaten > 0 ? ` + ${this.props.record.playersEaten}` : ''}
+              </span>
+            </div>
+*/
