@@ -36,7 +36,9 @@ class Chat extends Component {
     }
 
     if (!prevProps.gameState.isChatting && gameState.isChatting) {
-      this.refs.chatInput.focus();
+      let { messageBox, chatInput }  = this.refs;
+      messageBox.scrollTop = messageBox.scrollHeight;
+      chatInput.focus();
     }
   }
 
