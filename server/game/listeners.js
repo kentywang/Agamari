@@ -306,7 +306,7 @@ const setUpListeners = (io, socket) => {
       let eaten = players[socket.id];
       let eater = players[id];
 
-      if (eaten && eater && Date.now() - (eaten.eatenCooldown || 0) > 3000) {
+      if (eaten && eater && Date.now() - (eaten.eatenCooldown || 0) > 5000) {
         let { room } = eaten;
         io.sockets.in(room).emit('remove_player', socket.id, id, eater, eaten);
         // disabled because bouncing bug
@@ -329,5 +329,19 @@ const setUpListeners = (io, socket) => {
       }
     });
 };
+
+// override swearjar asterisks with rice balls
+swearjar.censor = function (text) {
+  var censored = text;
+
+  this.scan(text, function (word, index, categories) {
+    censored = censored.substr(0, index) + 
+                word.replace(/\S/g, '🍙') +
+                censored.substr(index + word.length);
+  });
+
+  return censored;
+}
+
 
 module.exports = setUpListeners;

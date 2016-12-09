@@ -86,21 +86,21 @@ body, html {
 
 }
 
-.abilities {
+/*.abilities {
 	transform: skewX(-2deg) skewY(-5deg);
 	font-size: 3em;
 	z-index: 1;
 	position: fixed;
 	bottom: 5%;
 	margin-left: 7%;
-}
+}*/
 
 .score {
 	transform: skewX(2deg) skewY(5deg);
 	position: fixed;
     text-align: right;
     width: 93%;
-    font-size: 2em;
+    font-size: 1.8em;
     z-index: 1;
     bottom: 10%;
     float: right;
@@ -165,21 +165,20 @@ body, html {
 
 #chat-button {
     position: fixed;
-    bottom: 10px;
-    left: 10px;
     margin: auto;
 }
 
 #chat-box {
+    transform: skewX(-2deg) skewY(-5deg);
+    font-size: 1.1em;
+    bottom: 5%;
+    margin-left: 7%;
     position: fixed;
     text-align: left;
-    width: 40%;
+    width: 35%;
     max-width: 20em;
     z-index: 1;
-    bottom: 10px;
-    left: 10px;
     float: right;
-    margin: 0;
 }
 
 .message-item {
@@ -219,4 +218,8 @@ body, html {
     float: right;
     margin-left: -2.5em;
     font-size: 0.4em;
+}
+
+#open-message {
+    padding-left: 2.5%;
 }

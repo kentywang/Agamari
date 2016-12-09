@@ -128,7 +128,7 @@ export class Player {
         let { players } = store.getState();
         let player = scene.getObjectByName(socket.id);
         // cooldown timer for being eaten
-        if (player && Date.now() - lastEaten > 3000) {
+        if (player && Date.now() - lastEaten > 5000) {
           // ensure collision was between this player and main player
           for (let contact of world.contacts){
             let thisHits = contact.bi === this.mesh.cannon,

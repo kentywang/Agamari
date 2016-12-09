@@ -127,10 +127,11 @@ class Canvas extends Component {
 
     // show score
     if(player && displayVol < player.volume){
-      displayVol = ~~(displayVol * 1.01);
+      console.log(displayVol, player.volume)
+      this.state.displayVol = ~~(this.state.displayVol * 1.01);
     }
     if(player && displayVol > player.volume){
-      displayVol = player.volume;
+      this.state.displayVol = player.volume;
     }
 
     // show eater/eaten status for 3 seconds before fading
@@ -165,21 +166,20 @@ class Canvas extends Component {
           <div ref="instructions" className="instructions">
             {!gameState.instructionsHidden && instructions[0]}
           </div>
-          <div ref="abilities"
-               className="abilities"
-               style={ abilities && abilities.launch ? {} : {color: 'rgba(255,255,255,0.2)'}}>
-          <div>
-            { player && abilities && abilities.meter }
-          </div>
-          <div>
-            { player && abilities && "launch ready" }
-          </div>
+          <Chat ref="abilities" />
+          <div className="abilities">
           </div>
           <div ref="score" className="score">
+            <div style={ abilities && abilities.launch ? {} : {color: 'rgba(255,255,255,0.2)'}}>
+              { player && abilities && abilities.meter }
+            </div>
+            <div style={ abilities && abilities.launch ? {marginTop: '-10px'} : {color: 'rgba(255,255,255,0.2)', marginTop: '-10px'}}>
+              { player && abilities && "launcher" }
+            </div>
             <div>
               {player && 'régime'}
             </div>
-            <div>
+            <div style={{marginTop: '-10px'}}>
               <span>
                 { player && `${record.objectEaten}` }
               </span>
@@ -190,7 +190,7 @@ class Canvas extends Component {
             <div>
               { player && 'volume' }
             </div>
-            <div>
+            <div style={{marginTop: '-10px'}}>
               { player && displayVol }
             </div>
           </div>
@@ -198,7 +198,6 @@ class Canvas extends Component {
         <div>
           <canvas id="canvas" style={{background: 'linear-gradient(#004570,#00ABD6)'}}></canvas>
         </div>
-        <Chat/>
       </div>
     )
   }
