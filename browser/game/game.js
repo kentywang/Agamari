@@ -24,13 +24,16 @@ export function loadEnvironment() {
     if (playerObject && playerObject.cannon) {
       if (id !== socket.id) {
         new TWEEN.Tween(playerObject.position)
-          .to({x, y, z}, 1000 / 30)
+          .to({x, y, z}, 1)
           .easing( TWEEN.Easing.Linear.None )
           .start();
-        new TWEEN.Tween(playerObject.quaternion)
-          .to({x: qx, y: qy, z: qz, w: qw}, 1000 / 30)
-          .easing( TWEEN.Easing.Linear.None )
-          .start();
+        let endQuaternion = new THREE.Quaternion(qx, qy, qz, qw);
+        playerObject.quaternion.slerp( endQuaternion, 1);
+
+        // new TWEEN.Tween(playerObject.quaternion)
+        //   .to({x: qx, y: qy, z: qz, w: qw}, 1)
+        //   .easing( TWEEN.Easing.Linear.None )
+        //   .start();
         console.log({x, y, z}, playerObject.position);
         // console.log('else...')
         // playerObject.position.x = x;
