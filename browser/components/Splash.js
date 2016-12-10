@@ -34,6 +34,7 @@ class Splash extends Component {
           <input value={nickname}
                  onChange={updateNickname}
                  onKeyPress={playEnter}
+                 maxLength={15}
                  type="text"
                  id="name-box"
                  placeholder="nickname"

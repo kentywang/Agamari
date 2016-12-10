@@ -2,7 +2,7 @@
 
 [![Live Demo](https://img.shields.io/badge/demo-online-green.svg)](http://agamari.herokuapp.com)[![Jenkins](https://img.shields.io/jenkins/s/https/jenkins.qa.ubuntu.com/precise-desktop-amd64_default.svg)]()[![license](https://img.shields.io/github/license/mashape/apistatus.svg)](https://github.com/quirkycorgi/Agamari/blob/master/LICENSE)
 
-### Physics-based 3D Multiplayer Browser Game 
+### Physics-based 3D Multiplayer Browser Game
 Inspired by [Katamari Damacy](https://en.wikipedia.org/wiki/Katamari_Damacy) and [Agar.io](http://agar.io), this is Agamari, an online multiplayer game where players compete to roll up the largest ball on a tiny planet. Along the way they might roll up each other, or even the moon.
 
 ![](https://github.com/quirkycorgi/Agamari/blob/master/public/gameplay.gif)
@@ -11,7 +11,7 @@ Inspired by [Katamari Damacy](https://en.wikipedia.org/wiki/Katamari_Damacy) and
 A playable online build of Agamari can be found [here](https://agamari.herokuapp.com).
 
 ### Gameplay Mechanics
-Agamari is designed to be a simple-to-understand game that relies on intuitive physics for its gameplay mechanics. Players join each game as small spherical rocks with one purpose for existence: to roll up everything they can on the planet. 
+Agamari is designed to be a simple-to-understand game that relies on intuitive physics for its gameplay mechanics. Players join each game as small spherical rocks with one purpose for existence: to roll up everything they can on the planet.
 Rocks are able to only pick up objects smaller than themselves. However, each object added increases a rock's size, allowing for larger and larger things to be rolled up as the game progresses. Items rolled up affect the mass and shape of a rock, bringing challenges and strategy to picking up different objects. Eventually, players may encounter other players, and if they are larger, can roll them up as well.
 
 ### Architecture
@@ -34,20 +34,20 @@ Handling of the game logic is distributed between the client and the server. Cli
 - The larger you are, the heavier and more unwieldly you become, making movement more cumbersome. Be aware of what and how you pick up different objects and players.
 
 ### Installation
-To install Agamari on your computer, you will need [Node.js with NPM](https://nodejs.org/en/download/).
+To install Agamari on your computer, you will need [Node.js with NPM](https://nodejs.org/en/download/) and [PostgreSQL](http://postgresguide.com/setup/install.html).
 
 Once you have Node.js with NPM, install the game's dependencies with the following command:
 ```
 npm install
 ```
 
-When the dependencies have been installed, run the server with the following command:
+When the dependencies have been installed, make sure PostgreSQL is running, then start the server with the following command:
 
 ```
 npm start
 ```
 
-The game will then be accessible at `http://localhost:8000`. 
+The game will then be accessible at `http://localhost:8000`.
 
 ### Help
 Create an [issue](https://github.com/quirkycorgi/Agamari/issues) if you need help.

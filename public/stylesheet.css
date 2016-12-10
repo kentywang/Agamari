@@ -207,6 +207,10 @@ body, html {
     background-color: rgba(0,0,0,0.4);
 }
 
+#last-message {
+    overflow: hidden;
+}
+
 #message-list {
     border: 1px solid #aaa;
     margin: 0 0 -0.5em;
