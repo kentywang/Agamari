@@ -61,7 +61,7 @@ export class Food {
     mesh.position.z = z;
 
     // position object on planet
-    if(type === "moon"){  
+    if(type === "moon"){
         mesh.position.normalize().multiplyScalar(600);
     }else{
       mesh.position.normalize().multiplyScalar(500);

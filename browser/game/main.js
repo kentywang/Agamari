@@ -16,6 +16,7 @@ import {  stopGame } from '../reducers/gameState';
 
 const THREE = require('three');
 const CANNON = require('../../public/cannon.min.js');
+const TWEEN = require('tween.js');
 
 let animateTimeout;
 let scene, camera, canvas, renderer, composer, stats, pass, shader;
@@ -156,7 +157,6 @@ export function animate() {
     // emit positional data to server
     socket.emit('update_position', getMeshData(playerMesh));
   }, 1000 / 30 );
-
   let { gameState, players } = store.getState();
 
   if (!gameState.isPlaying) clearTimeout(animateTimeout);
@@ -191,6 +191,7 @@ export function animate() {
   }
 
   loadEnvironment();
+  TWEEN.update();
   render();
 
   // stats.end();

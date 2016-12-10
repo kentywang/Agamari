@@ -2,9 +2,10 @@ import store from '../store';
 import socket from '../socket';
 
 import { scene, camera } from './main';
-import { forOwn } from 'lodash';
+import { forOwn, pick } from 'lodash';
 
 const THREE = require('three');
+const TWEEN = require('tween.js');
 
 let player;
 
@@ -14,23 +15,31 @@ const loadGame = () => {
 };
 
 export function loadEnvironment() {
-  let { players } = store.getState();
-
+  let { prevPlayers, players } = store.getState();
   forOwn(players, (data, id) => {
     let playerObject = scene.getObjectByName(id);
-
     let { x, y, z, qx, qy, qz, qw, scale, volume} = data;
 
     // set location and rotation for other players based on server socket message
     if (playerObject && playerObject.cannon) {
-       if (id !== socket.id) {
-        playerObject.position.x = x;
-        playerObject.position.y = y;
-        playerObject.position.z = z;
-        playerObject.quaternion.x = qx;
-        playerObject.quaternion.y = qy;
-        playerObject.quaternion.z = qz;
-        playerObject.quaternion.w = qw;
+      if (id !== socket.id) {
+        new TWEEN.Tween(playerObject.position)
+          .to({x, y, z}, 1000 / 30)
+          .easing( TWEEN.Easing.Linear.None )
+          .start();
+        new TWEEN.Tween(playerObject.quaternion)
+          .to({x: qx, y: qy, z: qz, w: qw}, 1000 / 30)
+          .easing( TWEEN.Easing.Linear.None )
+          .start();
+        console.log({x, y, z}, playerObject.position);
+        // console.log('else...')
+        // playerObject.position.x = x;
+        // playerObject.position.y = y;
+        // playerObject.position.z = z;
+        // playerObject.quaternion.x = qx;
+        // playerObject.quaternion.y = qy;
+        // playerObject.quaternion.z = qz;
+        // playerObject.quaternion.w = qw;
 
         // position name text according to scale
         if (playerObject.sprite) {

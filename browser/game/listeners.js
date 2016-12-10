@@ -3,21 +3,18 @@ import { attachFood, attachPlayer } from './utils';
 
 import {  closeConsole,
           setError } from '../reducers/controlPanel';
-import {  receivePlayers,
-          removeAllPlayers } from '../reducers/players';
+import {  receivePlayers } from '../reducers/players';
+import {  receivePrevPlayers } from '../reducers/prevPlayers';
 import {  removeFood,
           receiveFood,
-          receiveMultipleFood,
-          removeAllFood } from '../reducers/food';
+          receiveMultipleFood } from '../reducers/food';
 import {  lose,
           fell,
           ateSomeone } from '../reducers/gameStatus';
 import {  incrementRecord,
           incrementRecordPlayer,
           clearRecord } from '../reducers/record';
-import {  stopGame } from '../reducers/gameState';
-import { receiveMessage,
-         removeMessage } from '../reducers/messages';
+import { receiveMessage } from '../reducers/messages';
 import {  casualtyReport } from '../reducers/casualty';
 
 import { init,
@@ -32,6 +29,7 @@ export default socket => {
     // Receive current positions for all players and update game state
     // Happens before start and on server broadcast interval
     socket.on('player_data', state => {
+      store.dispatch(receivePrevPlayers(store.getState().players));
       store.dispatch(receivePlayers(state));
     });
 
