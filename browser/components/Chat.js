@@ -64,11 +64,16 @@ class Chat extends Component {
             <ul ref="messageBox"
                 id="message-list"
                 className="collection">
-              { messages && messages.map((message, i) => (
-                  <li key={i} className="message-item">
-                    {`${message.nickname}: ${message.text}`}
-                  </li>
-              ))}
+              { messages && messages.map((message, i) => {
+                  let nickname = message.nickname.length > 15 ?
+                                   message.nickname.slice(0,14) + '...' :
+                                   message.nickname;
+                  return (
+                    <li key={i} className="message-item">
+                      {`${nickname}: ${message.text}`}
+                    </li>
+                  )
+              })}
             </ul>
             <input ref="chatInput"
                    value={message}
