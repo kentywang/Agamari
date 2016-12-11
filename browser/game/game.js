@@ -15,7 +15,7 @@ const loadGame = () => {
 };
 
 export function loadEnvironment() {
-  let { prevPlayers, players } = store.getState();
+  let { players } = store.getState();
   forOwn(players, (data, id) => {
     let playerObject = scene.getObjectByName(id);
     let { x, y, z, qx, qy, qz, qw, scale, volume} = data;
@@ -23,18 +23,18 @@ export function loadEnvironment() {
     // set location and rotation for other players based on server socket message
     if (playerObject && playerObject.cannon) {
       if (id !== socket.id) {
-        new TWEEN.Tween(playerObject.position)
-          .to({x, y, z}, 1)
-          .easing( TWEEN.Easing.Linear.None )
-          .start();
-        let endQuaternion = new THREE.Quaternion(qx, qy, qz, qw);
-        playerObject.quaternion.slerp( endQuaternion, 1);
+        // TWEEN.removeAll();
+        // new TWEEN.Tween(playerObject.position)
+        //   .to({x, y, z})
+        //   .easing( TWEEN.Easing.Linear.None )
+        //   .start();
+        // let endQuaternion = new THREE.Quaternion(qx, qy, qz, qw);
+        // playerObject.quaternion.slerp( endQuaternion, 1);
 
         // new TWEEN.Tween(playerObject.quaternion)
         //   .to({x: qx, y: qy, z: qz, w: qw}, 1)
         //   .easing( TWEEN.Easing.Linear.None )
         //   .start();
-        console.log({x, y, z}, playerObject.position);
         // console.log('else...')
         // playerObject.position.x = x;
         // playerObject.position.y = y;

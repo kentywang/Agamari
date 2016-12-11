@@ -5,9 +5,7 @@ import { makeTextSprite } from './utils';
 import { scene,
          camera,
          world,
-         groundMaterial, 
          ballMaterial } from './main';
-import { Food } from './food';
 import { myColors } from './config';
 
 const THREE = require('three');
@@ -24,7 +22,6 @@ export class Player {
     this.initialData = data;
     this.isMainPlayer = isMainPlayer;
     this.mesh;
-
     this.init = this.init.bind(this);
   }
 
@@ -111,7 +108,7 @@ export class Player {
     }
 
     this.mesh = mesh;
-    
+
     if (!isMainPlayer) {
       // show name on player if not main player
       let { nickname } = initialData;

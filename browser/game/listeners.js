@@ -1,10 +1,13 @@
 import store from '../store';
+const THREE = require('three');
+const TWEEN = require('tween.js');
+
 import { attachFood, attachPlayer } from './utils';
+import { forOwn } from 'lodash';
 
 import {  closeConsole,
           setError } from '../reducers/controlPanel';
 import {  receivePlayers } from '../reducers/players';
-import {  receivePrevPlayers } from '../reducers/prevPlayers';
 import {  removeFood,
           receiveFood,
           receiveMultipleFood } from '../reducers/food';
@@ -28,9 +31,25 @@ import { Food } from '../game/food';
 export default socket => {
     // Receive current positions for all players and update game state
     // Happens before start and on server broadcast interval
-    socket.on('player_data', state => {
-      store.dispatch(receivePrevPlayers(store.getState().players));
-      store.dispatch(receivePlayers(state));
+    socket.on('player_data', players => {
+      if (scene) {
+        forOwn(players, (data, id) => {
+            if (id !== socket.id) {
+              let mesh = scene.getObjectByName(id);
+              if (mesh) {
+                let { x, y, z, qx, qy, qz, qw } = data;
+                TWEEN.removeAll();
+                new TWEEN.Tween(mesh.position)
+                  .to({x, y, z}, 0)
+                  .easing( TWEEN.Easing.Linear.None )
+                  .start();
+                let endQuaternion = new THREE.Quaternion(qx, qy, qz, qw);
+                mesh.quaternion.slerp(endQuaternion, 1);
+              }
+            }
+        });
+      }
+      store.dispatch(receivePlayers(players));
     });
 
     // Receive current positions for all food. Happens before start.
