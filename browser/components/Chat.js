@@ -30,6 +30,8 @@ class Chat extends Component {
   componentDidUpdate(prevProps) {
     let { messages, gameState } = this.props;
 
+    if (prevProps.gameState.isChatting && !gameState.isChatting) this.setState({ message: '' });
+
     if (gameState.isChatting && prevProps.messages !== messages) {
       let { messageBox }  = this.refs;
       messageBox.scrollTop = messageBox.scrollHeight;
