@@ -1,7 +1,7 @@
 let newState;
 
 /*----------  INITIAL STATE  ----------*/
-const initialState = {eatenCooldown: 0};
+const initialState = {};
 
 /*----------  ACTION TYPES  ----------*/
 const RECEIVE_PLAYERS = 'RECEIVE_PLAYERS';
