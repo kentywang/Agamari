@@ -71,6 +71,20 @@ const Event = db.define('event', {
         return event;
       });
     },
+    playerRespawns: function(player) {
+      let event = this.create({
+          volume: player.volume,
+          playersEaten: player.playersEaten,
+          foodEaten: player.foodEaten
+        });
+      let type = EventType.findOne({ where: { name: 'respawn' }});
+      return Promise.all([event, type]).spread((event, type) => {
+        event.setType(type.id);
+        event.setPlayer(player.id);
+        event.setWorld(player.world);
+        return event;
+      });
+    },
     joinWorld: function(player) {
       let event = this.create({
           volume: player.volume,

@@ -8,7 +8,8 @@ const { EventType, db } = require('./index');
     { name: 'join_world' },
     { name: 'leave_world' },
     { name: 'eat_player' },
-    { name: 'eat_food' }
+    { name: 'eat_food' },
+    { name: 'respawn' }
   ];
 
 

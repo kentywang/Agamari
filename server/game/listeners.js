@@ -332,7 +332,10 @@ const setUpListeners = (io, socket) => {
         store.dispatch(clearDiet(socket.id));
         store.dispatch(clearFoodEaten(socket.id));
         store.dispatch(clearPlayersEaten(socket.id));
-        io.sockets.in(world).emit('add_player', socket.id, Object.assign({}, initPos(), {nickname: eaten.nickname}), true);
+        let respawnedPlayer = Object.assign({}, eaten, initPos());
+        io.sockets.in(world).emit('add_player', socket.id, respawnedPlayer, true);
+        Score.add(respawnedPlayer);
+        Event.playerRespawns(respawnedPlayer);
         socket.emit('you_got_eaten', eater.nickname);
         io.sockets.in(world).emit('casualty_report', eater.nickname, eaten.nickname);
       }
