@@ -4,12 +4,12 @@ const chalk = require('chalk');
 
 // player spawn function
 function initPos(){
-  // let x = Math.random() * 1000 - 500;
-  // let y = Math.random() * 1000 - 500;
-  // let z = Math.random() * 1000 - 500;
-  let x = - 500;
-  let y = - 500;
-  let z = - 500;
+  let x = Math.random() * 1000 - 500;
+  let y = Math.random() * 1000 - 500;
+  let z = Math.random() * 1000 - 500;
+  // let x = - 500;
+  // let y = - 500;
+  // let z = - 500;
 
   return {
     x,
@@ -48,7 +48,7 @@ const getWorld = () => {
   let { worlds, players} = store.getState();
   for (let world of worlds) {
     let playerCount = size(pickBy(players, player => player.world === world.id));
-    if (playerCount < 2) {
+    if (playerCount < 20) {
       return [world, false];
     }
   }
