@@ -1,27 +1,32 @@
 const Sequelize = require('sequelize');
+const Promise = require('bluebird');
 const db = require('../_db');
-const eventType = require('./eventType');
+const EventType = require('./eventType');
 
 const Event = db.define('event', {
-  playerVolume: {
+  volume: {
     type: Sequelize.INTEGER,
     field: 'player_volume'
   },
-  playerDiet: {
+  playersEaten: {
     type: Sequelize.INTEGER,
-    field: 'player_diet'
+    field: 'players_eaten'
+  },
+  foodEaten: {
+    type: Sequelize.INTEGER,
+    field: 'food_eaten'
   },
   eatenPlayerVolume: {
     type: Sequelize.INTEGER,
     field: 'eaten_player_volume'
   },
-  eatenPlayerDiet: {
+  eatenPlayerPlayersEaten: {
     type: Sequelize.INTEGER,
-    field: 'eaten_player_diet'
+    field: 'eaten_player_players_eaten'
   },
-  eatenFoodVolume: {
+  eatenPlayerFoodEaten: {
     type: Sequelize.INTEGER,
-    field: 'eaten_food_volume'
+    field: 'eaten_player_food_eaten'
   },
   time: {
     type: Sequelize.DATE,
@@ -33,15 +38,24 @@ const Event = db.define('event', {
   timestamps: true,
   createAt: 'time',
   updatedAt: false,
-  setterMethods: {
+  classMethods: {
     playerEatsPlayer: function(eater, eaten) {
-      let type = eventType.findOne({ name: 'eat_player'}).then(type => {
-        this.setType(type);
-        this.setDataValue('eatenPlayerVolume', eaten.volume);
-        this.setDataValue('eatenPlayerDiet', eaten.volume);
-      })
-        this.setType(type);
-        this.setDataValue
+      let event = this.create({
+          volume: eater.volume,
+          playersEaten: eater.playersEaten,
+          foodEaten: eater.foodEaten,
+          eatenPlayerVolume: eaten.volume,
+          eatenPlayerPlayersEaten: eaten.playersEaten,
+          eatenPlayerFoodEaten: eaten.foodEaten,
+        });
+      let type = EventType.findOne({ where: { name: 'eat_player' }});
+      return Promise.all([event, type]).spread((event, type) => {
+        event.setPlayer(eater.id);
+        event.setEatenPlayer(eaten.id);
+        event.setWorld(eater.world);
+        event.setType(type.id);
+        return event;
+      });
     }
   }
 }

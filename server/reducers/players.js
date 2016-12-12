@@ -11,8 +11,8 @@ const UPDATE_PLAYER = 'UPDATE_PLAYER';
 const CHANGE_PLAYER_SCALE = 'CHANGE_PLAYER_SCALE';
 const REMOVE_PLAYER = 'REMOVE_PLAYER';
 const UPDATE_VOLUME = 'UPDATE_VOLUME';
-const INCREMENT_OBJECTS_EATEN = 'INCREMENT_OBJECTS_EATEN';
-const CLEAR_OBJECTS_EATEN = 'CLEAR_OBJECTS_EATEN';
+const INCREMENT_FOOD_EATEN = 'INCREMENT_FOOD_EATEN';
+const CLEAR_FOOD_EATEN = 'CLEAR_FOOD_EATEN';
 const INCREMENT_PLAYERS_EATEN = 'INCREMENT_PLAYERS_EATEN';
 const CLEAR_PLAYERS_EATEN = 'CLEAR_PLAYERS_EATEN';
 const ADD_FOOD_TO_DIET = 'ADD_FOOD_TO_DIET';
@@ -60,13 +60,13 @@ module.exports.updateVolume = (id, volume) => ({
   volume
 });
 
-module.exports.incrementObjectsEaten = id => ({
-  type: INCREMENT_OBJECTS_EATEN,
+module.exports.incrementFoodEaten = id => ({
+  type: INCREMENT_FOOD_EATEN,
   id
 });
 
-module.exports.clearObjectsEaten = id => ({
-  type: CLEAR_OBJECTS_EATEN,
+module.exports.clearFoodEaten = id => ({
+  type: CLEAR_FOOD_EATEN,
   id
 });
 
@@ -133,15 +133,15 @@ const immutable = (state = initialState, action) => {
       newState[action.id] = Object.assign({}, state[action.id]);
       newState[action.id].volume = ~~action.volume;
       return newState;
-    case INCREMENT_OBJECTS_EATEN:
+    case INCREMENT_FOOD_EATEN:
       newState = Object.assign({}, state);
       newState[action.id] = Object.assign({}, state[action.id]);
-      newState[action.id].objectsEaten += 1;
+      newState[action.id].foodEaten += 1;
       return newState;
-    case CLEAR_OBJECTS_EATEN:
+    case CLEAR_FOOD_EATEN:
        newState = Object.assign({}, state);
       newState[action.id] = Object.assign({}, state[action.id]);
-      newState[action.id].objectsEaten = 0;
+      newState[action.id].foodEaten = 0;
       return newState;
     case INCREMENT_PLAYERS_EATEN:
       newState = Object.assign({}, state);

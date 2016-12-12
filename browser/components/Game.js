@@ -177,7 +177,7 @@ class Canvas extends Component {
             </div>
             <div style={{marginTop: '-10px'}}>
               <span>
-                { player && `${player.objectsEaten}` }
+                { player && `${player.foodEaten}` }
               </span>
               <span>
                 {player && player.playersEaten > 0 ? ` + ${player.playersEaten}` : ''}

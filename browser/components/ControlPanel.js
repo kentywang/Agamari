@@ -55,7 +55,6 @@ const mapDispatchToProps = dispatch => ({
     dispatch(stopGame());
     dispatch(removeAllFood());
     socket.emit('leave');
-    dispatch(clearRecord());
   }
 });
 
