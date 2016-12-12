@@ -1,6 +1,6 @@
 const { pickBy, size } = require('lodash');
 const { receiveFood, removeMultipleFood } = require('../reducers/food');
-const { removeWorld } = require('../reducers/worlds');
+const { destroyWorld } = require('../reducers/worlds');
 const store = require('../store');
 const chalk = require('chalk');
 
@@ -119,7 +119,7 @@ const spawnFood = (io, currentWorld) => {
       } else {
         console.log(chalk.red('destroying world', JSON.stringify(currentWorld)));
         store.dispatch(removeMultipleFood(worldFood));
-        store.dispatch(removeWorld(currentWorld));
+        store.dispatch(destroyWorld(currentWorld));
       }
   }
 };

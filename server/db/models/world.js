@@ -11,6 +11,11 @@ const World = db.define('world', {
   }
 },
 {
+  classMethods: {
+    blowUp: function(id) {
+      this.update({ destroyedAt: Date.now() }, { where: { id }});
+    }
+  }
 });
 
 module.exports = World;

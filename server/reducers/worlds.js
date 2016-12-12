@@ -1,5 +1,6 @@
 let newState, idx;
 const { findIndex }  = require('lodash');
+const World = require('../db/models/world');
 
 /*----------  INITIAL STATE  ----------*/
 const initialState = [];
@@ -22,6 +23,10 @@ const removeWorld = id => ({
 
 
 /*----------  THUNK CREATORS  ----------*/
+const destroyWorld = id => dispatch => {
+  World.blowUp(id);
+  dispatch(removeWorld(id));
+};
 
 /*----------  REDUCER  ----------*/
 const reducer = (state = initialState, action) => {
@@ -42,4 +47,4 @@ const reducer = (state = initialState, action) => {
   }
 };
 
-module.exports = { reducer, addWorld, removeWorld };
+module.exports = { reducer, addWorld, removeWorld, destroyWorld };
