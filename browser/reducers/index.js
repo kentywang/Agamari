@@ -5,7 +5,6 @@ import players from './players';
 import food from './food';
 import abilities from './abilities';
 import gameState from './gameState';
-import record from './record';
 import messages from './messages';
 import casualty from './casualty';
 
@@ -16,7 +15,6 @@ export default combineReducers({
   food,
   abilities,
   gameState,
-  record,
   messages,
   casualty
 });

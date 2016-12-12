@@ -3,21 +3,14 @@ import { attachFood, attachPlayer } from './utils';
 
 import {  closeConsole,
           setError } from '../reducers/controlPanel';
-import {  receivePlayers,
-          removeAllPlayers } from '../reducers/players';
+import {  receivePlayers } from '../reducers/players';
 import {  removeFood,
           receiveFood,
-          receiveMultipleFood,
-          removeAllFood } from '../reducers/food';
+          receiveMultipleFood } from '../reducers/food';
 import {  lose,
           fell,
           ateSomeone } from '../reducers/gameState';
-import {  incrementRecord,
-          incrementRecordPlayer,
-          clearRecord } from '../reducers/record';
-import {  stopGame } from '../reducers/gameState';
-import { receiveMessage,
-         removeMessage } from '../reducers/messages';
+import { receiveMessage } from '../reducers/messages';
 import {  casualtyReport } from '../reducers/casualty';
 
 import { init,
@@ -65,7 +58,7 @@ export default socket => {
       let playerObject = scene.getObjectByName(id);
         if (eaterId === socket.id){
           createjs.Sound.play('eatSound');
-          store.dispatch(incrementRecordPlayer());
+          // store.dispatch(incrementPlayersEaten());
           store.dispatch(ateSomeone(playerObject.nickname));
         }
       if (playerObject) {
@@ -97,18 +90,15 @@ export default socket => {
 
         if (playerId === socket.id){
           createjs.Sound.play('eatSound');
-          store.dispatch(incrementRecord());
         }
       });
 
     socket.on('you_got_eaten', eater => {
-        store.dispatch(clearRecord());
         store.dispatch(lose(eater));
     });
 
     socket.on('you_lose', world => {
-        store.dispatch(clearRecord());
-        store.dispatch(fell(world));
+      store.dispatch(fell(world));
     });
 
     socket.on('add_message', message => {

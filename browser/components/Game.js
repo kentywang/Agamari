@@ -92,7 +92,6 @@ class Canvas extends Component {
     let { players,
           gameState,
           keepPlaying,
-          record,
           casualty,
           abilities } = this.props;
     let { leaderboard,
@@ -178,10 +177,10 @@ class Canvas extends Component {
             </div>
             <div style={{marginTop: '-10px'}}>
               <span>
-                { player && `${record.objectEaten}` }
+                { player && `${player.objectsEaten}` }
               </span>
               <span>
-                {record.playersEaten > 0 ? ` + ${record.playersEaten}` : ''}
+                {player && player.playersEaten > 0 ? ` + ${player.playersEaten}` : ''}
               </span>
             </div>
             <div>
@@ -200,7 +199,7 @@ class Canvas extends Component {
   }
 }
 
-const mapStateToProps = ({ players, gameState, abilities, record, casualty }) => ({ players, gameState, abilities, record, casualty });
+const mapStateToProps = ({ players, gameState, abilities, casualty }) => ({ players, gameState, abilities, casualty });
 
 const mapDispatchToProps = dispatch => ({
   keepPlaying: () => dispatch(keepPlaying()),

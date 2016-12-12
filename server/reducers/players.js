@@ -1,7 +1,7 @@
 let newState;
 
 /*----------  INITIAL STATE  ----------*/
-const initialState = {eatenCooldown: 0};
+const initialState = {};
 
 /*----------  ACTION TYPES  ----------*/
 const RECEIVE_PLAYERS = 'RECEIVE_PLAYERS';
@@ -11,6 +11,10 @@ const UPDATE_PLAYER = 'UPDATE_PLAYER';
 const CHANGE_PLAYER_SCALE = 'CHANGE_PLAYER_SCALE';
 const REMOVE_PLAYER = 'REMOVE_PLAYER';
 const UPDATE_VOLUME = 'UPDATE_VOLUME';
+const INCREMENT_OBJECTS_EATEN = 'INCREMENT_OBJECTS_EATEN';
+const CLEAR_OBJECTS_EATEN = 'CLEAR_OBJECTS_EATEN';
+const INCREMENT_PLAYERS_EATEN = 'INCREMENT_PLAYERS_EATEN';
+const CLEAR_PLAYERS_EATEN = 'CLEAR_PLAYERS_EATEN';
 const ADD_FOOD_TO_DIET = 'ADD_FOOD_TO_DIET';
 const ADD_PLAYER_TO_DIET = 'ADD_PLAYER_TO_DIET';
 const CLEAR_DIET = 'CLEAR_DIET';
@@ -55,6 +59,27 @@ module.exports.updateVolume = (id, volume) => ({
   id,
   volume
 });
+
+module.exports.incrementObjectsEaten = id => ({
+  type: INCREMENT_OBJECTS_EATEN,
+  id
+});
+
+module.exports.clearObjectsEaten = id => ({
+  type: CLEAR_OBJECTS_EATEN,
+  id
+});
+
+module.exports.incrementPlayersEaten = id => ({
+  type: INCREMENT_PLAYERS_EATEN,
+  id
+});
+
+module.exports.clearPlayersEaten = id => ({
+  type: CLEAR_PLAYERS_EATEN,
+  id
+});
+
 
 module.exports.addFoodToDiet = (food, id, data) => ({
   type: ADD_FOOD_TO_DIET,
@@ -107,6 +132,26 @@ const immutable = (state = initialState, action) => {
       newState = Object.assign({}, state);
       newState[action.id] = Object.assign({}, state[action.id]);
       newState[action.id].volume = ~~action.volume;
+      return newState;
+    case INCREMENT_OBJECTS_EATEN:
+      newState = Object.assign({}, state);
+      newState[action.id] = Object.assign({}, state[action.id]);
+      newState[action.id].objectsEaten += 1;
+      return newState;
+    case CLEAR_OBJECTS_EATEN:
+       newState = Object.assign({}, state);
+      newState[action.id] = Object.assign({}, state[action.id]);
+      newState[action.id].objectsEaten = 0;
+      return newState;
+    case INCREMENT_PLAYERS_EATEN:
+      newState = Object.assign({}, state);
+      newState[action.id] = Object.assign({}, state[action.id]);
+      newState[action.id].playersEaten += 1;
+      return newState;
+    case CLEAR_PLAYERS_EATEN:
+       newState = Object.assign({}, state);
+      newState[action.id] = Object.assign({}, state[action.id]);
+      newState[action.id].playersEaten = 0;
       return newState;
     case ADD_FOOD_TO_DIET:
       newState = Object.assign({}, state);

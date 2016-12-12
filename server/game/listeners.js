@@ -20,7 +20,9 @@ function initPos(){
     qz: 0,
     qw: 1,
     scale: 1,
-    volume: 4000
+    volume: 4000,
+    objectsEaten: 0,
+    playersEaten: 0
   };
 }
 
@@ -28,7 +30,12 @@ const { User, World } = require('../db');
 const store = require('../store');
 const worldNames = require('../world-names');
 const { forOwn, size, pickBy, random } = require('lodash');
-const { receivePlayer, removePlayer } = require('../reducers/players');
+const { receivePlayer,
+        removePlayer,
+        incrementObjectsEaten,
+        clearObjectsEaten,
+        incrementPlayersEaten,
+        clearPlayersEaten } = require('../reducers/players');
 const { addWorld } = require('../reducers/worlds');
 const { removeFood } = require('../reducers/food');
 const { updatePlayer,
@@ -127,6 +134,8 @@ const setUpListeners = (io, socket) => {
           io.sockets.in(player.world).emit('remove_player', socket.id);
           store.dispatch(updatePlayer(socket.id, initPos()));
           store.dispatch(clearDiet(socket.id));
+          store.dispatch(clearObjectsEaten(socket.id));
+          store.dispatch(clearPlayersEaten(socket.id));
           io.sockets.in(player.world).emit('add_player', socket.id, Object.assign({}, initPos(), {nickname: player.nickname}), true);
           socket.emit('you_lose', player.world.name);
         }
@@ -142,7 +151,7 @@ const setUpListeners = (io, socket) => {
       // Then increase player size and tell other players to remove food object
       if (eaten) {
         store.dispatch(removeFood(id));
-
+        store.dispatch(incrementObjectsEaten(socket.id));
         var place = playerIsLeading(socket.id);
 
         let worldPlayers = pickBy(players, ({ world }) => world === player.world);
@@ -312,8 +321,11 @@ const setUpListeners = (io, socket) => {
         // disabled because bouncing bug
         //store.dispatch(changePlayerScale(id, (volume - eater.volume) / eater.volume));
         store.dispatch(updateVolume(id, volume));
+        store.dispatch(incrementPlayersEaten(id));
         store.dispatch(updatePlayer(socket.id, initPos()));
         store.dispatch(clearDiet(socket.id));
+        store.dispatch(clearObjectsEaten(socket.id));
+        store.dispatch(clearPlayersEaten(socket.id));
         io.sockets.in(world).emit('add_player', socket.id, Object.assign({}, initPos(), {nickname: eaten.nickname}), true);
         socket.emit('you_got_eaten', eater.nickname);
         io.sockets.in(world).emit('casualty_report', eater.nickname, eaten.nickname);

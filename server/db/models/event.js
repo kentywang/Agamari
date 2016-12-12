@@ -1,5 +1,6 @@
 const Sequelize = require('sequelize');
 const db = require('../_db');
+const eventType = require('./eventType');
 
 const Event = db.define('event', {
   playerVolume: {
@@ -31,7 +32,18 @@ const Event = db.define('event', {
 {
   timestamps: true,
   createAt: 'time',
-  updatedAt: false
+  updatedAt: false,
+  setterMethods: {
+    playerEatsPlayer: function(eater, eaten) {
+      let type = eventType.findOne({ name: 'eat_player'}).then(type => {
+        this.setType(type);
+        this.setDataValue('eatenPlayerVolume', eaten.volume);
+        this.setDataValue('eatenPlayerDiet', eaten.volume);
+      })
+        this.setType(type);
+        this.setDataValue
+    }
+  }
 }
 );
 
