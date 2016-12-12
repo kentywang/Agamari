@@ -70,6 +70,34 @@ const Event = db.define('event', {
         event.setWorld(player.world);
         return event;
       });
+    },
+    joinWorld: function(player) {
+      let event = this.create({
+          volume: player.volume,
+          playersEaten: player.playersEaten,
+          foodEaten: player.foodEaten
+        });
+      let type = EventType.findOne({ where: { name: 'join_world' }});
+      return Promise.all([event, type]).spread((event, type) => {
+        event.setType(type.id);
+        event.setPlayer(player.id);
+        event.setWorld(player.world);
+        return event;
+      });
+    },
+    leaveWorld: function(player) {
+      let event = this.create({
+          volume: player.volume,
+          playersEaten: player.playersEaten,
+          foodEaten: player.foodEaten
+        });
+      let type = EventType.findOne({ where: { name: 'leave_world' }});
+      return Promise.all([event, type]).spread((event, type) => {
+        event.setType(type.id);
+        event.setPlayer(player.id);
+        event.setWorld(player.world);
+        return event;
+      });
     }
   }
 }

@@ -26,7 +26,6 @@ Event.belongsTo(World, { underscore: true });
 
 Player.hasMany(Score);
 Score.belongsTo(Player);
-
 World.hasMany(Score);
 Score.belongsTo(World);
 

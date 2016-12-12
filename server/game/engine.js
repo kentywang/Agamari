@@ -1,6 +1,7 @@
 const { pickBy, size } = require('lodash');
 const { receiveFood, removeMultipleFood } = require('../reducers/food');
 const { destroyWorld } = require('../reducers/worlds');
+const { Score } = require('../db');
 const store = require('../store');
 const chalk = require('chalk');
 
@@ -125,13 +126,20 @@ const spawnFood = (io, currentWorld) => {
 };
 
 const broadcastState = (io) => {
+  let start = Date.now();
   setInterval(() => {
     // On set interval, emit all player positions to all players in each world
     let { players, worlds } = store.getState();
-    for (let currentWorld of worlds) {
-      let worldPlayers = pickBy(players, ({ world }) => world === currentWorld.id);
-      io.sockets.in(currentWorld.id).emit('player_data', worldPlayers);
-      spawnFood(io, currentWorld.id);
+    if (size(players)) {
+      if (Date.now() - start > 1000 * 10) {
+        Score.updateAllScores(players);
+        start = Date.now();
+      }
+      for (let currentWorld of worlds) {
+        let worldPlayers = pickBy(players, ({ world }) => world === currentWorld.id);
+        io.sockets.in(currentWorld.id).emit('player_data', worldPlayers);
+        spawnFood(io, currentWorld.id);
+      }
     }
   }, (1000 / 30));
 };

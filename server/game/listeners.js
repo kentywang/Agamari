@@ -26,7 +26,7 @@ function initPos(){
   };
 }
 
-const { Player, User, World, Event } = require('../db');
+const { Player, User, World, Event, Score } = require('../db');
 const store = require('../store');
 const worldNames = require('../world-names');
 const { forOwn, size, pickBy, random } = require('lodash');
@@ -114,7 +114,11 @@ const setUpListeners = (io, socket) => {
               socket.emitAsync('food_data', worldFood);
             })
             .then(() => socket.joinAsync(world)) // Join world
-            .then(() => socket.emit('start_game')); // Tell player to initialize game
+            .then(() => socket.emit('start_game'))
+            .then(() => {
+              Event.joinWorld(player)
+              Score.add(player);
+            }); // Tell player to initialize game
         })
         .catch(err => {
           console.error(err);
@@ -305,6 +309,8 @@ const setUpListeners = (io, socket) => {
 
       // Remove player from server game state and tell players to remove player object
       store.dispatch(removePlayer(socket.id));
+      Event.leaveWorld(player);
+      Score.add(player);
       io.sockets.in(world).emit('remove_player', socket.id);
 
       console.log(`${player.nickname} has left ${world}.`);
@@ -319,6 +325,7 @@ const setUpListeners = (io, socket) => {
       if (eaten && eater && Date.now() - (eaten.eatenCooldown || 0) > 5000) {
         let { world } = eaten;
         Event.playerEatsPlayer(eater, eaten);
+        Score.add(eaten);
         io.sockets.in(world).emit('remove_player', socket.id, id, eater, eaten);
         // disabled because bouncing bug
         //store.dispatch(changePlayerScale(id, (volume - eater.volume) / eater.volume));
