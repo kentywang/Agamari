@@ -150,6 +150,7 @@ const setUpListeners = (io, socket) => {
       // First, verify that food still exists.
       // Then increase player size and tell other players to remove food object
       if (eaten) {
+        Event.playerEatsFood(player);
         store.dispatch(removeFood(id));
         store.dispatch(incrementFoodEaten(socket.id));
         var place = playerIsLeading(socket.id);

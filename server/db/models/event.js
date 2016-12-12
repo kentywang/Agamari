@@ -56,6 +56,20 @@ const Event = db.define('event', {
         event.setWorld(eater.world);
         return event;
       });
+    },
+    playerEatsFood: function(player) {
+      let event = this.create({
+          volume: player.volume,
+          playersEaten: player.playersEaten,
+          foodEaten: player.foodEaten
+        });
+      let type = EventType.findOne({ where: { name: 'eat_food' }});
+      return Promise.all([event, type]).spread((event, type) => {
+        event.setType(type.id);
+        event.setPlayer(player.id);
+        event.setWorld(player.world);
+        return event;
+      });
     }
   }
 }
