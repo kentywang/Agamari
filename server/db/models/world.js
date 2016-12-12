@@ -3,8 +3,7 @@ const db = require('../_db');
 
 const World = db.define('world', {
   name: {
-    type: Sequelize.STRING,
-    unique: true,
+    type: Sequelize.STRING
   },
   destroyedAt: {
     type: Sequelize.DATE,

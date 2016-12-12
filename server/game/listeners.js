@@ -4,9 +4,12 @@ const chalk = require('chalk');
 
 // player spawn function
 function initPos(){
-  let x = Math.random() * 1000 - 500;
-  let y = Math.random() * 1000 - 500;
-  let z = Math.random() * 1000 - 500;
+  // let x = Math.random() * 1000 - 500;
+  // let y = Math.random() * 1000 - 500;
+  // let z = Math.random() * 1000 - 500;
+  let x = - 500;
+  let y = - 500;
+  let z = - 500;
 
   return {
     x,

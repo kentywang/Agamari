@@ -11,7 +11,7 @@ import {  removeFood,
           removeAllFood } from '../reducers/food';
 import {  lose,
           fell,
-          ateSomeone } from '../reducers/gameStatus';
+          ateSomeone } from '../reducers/gameState';
 import {  incrementRecord,
           incrementRecordPlayer,
           clearRecord } from '../reducers/record';

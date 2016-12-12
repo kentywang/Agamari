@@ -8,7 +8,9 @@ import BugReportForm from './BugReportForm';
 
 
 class App extends Component {
-
+  componentDidUpdate(prevProps, prevState) {
+    if (prevProps.gameState.isPlaying !== this.props.gameState.isPlaying) console.log(prevProps.gameState, this.props.gameState);
+  }
   render() {
     let { isPlaying } = this.props.gameState;
     let { bugReportOpen } = this.props.controlPanel;

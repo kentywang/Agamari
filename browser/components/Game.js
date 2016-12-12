@@ -5,8 +5,7 @@ import ReactDOM from 'react-dom';
 import socket from '../socket';
 import { scene } from '../game/main';
 
-import { keepPlaying } from '../reducers/gameStatus';
-import { hideInstructions } from '../reducers/gameState';
+import { hideInstructions, keepPlaying } from '../reducers/gameState';
 
 import Chat from './Chat';
 
@@ -91,7 +90,6 @@ class Canvas extends Component {
 
   render = () => {
     let { players,
-          gameStatus,
           gameState,
           keepPlaying,
           record,
@@ -134,7 +132,7 @@ class Canvas extends Component {
     }
 
     // show eater/eaten status for 3 seconds before fading
-    if(gameStatus.length){
+    if(gameState.status.length){
       setTimeout(() => keepPlaying(), 3000);
     }
 
@@ -160,7 +158,7 @@ class Canvas extends Component {
             </div>
           </div>
           <div ref="status" className="status">
-            { gameStatus }
+            { gameState.status }
           </div>
           <div ref="instructions" className="instructions">
             {!gameState.instructionsHidden && instructions[0]}
@@ -202,7 +200,7 @@ class Canvas extends Component {
   }
 }
 
-const mapStateToProps = ({ players, gameStatus, gameState, abilities, record, casualty }) => ({ players, gameStatus, gameState, abilities, record, casualty });
+const mapStateToProps = ({ players, gameState, abilities, record, casualty }) => ({ players, gameState, abilities, record, casualty });
 
 const mapDispatchToProps = dispatch => ({
   keepPlaying: () => dispatch(keepPlaying()),
