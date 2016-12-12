@@ -50,10 +50,10 @@ const Event = db.define('event', {
         });
       let type = EventType.findOne({ where: { name: 'eat_player' }});
       return Promise.all([event, type]).spread((event, type) => {
+        event.setType(type.id);
         event.setPlayer(eater.id);
         event.setEatenPlayer(eaten.id);
         event.setWorld(eater.world);
-        event.setType(type.id);
         return event;
       });
     }
