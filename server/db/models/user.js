@@ -5,7 +5,6 @@ const bcrypt = require('bcrypt');
 const User = db.define('user', {
   email: {
     type: Sequelize.STRING,
-    allowNull: true,
     unique: true
   },
   password: {
@@ -13,7 +12,6 @@ const User = db.define('user', {
   },
   password_digest: {
     type: Sequelize.STRING,
-
   },
   admin: {
     type: Sequelize.BOOLEAN
@@ -21,13 +19,6 @@ const User = db.define('user', {
   username: {
     type: Sequelize.STRING,
     unique: true
-  },
-  nickname: {
-    type: Sequelize.STRING,
-    allowNull: false,
-    validate: {
-      notEmpty: true
-    }
   },
   guest: {
     type: Sequelize.BOOLEAN,

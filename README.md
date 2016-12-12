@@ -37,13 +37,20 @@ Handling of the game logic is distributed between the client and the server. Cli
 To install Agamari on your computer, you will need [Node.js with NPM](https://nodejs.org/en/download/) and [PostgreSQL](http://postgresguide.com/setup/install.html).
 
 Once you have Node.js with NPM, install the game's dependencies with the following command:
-```
+
+```js
 npm install
 ```
 
-When the dependencies have been installed, make sure PostgreSQL is running, then start the server with the following command:
+When the dependencies have been installed, open PostgreSQL and create a database with the following command:
 
+```SQL
+CREATE DATABASE agamari;
 ```
+
+Then start the server with the following command:
+
+```js
 npm start
 ```
 
