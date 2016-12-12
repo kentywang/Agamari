@@ -2,19 +2,20 @@ const { pickBy, size } = require('lodash');
 const { receiveFood, removeMultipleFood } = require('../reducers/food');
 const { removeRoom } = require('../reducers/rooms');
 const store = require('../store');
+const chalk = require('chalk');
 
 let types = ['box', 'sphere'];
 let elapsedTime = {},
     moonSpawnTime = {},
     id = 1;
-let spawnTime = .5 * 1000;
+let spawnTime = 0.5 * 1000;
 
 const spawnFood = (io, currentRoom) => {
   // spawn food in a room every so often
   if (!elapsedTime[currentRoom] || Date.now() - elapsedTime[currentRoom] > spawnTime){
 
     // moon spawn cooldown
-    if(!moonSpawnTime[currentRoom]){
+    if (!moonSpawnTime[currentRoom]){
       moonSpawnTime[currentRoom] = Date.now() - 30 * 60 * 1000;
     }
 
@@ -38,29 +39,28 @@ const spawnFood = (io, currentRoom) => {
           switch (type){
             case 'box':
               let boxType = Math.random();
-              if(boxType<.6){
+              if (boxType < 0.6){
                 // box
                 foodSize = [
                   2 + (Math.random() * 8),
                   2 + (Math.random() * 4),
                   2 + (Math.random() * 3),
-                ];    
-              }else if(boxType<.8){
+                ];
+              } else if (boxType < 0.8){
                 // plane
                 foodSize = [
                   6 + (Math.random() * 3),
                   7 + (Math.random() * 2),
                   1 + (Math.random() * 1)
-                ];   
-              }else{
+                ];
+              } else {
                 // stick
                 foodSize = [
                   9 + (Math.random() * 9),
                   2 + (Math.random() * 2),
                   2 + (Math.random() * 2)
-                ];   
+                ];
               }
-
               break;
             case 'sphere':
             default:
@@ -79,13 +79,13 @@ const spawnFood = (io, currentRoom) => {
           let largestScale = 1;
 
           for (var Pid in roomPlayers) {
-            if(roomPlayers[Pid].scale > largestScale){
+            if (roomPlayers[Pid].scale > largestScale) {
               largestScale = roomPlayers[Pid].scale;
             }
           }
 
           // if player is the largest in room and he isn't alone, rechoose a player to scale food to
-          if(Object.keys(roomPlayers).length > 1 && playerToFeed.scale === largestScale){
+          if (size(roomPlayers) > 1 && playerToFeed.scale === largestScale){
             randomPlayerId = Object.keys(roomPlayers)[~~(Math.random() * Object.keys(roomPlayers).length)];
           }
 
@@ -93,20 +93,20 @@ const spawnFood = (io, currentRoom) => {
 
           let parms;
           // occasionally spawn food linearly scaled to players
-          if(Math.random() > .92){
+          if (Math.random() > 0.92){
              parms = foodSize.map(e => (e * playerToFeed.scale));
-          }else{
-             parms = foodSize.map(e => (e * Math.min(playerToFeed.scale, 1 + Math.log(playerToFeed.scale)/Math.log(5))));
+          } else {
+             parms = foodSize.map(e => (e * Math.min(playerToFeed.scale, 1 + Math.log(playerToFeed.scale) / Math.log(5))));
           }
 
           // create Moon at first, then in increments based on moon spawn time
-          if(Date.now() - moonSpawnTime[currentRoom] >= 30 * 60 * 1000){
+          if (Date.now() - moonSpawnTime[currentRoom] >= 30 * 60 * 1000){
             moonSpawnTime[currentRoom] = Date.now();
 
-            x = (Math.random() * 1000) - 500,
-            y = (Math.random() * 1000) - 500,
-            z = (Math.random() * 1000) - 500,
-            type = "moon",
+            x = (Math.random() * 1000) - 500;
+            y = (Math.random() * 1000) - 500;
+            z = (Math.random() * 1000) - 500;
+            type = 'moon';
             parms = [100];
           }
 
@@ -117,6 +117,7 @@ const spawnFood = (io, currentRoom) => {
           id++;
         }
       } else {
+        console.log(chalk.red('destroying world', JSON.stringify(currentRoom)));
         store.dispatch(removeMultipleFood(roomFood));
         store.dispatch(removeRoom(currentRoom));
       }
@@ -128,9 +129,9 @@ const broadcastState = (io) => {
     // On set interval, emit all player positions to all players in each room
     let { players, rooms } = store.getState();
     for (let currentRoom of rooms) {
-      let roomPlayers = pickBy(players, ({ room }) => room === currentRoom);
-      io.sockets.in(currentRoom).emit('player_data', roomPlayers);
-      spawnFood(io, currentRoom);
+      let roomPlayers = pickBy(players, ({ room }) => room === currentRoom.id);
+      io.sockets.in(currentRoom.id).emit('player_data', roomPlayers);
+      spawnFood(io, currentRoom.id);
     }
   }, (1000 / 30));
 };
@@ -146,11 +147,11 @@ function playerIsLeading(id){
     let peopleAhead = 0;
 
     for (var Pid in roomPlayers) {
-      if(roomPlayers[Pid].volume > player.volume){
+      if (roomPlayers[Pid].volume > player.volume){
         peopleAhead++;
       }
     }
-    return peopleAhead+1;
+    return peopleAhead + 1;
   }
 }
 

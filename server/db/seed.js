@@ -2,19 +2,13 @@
 
 const Promise = require('bluebird');
 
-const { User, Room, Score, db } = require('./index');
+const { User, EventType, Score, db } = require('./index');
 
-
-let rooms = [
-    {
-      name: 'room1'
-    },
-    {
-      name: 'room2'
-    },
-    {
-      name: 'room3'
-    }
+  let eventTypes = [
+    { name: 'join_game' },
+    { name: 'leave_game' },
+    { name: 'eat_player' },
+    { name: 'eat_food' }
   ];
 
  let scores = [
@@ -39,7 +33,7 @@ let rooms = [
       admin: false,
       username: 'dan',
       nickname: 'dan',
-      guest:false
+      guest: false
     },
     {
       email: 'ben@fullstack.com',
@@ -47,7 +41,7 @@ let rooms = [
       admin: true,
       username: 'ben',
       nickname: 'ben',
-      guest:false
+      guest: false
     },
     {
       email: 'joe@fullstack.com',
@@ -55,15 +49,15 @@ let rooms = [
       admin: false,
       username: 'joe',
       nickname: 'joe',
-      guest:false
+      guest: false
     }
 
     ];
 
 db.sync({force: true})
 .then(() => {
- console.log('Dropped old data, now inserting data');
- return rooms.map((room) =>  Room.create(room));
+  console.log('Dropped old data, now inserting data');
+  return eventTypes.map((eventType) =>  EventType.create(eventType));
 })
 .then(() => {
  return scores.map((score) =>  Score.create(score));

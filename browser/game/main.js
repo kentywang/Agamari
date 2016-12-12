@@ -188,10 +188,17 @@ export function animate() {
        world.step(fixedTimeStep, dt, maxSubSteps);
     }
     lastTime = time;
+    loadEnvironment();
+    render();
+  } else {
+    store.dispatch(stopGame());
+    store.dispatch(removeAllFood());
+    socket.emit('leave');
+    store.dispatch(clearRecord());
+    clearTimeout(animateTimeout);
   }
 
-  loadEnvironment();
-  render();
+
 
   // stats.end();
 }

@@ -3,7 +3,7 @@
 const api = module.exports = require('express').Router();
 
 api.use('/users', require('./userRoutes'));
-api.use('/rooms', require('./roomRoutes'));
+api.use('/worlds', require('./worldRoutes'));
 api.use('/scores', require('./scoreRoutes'));
 api.use('/bugs', require('./bugRoutes'));
 api.use('/state', require('./stateRoutes'));

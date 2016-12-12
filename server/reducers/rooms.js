@@ -1,4 +1,5 @@
 let newState, idx;
+const { findIndex }  = require('lodash');
 
 /*----------  INITIAL STATE  ----------*/
 const initialState = [];
@@ -9,28 +10,27 @@ const ADD_ROOM = 'ADD_ROOM';
 const REMOVE_ROOM = 'REMOVE_ROOM';
 
 /*----------  ACTION CREATORS  ----------*/
-const addRoom = name => ({
+const addRoom = room => ({
   type: ADD_ROOM,
-  name
+  room
 });
 
-const removeRoom = name => ({
+const removeRoom = id => ({
   type: REMOVE_ROOM,
-  name
+  id
 });
 
 
 /*----------  THUNK CREATORS  ----------*/
 
-
 /*----------  REDUCER  ----------*/
 const reducer = (state = initialState, action) => {
   switch (action.type) {
     case ADD_ROOM:
-      if (state.indexOf(action.name) === -1) return [...state, action.name];
+      if (findIndex(state, { id: action.room.id }) === -1) return [...state, action.room];
       else return state;
     case REMOVE_ROOM:
-      idx = state.indexOf(action.name);
+      idx = findIndex(state, { id: action.id });
       if (idx + 1) {
         newState = [...state];
         newState.splice(idx, 1);
