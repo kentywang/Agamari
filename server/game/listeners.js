@@ -23,10 +23,10 @@ function initPos(){
 
 const { User, World } = require('../db');
 const store = require('../store');
-const roomNames = require('../room-names');
+const worldNames = require('../world-names');
 const { forOwn, size, pickBy, random } = require('lodash');
 const { receivePlayer, removePlayer } = require('../reducers/players');
-const { addRoom } = require('../reducers/rooms');
+const { addWorld } = require('../reducers/worlds');
 const { removeFood } = require('../reducers/food');
 const { updatePlayer,
         updateVolume,
@@ -34,15 +34,15 @@ const { updatePlayer,
         clearDiet } = require('../reducers/players');
 
 
-const getRoom = () => {
-  let { rooms, players} = store.getState();
-  for (let room of rooms) {
-    let playerCount = size(pickBy(players, player => player.room === room.id));
+const getWorld = () => {
+  let { worlds, players} = store.getState();
+  for (let world of worlds) {
+    let playerCount = size(pickBy(players, player => player.world === world.id));
     if (playerCount < 2) {
-      return [room, false];
+      return [world, false];
     }
   }
-  return [roomNames[random(roomNames.length - 1)], true];
+  return [worldNames[random(worldNames.length - 1)], true];
 };
 
 const {playerIsLeading} = require('./engine');
@@ -59,22 +59,21 @@ const setUpListeners = (io, socket) => {
 
       let { players, food } = store.getState();
       let user = User.create({ nickname: data.nickname, guest: true });
-      let world;
-      let playerRoom = getRoom();
-      world = playerRoom[1] ? World.create({ name: playerRoom[0] }) : World.findById(playerRoom.id);
-      console.log(chalk.magenta('promissing all', JSON.stringify(playerRoom), user));
-      Promise.all([world, user])
-        .then(([dbRoom, dbUser]) => {
-          console.log(chalk.grey('in then',playerRoom[1] ? dbRoom : playerRoom, dbUser));
+      let foundWorld = getWorld();
+      let playerWorld = foundWorld[1] ? World.create({ name: foundWorld[0] }) : World.findById(foundWorld.id);
+      console.log(chalk.magenta('promissing all', JSON.stringify(foundWorld), user));
+      Promise.all([playerWorld, user])
+        .then(([dbWorld, dbUser]) => {
+          console.log(chalk.grey('in then', foundWorld[1] ? dbWorld : foundWorld, dbUser));
           let { id, nickname } = dbUser;
           console.log(chalk.yellow('id, nickname', id, nickname));
-          if (playerRoom[1]) store.dispatch(addRoom({id: dbRoom.id, name: dbRoom.name}));
-          let room = playerRoom[1] ? dbRoom.id : playerRoom[0].id;
+          if (foundWorld[1]) store.dispatch(addWorld({id: dbWorld.id, name: dbWorld.name}));
+          let world = foundWorld[1] ? dbWorld.id : foundWorld[0].id;
 
-          // Create new player with db info, initial position and room
-          let player = Object.assign({}, initPos(), {id, nickname, room});
+          // Create new player with db info, initial position and world
+          let player = Object.assign({}, initPos(), {id, nickname, world});
 
-          // Log player out of all current rooms (async, stored in array of promises)
+          // Log player out of all current worlds (async, stored in array of promises)
           let leavePromises = [];
           forOwn(socket.rooms, currentRoom => {
             leavePromises.push(socket.leaveAsync(currentRoom));
@@ -83,28 +82,28 @@ const setUpListeners = (io, socket) => {
           // Add player to server game state
           store.dispatch(receivePlayer(socket.id, player));
 
-          // Tell all players in room to create object for new player
-          io.sockets.in(room).emit('add_player', socket.id, player);
+          // Tell all players in world to create object for new player
+          io.sockets.in(world).emit('add_player', socket.id, player);
 
-          console.log(`adding ${player.nickname} (${socket.id}) to room ${room}`);
+          console.log(`adding ${player.nickname} (${socket.id}) to world ${world}`);
 
           Promise.all(leavePromises)
             .then(() => {
-              // Find all players in room and tell new player to add to game state
-              let roomPlayers = pickBy(players, currentPlayer => currentPlayer.room === room);
-              roomPlayers[socket.id] = player;
+              // Find all players in world and tell new player to add to game state
+              let worldPlayers = pickBy(players, currentPlayer => currentPlayer.world === world);
+              worldPlayers[socket.id] = player;
 
               // here we pass the entire players store (incl. diet arrays)
-              socket.emitAsync('player_data', roomPlayers);
+              socket.emitAsync('player_data', worldPlayers);
             })
             .then(() => {
-              // Find all food in room and tell new player to add to game state
-              let roomFood = pickBy(food, currentFood => currentFood.room === room);
-              // let roomFood = food.filter(({ room }) => room === room);
+              // Find all food in world and tell new player to add to game state
+              let worldFood = pickBy(food, currentFood => currentFood.world === world);
+              // let worldFood = food.filter(({ world }) => world === world);
 
-              socket.emitAsync('food_data', roomFood);
+              socket.emitAsync('food_data', worldFood);
             })
-            .then(() => socket.joinAsync(room)) // Join room
+            .then(() => socket.joinAsync(world)) // Join world
             .then(() => socket.emit('start_game')); // Tell player to initialize game
         })
         .catch(err => {
@@ -122,11 +121,11 @@ const setUpListeners = (io, socket) => {
           store.dispatch(updatePlayer(socket.id, data));
         } else {
           // if player's coordinates are too far from planet center, they are respawned
-          io.sockets.in(player.room).emit('remove_player', socket.id);
+          io.sockets.in(player.world).emit('remove_player', socket.id);
           store.dispatch(updatePlayer(socket.id, initPos()));
           store.dispatch(clearDiet(socket.id));
-          io.sockets.in(player.room).emit('add_player', socket.id, Object.assign({}, initPos(), {nickname: player.nickname}), true);
-          socket.emit('you_lose', player.room);
+          io.sockets.in(player.world).emit('add_player', socket.id, Object.assign({}, initPos(), {nickname: player.nickname}), true);
+          socket.emit('you_lose', player.world.name);
         }
       }
     });
@@ -143,11 +142,11 @@ const setUpListeners = (io, socket) => {
 
         var place = playerIsLeading(socket.id);
 
-        let roomPlayers = pickBy(players, ({ room }) => room === player.room);
+        let worldPlayers = pickBy(players, ({ world }) => world === player.world);
 
-        var numberPeople = size(roomPlayers);
+        var numberPeople = size(worldPlayers);
 
-        // increase vol and scale of player based on number of people in room and position in leaderboard
+        // increase vol and scale of player based on number of people in world and position in leaderboard
         if (numberPeople === 1) {
             store.dispatch(updateVolume(socket.id, (volume - player.volume) / 1 + player.volume));
             store.dispatch(changePlayerScale(socket.id, ((volume - player.volume) / 1) / player.volume));
@@ -169,20 +168,20 @@ const setUpListeners = (io, socket) => {
         } else if (numberPeople === 3) {
           switch (place){
             case 1:
-              store.dispatch(updateVolume(socket.id, (volume-player.volume)/9 + player.volume));
-              store.dispatch(changePlayerScale(socket.id, ((volume - player.volume)/9) / player.volume));
+              store.dispatch(updateVolume(socket.id, (volume - player.volume) / 9 + player.volume));
+              store.dispatch(changePlayerScale(socket.id, ((volume - player.volume) / 9) / player.volume));
               break;
             case 2:
-              store.dispatch(updateVolume(socket.id, (volume-player.volume)/3 + player.volume));
-              store.dispatch(changePlayerScale(socket.id, ((volume - player.volume)/3) / player.volume));
+              store.dispatch(updateVolume(socket.id, (volume - player.volume) / 3 + player.volume));
+              store.dispatch(changePlayerScale(socket.id, ((volume - player.volume) / 3) / player.volume));
               break;
             case 3:
-              store.dispatch(updateVolume(socket.id, (volume-player.volume)/1 + player.volume));
-              store.dispatch(changePlayerScale(socket.id, ((volume - player.volume)/1) / player.volume));
+              store.dispatch(updateVolume(socket.id, (volume - player.volume) / 1 + player.volume));
+              store.dispatch(changePlayerScale(socket.id, ((volume - player.volume) / 1) / player.volume));
               break;
             default:
-              store.dispatch(updateVolume(socket.id, (volume-player.volume)/1 + player.volume));
-              store.dispatch(changePlayerScale(socket.id, ((volume - player.volume)/1) / player.volume));
+              store.dispatch(updateVolume(socket.id, (volume - player.volume) / 1 + player.volume));
+              store.dispatch(changePlayerScale(socket.id, ((volume - player.volume) / 1) / player.volume));
               break;
           }
         } else if (numberPeople === 4){
@@ -267,7 +266,7 @@ const setUpListeners = (io, socket) => {
               break;
           }
         }
-        io.sockets.in(eaten.room).emit('remove_food', id, socket.id, store.getState().players[socket.id]);
+        io.sockets.in(eaten.world).emit('remove_food', id, socket.id, store.getState().players[socket.id]);
       }
     });
 
@@ -275,11 +274,11 @@ const setUpListeners = (io, socket) => {
     socket.on('disconnect', () => {
       let player = store.getState().players[socket.id];
       if (player) {
-      let { room } = player;
+      let { world } = player;
 
       // Remove player from server game state and tell players to remove player object
       store.dispatch(removePlayer(socket.id));
-      io.sockets.in(room).emit('remove_player', socket.id);
+      io.sockets.in(world).emit('remove_player', socket.id);
 
       console.log(`socket id ${socket.id} has disconnected.`);
       }
@@ -289,13 +288,13 @@ const setUpListeners = (io, socket) => {
     socket.on('leave', () => {
       let player = store.getState().players[socket.id];
       if (player) {
-      let { room } = player;
+      let { world } = player;
 
       // Remove player from server game state and tell players to remove player object
       store.dispatch(removePlayer(socket.id));
-      io.sockets.in(room).emit('remove_player', socket.id);
+      io.sockets.in(world).emit('remove_player', socket.id);
 
-      console.log(`${player.nickname} has left ${room}.`);
+      console.log(`${player.nickname} has left ${world}.`);
       }
     });
 
@@ -305,25 +304,25 @@ const setUpListeners = (io, socket) => {
       let eater = players[id];
 
       if (eaten && eater && Date.now() - (eaten.eatenCooldown || 0) > 5000) {
-        let { room } = eaten;
-        io.sockets.in(room).emit('remove_player', socket.id, id, eater, eaten);
+        let { world } = eaten;
+        io.sockets.in(world).emit('remove_player', socket.id, id, eater, eaten);
         // disabled because bouncing bug
         //store.dispatch(changePlayerScale(id, (volume - eater.volume) / eater.volume));
         store.dispatch(updateVolume(id, volume));
         store.dispatch(updatePlayer(socket.id, initPos()));
         store.dispatch(clearDiet(socket.id));
-        io.sockets.in(room).emit('add_player', socket.id, Object.assign({}, initPos(), {nickname: eaten.nickname}), true);
+        io.sockets.in(world).emit('add_player', socket.id, Object.assign({}, initPos(), {nickname: eaten.nickname}), true);
         socket.emit('you_got_eaten', eater.nickname);
-        io.sockets.in(room).emit('casualty_report', eater.nickname, eaten.nickname);
+        io.sockets.in(world).emit('casualty_report', eater.nickname, eaten.nickname);
       }
     });
 
     socket.on('new_message', message => {
       let player = store.getState().players[socket.id];
         if (player) {
-        let { room, nickname } = player;
+        let { world, nickname } = player;
         let text = swearjar.censor(message);
-        io.sockets.in(room).emit('add_message', { nickname, text });
+        io.sockets.in(world).emit('add_message', { nickname, text });
       }
     });
 };

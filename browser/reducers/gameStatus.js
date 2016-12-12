@@ -11,30 +11,23 @@ const FELL = 'FELL';
 
 /*----------  ACTION CREATORS  ----------*/
 export const lose = eater => {
-	if(eater.length > 15){
-		eater = eater.slice(0,14) + "..."; 
-	}
-
 	return ({
 	  type: LOSE,
-	  eater
+	  eater: eater.length > 15 ? eater.slice(0, 14) + '...' : eater
 	});
-}
+};
+
 export const keepPlaying = () => ({
   type: CONTINUE
 });
-export const fell = room => ({
+export const fell = world => ({
   type: FELL,
-  eaten: room
+  eaten: world
 });
 export const ateSomeone = eaten => {
-	if(eaten.length > 15){
-		eaten = eaten.slice(0,14) + "..."; 
-	}
-
 	return ({
 	  type: ATE,
-	  eaten
+	  eaten: eaten.length > 15 ? eaten.slice(0, 14) + '...' : eaten
 	});
 }
 

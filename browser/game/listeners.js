@@ -69,7 +69,7 @@ export default socket => {
           store.dispatch(ateSomeone(playerObject.nickname));
         }
       if (playerObject) {
-        if(eaterId){
+        if (eaterId){
           // attach player if this was a eat event
           attachPlayer(id, eaterId, eaterData, eatenData);
         }
@@ -106,9 +106,9 @@ export default socket => {
         store.dispatch(lose(eater));
     });
 
-    socket.on('you_lose', room => {
+    socket.on('you_lose', world => {
         store.dispatch(clearRecord());
-        store.dispatch(fell(room));
+        store.dispatch(fell(world));
     });
 
     socket.on('add_message', message => {

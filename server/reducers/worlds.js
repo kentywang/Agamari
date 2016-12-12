@@ -6,17 +6,17 @@ const initialState = [];
 
 
 /*----------  ACTION TYPES  ----------*/
-const ADD_ROOM = 'ADD_ROOM';
-const REMOVE_ROOM = 'REMOVE_ROOM';
+const ADD_WORLD = 'ADD_WORLD';
+const REMOVE_WORLD = 'REMOVE_WORLD';
 
 /*----------  ACTION CREATORS  ----------*/
-const addRoom = room => ({
-  type: ADD_ROOM,
-  room
+const addWorld = world => ({
+  type: ADD_WORLD,
+  world
 });
 
-const removeRoom = id => ({
-  type: REMOVE_ROOM,
+const removeWorld = id => ({
+  type: REMOVE_WORLD,
   id
 });
 
@@ -26,10 +26,10 @@ const removeRoom = id => ({
 /*----------  REDUCER  ----------*/
 const reducer = (state = initialState, action) => {
   switch (action.type) {
-    case ADD_ROOM:
-      if (findIndex(state, { id: action.room.id }) === -1) return [...state, action.room];
+    case ADD_WORLD:
+      if (findIndex(state, { id: action.world.id }) === -1) return [...state, action.world];
       else return state;
-    case REMOVE_ROOM:
+    case REMOVE_WORLD:
       idx = findIndex(state, { id: action.id });
       if (idx + 1) {
         newState = [...state];
@@ -42,4 +42,4 @@ const reducer = (state = initialState, action) => {
   }
 };
 
-module.exports = { reducer, addRoom, removeRoom };
+module.exports = { reducer, addWorld, removeWorld };
