@@ -62,7 +62,7 @@ const setUpListeners = (io, socket) => {
   Promise.promisifyAll(socket);
 
     console.log('A new client has connected');
-    console.log('socket id: ', socket.id);
+    console.log(chalk.yellow('socket id: ', socket.id));
 
     // Player requests to start game as guest
     socket.on('start_as_guest', data => {
@@ -71,12 +71,9 @@ const setUpListeners = (io, socket) => {
       let user = Player.create({ nickname: data.nickname });
       let foundWorld = getWorld();
       let playerWorld = foundWorld[1] ? World.create({ name: foundWorld[0] }) : World.findById(foundWorld.id);
-      console.log(chalk.magenta('promissing all', JSON.stringify(foundWorld), user));
       Promise.all([playerWorld, user])
         .then(([dbWorld, dbUser]) => {
-          console.log(chalk.grey('in then', foundWorld[1] ? dbWorld : foundWorld, dbUser));
           let { id, nickname } = dbUser;
-          console.log(chalk.yellow('id, nickname', id, nickname));
           if (foundWorld[1]) store.dispatch(addWorld({id: dbWorld.id, name: dbWorld.name}));
           let world = foundWorld[1] ? dbWorld.id : foundWorld[0].id;
 
@@ -95,7 +92,7 @@ const setUpListeners = (io, socket) => {
           // Tell all players in world to create object for new player
           io.sockets.in(world).emit('add_player', socket.id, player);
 
-          console.log(`adding ${player.nickname} (${socket.id}) to world ${world}`);
+          console.log(chalk.green(`adding ${player.nickname} (${socket.id}) to world ${world}`));
 
           Promise.all(leavePromises)
             .then(() => {
@@ -296,24 +293,24 @@ const setUpListeners = (io, socket) => {
       // Remove player from server game state and tell players to remove player object
       store.dispatch(removePlayer(socket.id));
       io.sockets.in(world).emit('remove_player', socket.id);
-
-      console.log(`socket id ${socket.id} has disconnected.`);
       }
+      console.log(chalk.grey(`socket id ${socket.id} has disconnected.`));
     });
 
     // Verify client disconnect
     socket.on('leave', () => {
-      let player = store.getState().players[socket.id];
+      let { players, worlds } = store.getState();
+      let player = players[socket.id];
       if (player) {
-      let { world } = player;
+      let world = worlds[player.world] ? worlds[player.world].name : player.world;
 
       // Remove player from server game state and tell players to remove player object
       store.dispatch(removePlayer(socket.id));
       Event.leaveWorld(player);
       Score.add(player);
-      io.sockets.in(world).emit('remove_player', socket.id);
+      io.sockets.in(player.world).emit('remove_player', socket.id);
 
-      console.log(`${player.nickname} has left ${world}.`);
+      console.log(chalk.cyan(`${player.nickname} has left ${world}.`));
       }
     });
 

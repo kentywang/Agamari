@@ -117,10 +117,6 @@ const spawnFood = (io, currentWorld) => {
           io.sockets.in(currentWorld).emit('add_food', id, data);
           id++;
         }
-      } else {
-        console.log(chalk.red('destroying world', JSON.stringify(currentWorld)));
-        store.dispatch(removeMultipleFood(worldFood));
-        store.dispatch(destroyWorld(currentWorld));
       }
   }
 };
@@ -129,16 +125,21 @@ const broadcastState = (io) => {
   let start = Date.now();
   setInterval(() => {
     // On set interval, emit all player positions to all players in each world
-    let { players, worlds } = store.getState();
-    if (size(players)) {
-      if (Date.now() - start > 1000 * 10) {
-        Score.updateAllScores(players);
-        start = Date.now();
-      }
-      for (let currentWorld of worlds) {
-        let worldPlayers = pickBy(players, ({ world }) => world === currentWorld.id);
-        io.sockets.in(currentWorld.id).emit('player_data', worldPlayers);
+    let { players, worlds, food } = store.getState();
+    if (size(players) && (Date.now() - start > 1000 * 10)) {
+      Score.updateAllScores(players);
+      start = Date.now();
+    }
+    for (let currentWorld of worlds) {
+      let worldPlayers = pickBy(players, ({ world }) => world === currentWorld.id);
+      io.sockets.in(currentWorld.id).emit('player_data', worldPlayers);
+      if (size(worldPlayers)) {
         spawnFood(io, currentWorld.id);
+      } else {
+        console.log(chalk.magenta(`Destroying ${currentWorld.name}`))
+        let worldFood = pickBy(food, ({ world }) => world === currentWorld.id);
+        store.dispatch(removeMultipleFood(worldFood));
+        store.dispatch(destroyWorld(currentWorld.id));
       }
     }
   }, (1000 / 30));
