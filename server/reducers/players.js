@@ -1,16 +1,20 @@
 let newState;
 
 /*----------  INITIAL STATE  ----------*/
-const initialState = {eatenCooldown: 0};
+const initialState = {};
 
 /*----------  ACTION TYPES  ----------*/
 const RECEIVE_PLAYERS = 'RECEIVE_PLAYERS';
 const RECEIVE_PLAYER = 'RECEIVE_PLAYER';
-const ASSIGN_ROOM = 'ASSIGN_ROOM';
+const ASSIGN_WORLD = 'ASSIGN_WORLD';
 const UPDATE_PLAYER = 'UPDATE_PLAYER';
 const CHANGE_PLAYER_SCALE = 'CHANGE_PLAYER_SCALE';
 const REMOVE_PLAYER = 'REMOVE_PLAYER';
 const UPDATE_VOLUME = 'UPDATE_VOLUME';
+const INCREMENT_FOOD_EATEN = 'INCREMENT_FOOD_EATEN';
+const CLEAR_FOOD_EATEN = 'CLEAR_FOOD_EATEN';
+const INCREMENT_PLAYERS_EATEN = 'INCREMENT_PLAYERS_EATEN';
+const CLEAR_PLAYERS_EATEN = 'CLEAR_PLAYERS_EATEN';
 const ADD_FOOD_TO_DIET = 'ADD_FOOD_TO_DIET';
 const ADD_PLAYER_TO_DIET = 'ADD_PLAYER_TO_DIET';
 const CLEAR_DIET = 'CLEAR_DIET';
@@ -28,10 +32,10 @@ module.exports.receivePlayer = (id, data) => ({
   data
 });
 
-module.exports.assignRoom = (id, room) => ({
-  type: ASSIGN_ROOM,
+module.exports.assignWorld = (id, world) => ({
+  type: ASSIGN_WORLD,
   id,
-  room
+  world
 });
 
 module.exports.updatePlayer = (id, data) => ({
@@ -55,6 +59,27 @@ module.exports.updateVolume = (id, volume) => ({
   id,
   volume
 });
+
+module.exports.incrementFoodEaten = id => ({
+  type: INCREMENT_FOOD_EATEN,
+  id
+});
+
+module.exports.clearFoodEaten = id => ({
+  type: CLEAR_FOOD_EATEN,
+  id
+});
+
+module.exports.incrementPlayersEaten = id => ({
+  type: INCREMENT_PLAYERS_EATEN,
+  id
+});
+
+module.exports.clearPlayersEaten = id => ({
+  type: CLEAR_PLAYERS_EATEN,
+  id
+});
+
 
 module.exports.addFoodToDiet = (food, id, data) => ({
   type: ADD_FOOD_TO_DIET,
@@ -86,9 +111,9 @@ const immutable = (state = initialState, action) => {
       newState = Object.assign({}, state);
       newState[action.id] = action.data;
       return newState;
-    case ASSIGN_ROOM:
+    case ASSIGN_WORLD:
       newState = Object.assign({}, state);
-      newState[action.id] = Object.assign({}, state[action.id], { room: action.data });
+      newState[action.id] = Object.assign({}, state[action.id], { world: action.world });
       return newState;
     case UPDATE_PLAYER:
       newState = Object.assign({}, state);
@@ -108,10 +133,30 @@ const immutable = (state = initialState, action) => {
       newState[action.id] = Object.assign({}, state[action.id]);
       newState[action.id].volume = ~~action.volume;
       return newState;
+    case INCREMENT_FOOD_EATEN:
+      newState = Object.assign({}, state);
+      newState[action.id] = Object.assign({}, state[action.id]);
+      newState[action.id].foodEaten += 1;
+      return newState;
+    case CLEAR_FOOD_EATEN:
+       newState = Object.assign({}, state);
+      newState[action.id] = Object.assign({}, state[action.id]);
+      newState[action.id].foodEaten = 0;
+      return newState;
+    case INCREMENT_PLAYERS_EATEN:
+      newState = Object.assign({}, state);
+      newState[action.id] = Object.assign({}, state[action.id]);
+      newState[action.id].playersEaten += 1;
+      return newState;
+    case CLEAR_PLAYERS_EATEN:
+       newState = Object.assign({}, state);
+      newState[action.id] = Object.assign({}, state[action.id]);
+      newState[action.id].playersEaten = 0;
+      return newState;
     case ADD_FOOD_TO_DIET:
       newState = Object.assign({}, state);
       newState[action.id] = Object.assign({}, state[action.id]);
-        if(!newState[action.id].diet){
+        if (!newState[action.id].diet){
           newState[action.id].diet = [];
         }
       newState[action.id].diet.push({food: action.food, x: action.data.x, y: action.data.y, z: action.data.z, qx: action.data.qx, qy: action.data.qy, qz: action.data.qz, qw: action.data.qw, scale: action.data.scale}); // when I do playerData: action.data, I get max call stack. Why?
@@ -119,7 +164,7 @@ const immutable = (state = initialState, action) => {
     case ADD_PLAYER_TO_DIET:
       newState = Object.assign({}, state);
       newState[action.id] = Object.assign({}, state[action.id]);
-        if(!newState[action.id].diet){
+        if (!newState[action.id].diet){
           newState[action.id].diet = [];
         }
       newState[action.id].diet.push({eatenPlayer: action.food, x: action.data.x, y: action.data.y, z: action.data.z, qx: action.data.qx, qy: action.data.qy, qz: action.data.qz, qw: action.data.qw, scale: action.data.scale}); // when I do playerData: action.data, I get max call stack. Why?
@@ -142,8 +187,8 @@ const mutable = (state = initialState, action) => {
     case RECEIVE_PLAYER:
       state[action.id] = action.data;
       return state;
-    case ASSIGN_ROOM:
-      state[action.id].room = action.room;
+    case ASSIGN_WORLD:
+      state[action.id].world = action.world;
       return state;
     case UPDATE_PLAYER:
       Object.assign(state[action.id], action.data);

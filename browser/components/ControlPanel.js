@@ -6,7 +6,6 @@ import { openConsole,
          closeConsole,
          openBugReport } from '../reducers/controlPanel';
 import { removeAllFood } from '../reducers/food';
-import { clearRecord } from '../reducers/record';
 import {stopGame} from '../reducers/gameState';
 
 class ControlPanel extends Component {
@@ -56,7 +55,6 @@ const mapDispatchToProps = dispatch => ({
     dispatch(stopGame());
     dispatch(removeAllFood());
     socket.emit('leave');
-    dispatch(clearRecord());
   }
 });
 

@@ -5,8 +5,8 @@ const initialState = {};
 /*----------  ACTION TYPES  ----------*/
 
 const ADD_USER = 'ADD_USER';
-const ASSIGN_ROOM = 'ASSIGN_ROOM';
-const UNASSIGN_ROOM = 'UNASSIGN_ROOM';
+const ASSIGN_WORLD = 'ASSIGN_WORLD';
+const UNASSIGN_WORLD = 'UNASSIGN_WORLD';
 const REMOVE_USER = 'REMOVE_USER';
 
 /*--------
@@ -16,14 +16,14 @@ module.exports.addUser = id => ({
   id
 });
 
-module.exports.assignRoom = (id, room) => ({
-  type: ASSIGN_ROOM,
+module.exports.assignWorld = (id, world) => ({
+  type: ASSIGN_WORLD,
   id,
-  room
+  world
 });
 
-module.exports.unassignRoom = id => ({
-  type: UNASSIGN_ROOM,
+module.exports.unassignWorld = id => ({
+  type: UNASSIGN_WORLD,
   id
 });
 
@@ -42,14 +42,14 @@ module.exports.reducer = (state = initialState, action) => {
   let newState = Object.assign({}, state);
   switch (action.type) {
     case ADD_USER:
-      newState[action.id] = {room: null};
+      newState[action.id] = {world: null};
       return newState;
-    case ASSIGN_ROOM:
-      user = Object.assign({}, newState[action.id], {room: action.room});
+    case ASSIGN_WORLD:
+      user = Object.assign({}, newState[action.id], {world: action.world});
       newState[action.id] = user;
       return newState;
-    case UNASSIGN_ROOM:
-      user = Object.assign({}, newState[action.id], {room: null});
+    case UNASSIGN_WORLD:
+      user = Object.assign({}, newState[action.id], {world: null});
       newState[action.id] = user;
       return newState;
     case REMOVE_USER:

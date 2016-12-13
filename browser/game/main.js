@@ -11,7 +11,6 @@ import { controls, Player} from './player';
 import { Food } from './food';
 
 import {  removeAllFood } from '../reducers/food';
-import {  clearRecord } from '../reducers/record';
 import {  stopGame } from '../reducers/gameState';
 
 const THREE = require('three');
@@ -37,7 +36,6 @@ export const init = () => {
       store.dispatch(stopGame());
       store.dispatch(removeAllFood());
       socket.emit('leave');
-      store.dispatch(clearRecord());
     }, 60 * 1000);
   };
 
@@ -188,10 +186,16 @@ export function animate() {
        world.step(fixedTimeStep, dt, maxSubSteps);
     }
     lastTime = time;
+    loadEnvironment();
+    render();
+  } else {
+    store.dispatch(stopGame());
+    store.dispatch(removeAllFood());
+    socket.emit('leave');
+    clearTimeout(animateTimeout);
   }
 
-  loadEnvironment();
-  render();
+
 
   // stats.end();
 }

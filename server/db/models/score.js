@@ -1,23 +1,46 @@
 const Sequelize = require('sequelize');
 const db = require('../_db');
+const { pick, forOwn } = require('lodash');
 
 const Score = db.define('score', {
-  value: {
+  volume: {
     type: Sequelize.INTEGER,
     allowNull: false,
-    validate: {
-            min: 0
-          }
+    validate: { min: 0 }
   },
-  time: {
-    type: Sequelize.DATE,
-    defaultValue: Sequelize.NOW,
+  playersEaten: {
+    type: Sequelize.INTEGER,
     allowNull: false,
+    validate: { min: 0 }
+  },
+  foodEaten: {
+    type: Sequelize.INTEGER,
+    allowNull: false,
+    validate: { min: 0 }
   }
 },
 {
-  timestamps: false,
-
+  timestamps: true,
+  createdAt: 'time',
+  classMethods: {
+    add: function({ id, volume, playersEaten, foodEaten, world}) {
+      let score = {
+        volume,
+        playersEaten,
+        foodEaten,
+        player_id: id,
+        world_id: world
+      }
+      this.create(score);
+    },
+    updateAllScores: function(players) {
+      let playerScores = [];
+      forOwn(players, ({id, volume, playersEaten, foodEaten, world}) => {
+        playerScores.push({ volume, playersEaten, foodEaten, player_id: id, world_id: world });
+      });
+      this.bulkCreate(playerScores);
+    }
+  }
 }
 );
 

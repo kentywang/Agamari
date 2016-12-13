@@ -1,17 +1,17 @@
 'use strict';
 
 const router = module.exports = require('express').Router();
-const Room = require('../db/models/room');
+const World = require('../db/models/world');
 const Score = require('../db/models/score');
 
 router.get('/', (req, res, next) => {
   Score.findAll()
-    .then(rooms => res.send(rooms))
+    .then(world => res.send(world))
     .catch(next);
 });
 
 router.get('/:id', (req, res, next) => {
- Room.findById(req.params.id)
+ World.findById(req.params.id)
     .then(score => res.json(score))
     .catch(next);
 });
