@@ -111,7 +111,7 @@ export class Food {
               // eat food if larger
               if (playerVol > foodVol ) {
                 this.eaten = true;
-                socket.emit('eat_food', this.id, foodVol + playerVol);
+                socket.emit('eat_food', this.id, foodVol);
               }
             }
           }

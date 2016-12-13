@@ -107,18 +107,22 @@ class Canvas extends Component {
       leaderboard = [];
 
       // shorten own nickname
-      var myNick = scene.getObjectByName(socket.id).nickname;
-      if (myNick.length > 15){
-        myNick = myNick.slice(0,14) + "...";
+      if(scene.getObjectByName(socket.id)){
+        var myNick = scene.getObjectByName(socket.id).nickname;
+        if (myNick.length > 15){
+          myNick = myNick.slice(0,14) + "...";
+        }
       }
 
       // shorten all other nicknames
       for(let id in players){
-        var nick = scene.getObjectByName(id).nickname;
-        if (nick.length > 15){
-          nick = nick.slice(0,14) + "...";
+        if(scene.getObjectByName(id)){
+          var nick = scene.getObjectByName(id).nickname;
+          if (nick.length > 15){
+            nick = nick.slice(0,14) + "...";
+          }
+          leaderboard.push({ nick, vol: players[id].volume });
         }
-        leaderboard.push({ nick, vol: players[id].volume });
       }
 
       // order by volume
