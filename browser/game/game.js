@@ -35,13 +35,13 @@ export function loadEnvironment() {
         // position name text according to scale
         if (playerObject.sprite) {
           playerObject.sprite.position.copy(playerObject.position);
-          playerObject.sprite.position.add(playerObject.sprite.position.clone().normalize().multiplyScalar(scale * 12))
+          playerObject.sprite.position.add(playerObject.sprite.position.clone().normalize().multiplyScalar(scale * 15))
         }
       }
 
       // add mass to self according to scale
       if (id === socket.id){
-        playerObject.cannon.mass = 26 + (scale * 8);
+        playerObject.cannon.mass = 28 + (scale * 6);
       }
 
       // scale name text
