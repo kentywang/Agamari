@@ -1,4 +1,4 @@
-const { pickBy, size } = require('lodash');
+const { pickBy, size, forOwn } = require('lodash');
 const { receiveFood, removeMultipleFood } = require('../reducers/food');
 const { destroyWorld } = require('../reducers/worlds');
 const { Score } = require('../db');
@@ -145,21 +145,18 @@ const broadcastState = (io) => {
   }, (1000 / 30));
 };
 
-function playerIsLeading(id){
+function playerIsLeading(id) {
   // this fn returns position in leaderboard of player id
-  let player = store.getState().players[id];
   let { players } = store.getState();
+  let player = players[id];
 
   if (player) {
-    let currentWorld = player.world;
-    let worldPlayers = pickBy(players, ({ world }) => world === currentWorld);
     let peopleAhead = 0;
-
-    for (var Pid in worldPlayers) {
-      if (worldPlayers[Pid].volume > player.volume){
+    forOwn(players, currentPlayer => {
+      if (currentPlayer.world === player.world && currentPlayer.volume > player.volume) {
         peopleAhead++;
       }
-    }
+    })
     return peopleAhead + 1;
   }
 }
