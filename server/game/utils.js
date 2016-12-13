@@ -1,12 +1,12 @@
 // player spawn function
 const initPos = () => {
-  // let x = Math.random() * 1000 - 500;
-  // let y = Math.random() * 1000 - 500;
-  // let z = Math.random() * 1000 - 500;
+  let x = Math.random() * 1000 - 500;
+  let y = Math.random() * 1000 - 500;
+  let z = Math.random() * 1000 - 500;
   // Constant start position for debugging/testing
-  let x = - 500;
-  let y = - 500;
-  let z = - 500;
+  // let x = - 500;
+  // let y = - 500;
+  // let z = - 500;
   return {
     x,
     y,
