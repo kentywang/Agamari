@@ -1,4 +1,5 @@
 import store from '../store';
+import socket from '../socket';
 
 import {launch , launchReady, buildUp } from '../reducers/abilities';
 
@@ -227,7 +228,12 @@ THREE.PlayerControls = function ( camera, player, cannonMesh , id) {
 
 		    store.dispatch(launch());
 
-	        this.cannonMesh.applyImpulse(new CANNON.Vec3(launchIntoOrbit.x * 3000 * this.launchMult , launchIntoOrbit.z * 3000 * this.launchMult , launchIntoOrbit.y * 3000 * this.launchMult ), topOfBall);
+		    // reduce own volume if greater than 3500
+		    if(store.getState().players[scope.id].volume > 3500){
+		    	socket.emit('launched', scope.launchMult);
+		    }
+
+	        this.cannonMesh.applyImpulse(new CANNON.Vec3(launchIntoOrbit.x * 2750 * this.launchMult , launchIntoOrbit.z * 2750 * this.launchMult , launchIntoOrbit.y * 2750 * this.launchMult ), topOfBall);
 	        scope.cooldown = Date.now();
 
 	        this.launchMult = 1;
