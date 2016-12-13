@@ -13,28 +13,28 @@ const REMOVE_MULTIPLE_FOOD = 'REMOVE_MULTIPLE_FOOD';
 
 
 /*----------  ACTION CREATORS  ----------*/
-module.exports.receiveAllFood = food => ({
+const receiveAllFood = food => ({
   type: RECEIVE_ALL_FOOD,
   food
 });
 
-module.exports.receiveFood = (id, data) => ({
+const receiveFood = (id, data) => ({
   type: RECEIVE_FOOD,
   id,
   data
 });
 
-module.exports.receiveMultipleFood = food => ({
+const receiveMultipleFood = food => ({
   type: RECEIVE_MULTIPLE_FOOD,
   food
 });
 
-module.exports.removeFood = id => ({
+const removeFood = id => ({
   type: REMOVE_FOOD,
   id
 });
 
-module.exports.removeMultipleFood = food => ({
+const removeMultipleFood = food => ({
   type: REMOVE_MULTIPLE_FOOD,
   food
 });
@@ -93,4 +93,13 @@ const chooseReducer = reducerMode => {
   }
 };
 
-module.exports.reducer = chooseReducer('immutable');
+const reducer = chooseReducer('immutable');
+
+module.exports = {
+  reducer,
+  receiveAllFood,
+  receiveFood,
+  receiveMultipleFood,
+  removeFood,
+  removeMultipleFood
+};

@@ -1,4 +1,8 @@
 let newState;
+const { Score, Event } = require('../db');
+const { initPos, getDivisor } = require('../game/utils');
+const chalk = require('chalk');
+const { removeFood } = require('./food');
 
 /*----------  INITIAL STATE  ----------*/
 const initialState = {};
@@ -20,87 +24,124 @@ const ADD_PLAYER_TO_DIET = 'ADD_PLAYER_TO_DIET';
 const CLEAR_DIET = 'CLEAR_DIET';
 
 /*----------  ACTION CREATORS  ----------*/
-
-module.exports.receivePlayers = players => ({
+const receivePlayers = players => ({
   type: RECEIVE_PLAYERS,
   players
 });
 
-module.exports.receivePlayer = (id, data) => ({
+const receivePlayer = (id, data) => ({
   type: RECEIVE_PLAYER,
   id,
   data
 });
 
-module.exports.assignWorld = (id, world) => ({
+const assignWorld = (id, world) => ({
   type: ASSIGN_WORLD,
   id,
   world
 });
 
-module.exports.updatePlayer = (id, data) => ({
+const updatePlayer = (id, data) => ({
   type: UPDATE_PLAYER,
   id,
   data
 });
 
-module.exports.changePlayerScale = (id, change) => ({
+const changePlayerScale = (id, change) => ({
   type: CHANGE_PLAYER_SCALE,
   id, change
 });
 
-module.exports.removePlayer = id => ({
+const removePlayer = id => ({
   type: REMOVE_PLAYER,
   id
 });
 
-module.exports.updateVolume = (id, volume) => ({
+const updateVolume = (id, volume) => ({
   type: UPDATE_VOLUME,
   id,
   volume
 });
 
-module.exports.incrementFoodEaten = id => ({
+const incrementFoodEaten = id => ({
   type: INCREMENT_FOOD_EATEN,
   id
 });
 
-module.exports.clearFoodEaten = id => ({
+const clearFoodEaten = id => ({
   type: CLEAR_FOOD_EATEN,
   id
 });
 
-module.exports.incrementPlayersEaten = id => ({
+const incrementPlayersEaten = id => ({
   type: INCREMENT_PLAYERS_EATEN,
   id
 });
 
-module.exports.clearPlayersEaten = id => ({
+const clearPlayersEaten = id => ({
   type: CLEAR_PLAYERS_EATEN,
   id
 });
 
 
-module.exports.addFoodToDiet = (food, id, data) => ({
+const addFoodToDiet = (food, id, data) => ({
   type: ADD_FOOD_TO_DIET,
   food,
   id,
   data
 });
 
-module.exports.addPlayerToDiet = (food, id, data) => ({
+const addPlayerToDiet = (food, id, data) => ({
   type: ADD_PLAYER_TO_DIET,
   food,
   id,
   data
 });
 
-module.exports.clearDiet = id => ({
+const clearDiet = id => ({
   type: CLEAR_DIET,
   id,
 });
 
 /*----------  THUNK CREATORS  ----------*/
+const addPlayer = (id, player) => dispatch => {
+  dispatch(receivePlayer(id, player));
+  Event.joinWorld(player)
+  Score.add(player);
+};
+
+const playerEatsPlayer = (eater, eaten, volume) => dispatch => {
+    dispatch(incrementPlayersEaten(eater.socketId));
+    // balance change: vol gain only fraction of eaten player's vol
+    dispatch(updateVolume(eater.socketId, (volume - eater.volume) / 3 + eater.volume));
+    dispatch(updatePlayer(eaten.socketId, initPos()));
+    dispatch(clearDiet(eaten.socketId));
+    dispatch(clearFoodEaten(eaten.socketId));
+    dispatch(clearPlayersEaten(eaten.socketId));
+    let respawnedPlayer = Object.assign({}, eaten, initPos());
+    Event.playerEatsPlayer(eater, eaten);
+    Score.add(eaten);
+    Score.add(respawnedPlayer);
+    Event.playerRespawns(respawnedPlayer);
+};
+
+const playerLeaves = player => dispatch => {
+  dispatch(removePlayer(player.socketId));
+  Event.leaveWorld(player);
+  Score.add(player);
+};
+
+const eatFood = (player, foodId, numberPeople, place, volume) => dispatch => {
+  console.log(chalk.blue('eating food'));
+  Event.playerEatsFood(player);
+  dispatch(removeFood(foodId));
+  dispatch(incrementFoodEaten(player.socketId));
+
+  // increase vol and scale of player based on number of people in world and position in leaderboard
+  let divisor = getDivisor(numberPeople, place);
+  dispatch(updateVolume(player.socketId, (volume - player.volume) / divisor + player.volume));
+  dispatch(changePlayerScale(player.socketId, ((volume - player.volume) / divisor) / player.volume));
+};
 
 /*----------  REDUCER  ----------*/
 const immutable = (state = initialState, action) => {
@@ -139,7 +180,7 @@ const immutable = (state = initialState, action) => {
       newState[action.id].foodEaten += 1;
       return newState;
     case CLEAR_FOOD_EATEN:
-       newState = Object.assign({}, state);
+      newState = Object.assign({}, state);
       newState[action.id] = Object.assign({}, state[action.id]);
       newState[action.id].foodEaten = 0;
       return newState;
@@ -219,4 +260,26 @@ const chooseReducer = reducerMode => {
   }
 };
 
-module.exports.reducer =  chooseReducer('immutable');
+const reducer = chooseReducer('immutable');
+
+module.exports = {
+  reducer,
+  receivePlayers,
+  receivePlayer,
+  assignWorld,
+  updatePlayer,
+  changePlayerScale,
+  removePlayer,
+  updateVolume,
+  incrementFoodEaten,
+  clearFoodEaten,
+  incrementPlayersEaten,
+  clearPlayersEaten,
+  addFoodToDiet,
+  addPlayerToDiet,
+  clearDiet,
+  addPlayer,
+  playerEatsPlayer,
+  playerLeaves,
+  eatFood
+ };

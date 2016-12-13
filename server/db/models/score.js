@@ -1,6 +1,7 @@
 const Sequelize = require('sequelize');
 const db = require('../_db');
 const { pick, forOwn } = require('lodash');
+const chalk = require('chalk');
 
 const Score = db.define('score', {
   volume: {
@@ -24,6 +25,7 @@ const Score = db.define('score', {
   createdAt: 'time',
   classMethods: {
     add: function({ id, volume, playersEaten, foodEaten, world}) {
+      console.log(chalk.magenta(id, volume, playersEaten, foodEaten, world));
       let score = {
         volume,
         playersEaten,
@@ -36,6 +38,7 @@ const Score = db.define('score', {
     updateAllScores: function(players) {
       let playerScores = [];
       forOwn(players, ({id, volume, playersEaten, foodEaten, world}) => {
+        console.log(chalk.grey(id, volume, playersEaten, foodEaten, world));
         playerScores.push({ volume, playersEaten, foodEaten, player_id: id, world_id: world });
       });
       this.bulkCreate(playerScores);
