@@ -35,7 +35,7 @@ export function loadEnvironment() {
         // position name text according to scale
         if (playerObject.sprite) {
           playerObject.sprite.position.copy(playerObject.position);
-          playerObject.sprite.position.add(playerObject.sprite.position.clone().normalize().multiplyScalar(scale * 12))
+          playerObject.sprite.position.add(playerObject.sprite.position.clone().normalize().multiplyScalar(scale * 15))
         }
       }
 

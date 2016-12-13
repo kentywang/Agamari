@@ -45,7 +45,7 @@ body, html {
 
 .leaderboard {
 	transform: skewX(3deg) skewY(2deg);
-	font-size: 1.1em;
+	font-size: .9em;
 	z-index: 1;
 	position: fixed;
 	margin-top: 5%;
@@ -57,7 +57,7 @@ body, html {
     position: fixed;
     text-align: right;
     width: 93%;
-    font-size: 1.1em;
+    font-size: 1.2em;
     z-index: 1;
     margin-top: 5%;
     float: right;
@@ -96,7 +96,7 @@ body, html {
 }*/
 
 .score {
-	transform: skewX(2deg) skewY(5deg);
+	transform: skewX(2deg) skewY(4deg);
 	position: fixed;
     text-align: right;
     width: 93%;
@@ -169,7 +169,7 @@ body, html {
 }
 
 #chat-box {
-    transform: skewX(-2deg) skewY(-5deg);
+    transform: skewX(-2deg) skewY(-4deg);
     font-size: 1.1em;
     bottom: 5%;
     margin-left: 7%;

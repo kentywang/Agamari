@@ -126,12 +126,20 @@ class Canvas extends Component {
     }
 
     // show score
-    if(player && displayVol < player.volume){
-      this.state.displayVol = ~~(this.state.displayVol * 1.01);
-    }
-    if(player && displayVol > player.volume){
-      this.state.displayVol = player.volume;
-    }
+     if(player && displayVol < player.volume){
+      if(player.volume/displayVol > 1.01){
+        this.state.displayVol = ~~(this.state.displayVol * 1.01);
+      }else{
+        this.state.displayVol = player.volume;
+      }
+     }
+     if(player && displayVol > player.volume){
+      if(displayVol/player.volume > 1.01){
+        this.state.displayVol = ~~(this.state.displayVol / 1.01);
+      }else{
+        this.state.displayVol = player.volume;
+      }
+     }
 
     // show eater/eaten status for 3 seconds before fading
     if(gameStatus.length){

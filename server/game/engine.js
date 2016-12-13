@@ -93,7 +93,7 @@ const spawnFood = (io, currentRoom) => {
 
           let parms;
           // occasionally spawn food linearly scaled to players
-          if(Math.random() > .92){
+          if(Math.random() > .95){
              parms = foodSize.map(e => (e * playerToFeed.scale));
           }else{
              parms = foodSize.map(e => (e * Math.min(playerToFeed.scale, 1 + Math.log(playerToFeed.scale)/Math.log(5))));
