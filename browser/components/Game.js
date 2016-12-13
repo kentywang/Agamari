@@ -20,7 +20,7 @@ class Canvas extends Component {
         "use arrow keys to move",
         "roll over smaller objects to grow",
         "avoid being rolled up by larger players",
-        "hold & release spacebar for speed boost"],
+        "hold & release spacebar to trade volume for speed"],
       }
     }
 

@@ -324,7 +324,7 @@ const setUpListeners = (io, socket) => {
       let { players } = store.getState();
       let player = players[socket.id];
 
-      let percentageRemainingVol = 1 - .045 * launchMult;
+      let percentageRemainingVol = 1 - .04 * launchMult;
       console.log(launchMult, percentageRemainingVol)
       store.dispatch(updateVolume(socket.id, player.volume * percentageRemainingVol)); 
       store.dispatch(changePlayerScale(socket.id, -1 * player.volume * (1-percentageRemainingVol)/player.volume)); 
