@@ -97,7 +97,7 @@ export default socket => {
         store.dispatch(lose(eater));
     });
 
-    socket.on('you_lose', world => {
+    socket.on('you_fell', world => {
       store.dispatch(fell(world));
     });
 

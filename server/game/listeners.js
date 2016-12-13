@@ -29,7 +29,7 @@ function initPos(){
 const { Player, User, World, Event, Score } = require('../db');
 const store = require('../store');
 const worldNames = require('../world-names');
-const { forOwn, size, pickBy, random } = require('lodash');
+const { forOwn, size, pickBy, random, find } = require('lodash');
 const { receivePlayer,
         removePlayer,
         incrementFoodEaten,
@@ -125,7 +125,8 @@ const setUpListeners = (io, socket) => {
 
     // For every frame of animation, players are emitting their current position
     socket.on('update_position', data => {
-      let player = store.getState().players[socket.id];
+      let { players, worlds } = store.getState();
+      let player = players[socket.id];
       if (player) {
         if ((data.x > -1600 && data.y > -1600 && data.z > -1600) && (data.x < 1600 && data.y < 1600 && data.z < 1600)) {
           // update game state with current position
@@ -138,7 +139,8 @@ const setUpListeners = (io, socket) => {
           store.dispatch(clearFoodEaten(socket.id));
           store.dispatch(clearPlayersEaten(socket.id));
           io.sockets.in(player.world).emit('add_player', socket.id, Object.assign({}, initPos(), {nickname: player.nickname}), true);
-          socket.emit('you_lose', player.world.name);
+          let world = find(worlds, { id: player.world });
+          socket.emit('you_fell', world);
         }
       }
     });

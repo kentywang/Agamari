@@ -76,10 +76,12 @@ export const lose = eater => {
 export const keepPlaying = () => ({
   type: CONTINUE
 });
+
 export const fell = world => ({
   type: FELL,
-  eaten: world
+  world
 });
+
 export const ateSomeone = eaten => {
   return ({
     type: ATE,
@@ -88,7 +90,6 @@ export const ateSomeone = eaten => {
 };
 
 /*----------  THUNK CREATORS  ----------*/
-
 export const startAsGuest = (nickname, socket) => dispatch => {
   if (nickname) {
     socket.emit('start_as_guest', { nickname });
@@ -133,7 +134,7 @@ export default (state = initialState, action) => {
     case LOSE:
       return Object.assign({}, state, { status: `${action.eater} rolled you up` });
     case FELL:
-      return Object.assign({}, state, { status: `you left ${action.eaten}'s orbit` });
+      return Object.assign({}, state, { status: `you left ${action.world}'s orbit` });
     case CONTINUE:
       return Object.assign({}, state, { status: ''});
     case ATE:
