@@ -8,7 +8,6 @@ import BugReportForm from './BugReportForm';
 
 
 class App extends Component {
-
   render() {
     let { isPlaying } = this.props.gameState;
     let { bugReportOpen } = this.props.controlPanel;

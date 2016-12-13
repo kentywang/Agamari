@@ -5,8 +5,7 @@ import ReactDOM from 'react-dom';
 import socket from '../socket';
 import { scene } from '../game/main';
 
-import { keepPlaying } from '../reducers/gameStatus';
-import { hideInstructions } from '../reducers/gameState';
+import { hideInstructions, keepPlaying } from '../reducers/gameState';
 
 import Chat from './Chat';
 
@@ -91,10 +90,8 @@ class Canvas extends Component {
 
   render = () => {
     let { players,
-          gameStatus,
           gameState,
           keepPlaying,
-          record,
           casualty,
           abilities } = this.props;
     let { leaderboard,
@@ -146,7 +143,7 @@ class Canvas extends Component {
      }
 
     // show eater/eaten status for 3 seconds before fading
-    if(gameStatus.length){
+    if(gameState.status.length){
       setTimeout(() => keepPlaying(), 3000);
     }
 
@@ -172,7 +169,7 @@ class Canvas extends Component {
             </div>
           </div>
           <div ref="status" className="status">
-            { gameStatus }
+            { gameState.status }
           </div>
           <div ref="instructions" className="instructions">
             {!gameState.instructionsHidden && instructions[0]}
@@ -192,10 +189,10 @@ class Canvas extends Component {
             </div>
             <div style={{marginTop: '-10px'}}>
               <span>
-                { player && `${record.objectEaten}` }
+                { player && `${player.foodEaten}` }
               </span>
               <span>
-                {record.playersEaten > 0 ? ` + ${record.playersEaten}` : ''}
+                {player && player.playersEaten > 0 ? ` + ${player.playersEaten}` : ''}
               </span>
             </div>
             <div>
@@ -214,7 +211,7 @@ class Canvas extends Component {
   }
 }
 
-const mapStateToProps = ({ players, gameStatus, gameState, abilities, record, casualty }) => ({ players, gameStatus, gameState, abilities, record, casualty });
+const mapStateToProps = ({ players, gameState, abilities, casualty }) => ({ players, gameState, abilities, casualty });
 
 const mapDispatchToProps = dispatch => ({
   keepPlaying: () => dispatch(keepPlaying()),

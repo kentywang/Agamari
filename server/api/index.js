@@ -2,9 +2,9 @@
 
 const api = module.exports = require('express').Router();
 
-api.use('/users', require('./userRoutes'));
-api.use('/rooms', require('./roomRoutes'));
-api.use('/scores', require('./scoreRoutes'));
-api.use('/bugs', require('./bugRoutes'));
-api.use('/state', require('./stateRoutes'));
+api.use('/users', require('./users'));
+api.use('/worlds', require('./worlds'));
+api.use('/scores', require('./scores'));
+api.use('/bugs', require('./bugs'));
+api.use('/state', require('./states'));
 api.get('/whoami', (req, res) => res.send(req.cookie.user));
