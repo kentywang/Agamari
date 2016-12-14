@@ -142,7 +142,7 @@ export class Player {
               // if main player smaller, emit event
               if (thisVol > mainVol){
                 lastEaten = Date.now();
-                socket.emit('got_eaten', id, thisVol + mainVol);
+                socket.emit('got_eaten', id);
               }
             }
           }

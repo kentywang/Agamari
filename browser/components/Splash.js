@@ -62,8 +62,11 @@ const mapDispatchToProps = dispatch => ({
   leave: () => dispatch(stopGame()),
   updateNickname: e => dispatch(setNickname(e.target.value)),
   signInAsGuest: (nickname, socket) => {
-    dispatch(startGame());
-    dispatch(startAsGuest(nickname, socket));
+    // prevent double init
+    if(!store.getState().gameState.isPlaying){
+      dispatch(startGame());
+      dispatch(startAsGuest(nickname, socket));
+    }
   },
   openBugReport: () => dispatch(openBugReport())
 });
