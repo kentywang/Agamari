@@ -110,10 +110,10 @@ const addPlayer = (id, player) => dispatch => {
   Score.add(player);
 };
 
-const playerEatsPlayer = (eater, eaten, volume) => dispatch => {
+const playerEatsPlayer = (eater, eaten, eatenVolume) => dispatch => {
     dispatch(incrementPlayersEaten(eater.socketId));
     // balance change: vol gain only fraction of eaten player's vol
-    dispatch(updateVolume(eater.socketId, (volume - eater.volume) / 3 + eater.volume));
+    dispatch(updateVolume(eater.socketId, eatenVolume / 3 + eater.volume));
     dispatch(updatePlayer(eaten.socketId, initPos()));
     dispatch(clearDiet(eaten.socketId));
     dispatch(clearFoodEaten(eaten.socketId));
@@ -131,7 +131,7 @@ const playerLeaves = player => dispatch => {
   Score.add(player);
 };
 
-const eatFood = (player, foodId, numberPeople, place, volume) => dispatch => {
+const eatFood = (player, foodId, numberPeople, place, foodVolume) => dispatch => {
   console.log(chalk.blue('eating food'));
   Event.playerEatsFood(player);
   dispatch(removeFood(foodId));
@@ -139,8 +139,8 @@ const eatFood = (player, foodId, numberPeople, place, volume) => dispatch => {
 
   // increase vol and scale of player based on number of people in world and position in leaderboard
   let divisor = getDivisor(numberPeople, place);
-  dispatch(updateVolume(player.socketId, (volume - player.volume) / divisor + player.volume));
-  dispatch(changePlayerScale(player.socketId, ((volume - player.volume) / divisor) / player.volume));
+  dispatch(updateVolume(player.socketId, foodVolume / divisor + player.volume));
+  dispatch(changePlayerScale(player.socketId, (foodVolume / divisor) / player.volume));
 };
 
 /*----------  REDUCER  ----------*/

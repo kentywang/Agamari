@@ -116,7 +116,7 @@ const setUpListeners = (io, socket) => {
     });
 
     // When players collide with food objects, they emit the food's id
-    socket.on('eat_food', (id, volume) => {
+    socket.on('eat_food', (id, foodVolume) => {
       let { food, players } = store.getState();
       let eaten = food[id];
       let player = players[socket.id];
@@ -126,8 +126,7 @@ const setUpListeners = (io, socket) => {
         let numberPeople = size(pickBy(players, ({ world }) => world === player.world));
         let place = playerIsLeading(socket.id);
         // increase vol and scale of player based on number of people in world and position in leaderboard
-
-        store.dispatch(eatFood(player, id, numberPeople, place, volume));
+        store.dispatch(eatFood(player, id, numberPeople, place, foodVolume));
         io.sockets.in(eaten.world).emit('remove_food', id, socket.id, player);
       }
     });
@@ -159,16 +158,17 @@ const setUpListeners = (io, socket) => {
       }
     });
 
-    socket.on('got_eaten', (id, volume) => {
+    socket.on('got_eaten', (id) => {
       let { players } = store.getState();
       let eaten = players[socket.id];
       let eater = players[id];
+      let eatenVolume = eaten.volume;
 
       if (eaten && eater && Date.now() - (eaten.eatenCooldown || 0) > 5000) {
         let { world } = eaten;
         let respawnedPlayer = Object.assign({}, eaten, initPos());
 
-        store.dispatch(playerEatsPlayer(eater, eaten, volume))
+        store.dispatch(playerEatsPlayer(eater, eaten, eatenVolume))
         io.sockets.in(world).emit('remove_player', socket.id, id, eater, eaten);
         io.sockets.in(world).emit('add_player', socket.id, respawnedPlayer, true);
         socket.emit('you_got_eaten', eater.nickname);
@@ -180,10 +180,9 @@ const setUpListeners = (io, socket) => {
       let { players } = store.getState();
       let player = players[socket.id];
 
-      let percentageRemainingVol = 1 - 0.04 * launchMult;
-      console.log(launchMult, percentageRemainingVol);
-      store.dispatch(updateVolume(socket.id, player.volume * percentageRemainingVol));
-      store.dispatch(changePlayerScale(socket.id, -1 * player.volume * (1 - percentageRemainingVol)/player.volume));
+      let percentageRemainingVol = 1 - .04 * launchMult;
+      store.dispatch(updateVolume(socket.id, player.volume * percentageRemainingVol)); 
+      store.dispatch(changePlayerScale(socket.id, -1 * player.volume * (1-percentageRemainingVol)/player.volume)); 
     });
 
     socket.on('new_message', message => {
