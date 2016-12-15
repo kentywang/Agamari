@@ -110,7 +110,7 @@ const setUpListeners = (io, socket) => {
           store.dispatch(clearPlayersEaten(socket.id));
           io.sockets.in(player.world).emit('add_player', socket.id, Object.assign({}, initPos(), {nickname: player.nickname}), true);
           let world = find(worlds, { id: player.world });
-          socket.emit('you_fell', world);
+          socket.emit('you_fell', world.name);
         }
       }
     });
