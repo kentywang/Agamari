@@ -32,6 +32,18 @@ const getWorld = () => {
   return [worldNames[random(worldNames.length - 1)], true];
 };
 
+
+// override swearjar asterisks with rice balls
+swearjar.censor = function (text) {
+  let censored = text;
+  this.scan(text, function (word, index, categories) {
+    censored = censored.substr(0, index) +
+                word.replace(/\S/g, '🍙') +
+                censored.substr(index + word.length);
+  });
+  return censored;
+};
+
 const setUpListeners = (io, socket) => {
   Promise.promisifyAll(socket);
 
@@ -40,9 +52,9 @@ const setUpListeners = (io, socket) => {
 
     // Player requests to start game as guest
     socket.on('start_as_guest', data => {
-
+      let nickname = swearjar.censor(data.nickname);
       let { players, food } = store.getState();
-      let user = Player.create({ nickname: data.nickname });
+      let user = Player.create({ nickname });
       let foundWorld = getWorld();
       let playerWorld = foundWorld[1] ? World.create({ name: foundWorld[0] }) : World.findById(foundWorld.id);
       Promise.all([playerWorld, user])
@@ -181,8 +193,8 @@ const setUpListeners = (io, socket) => {
       let player = players[socket.id];
 
       let percentageRemainingVol = 1 - .04 * launchMult;
-      store.dispatch(updateVolume(socket.id, player.volume * percentageRemainingVol)); 
-      store.dispatch(changePlayerScale(socket.id, -1 * player.volume * (1-percentageRemainingVol)/player.volume)); 
+      store.dispatch(updateVolume(socket.id, player.volume * percentageRemainingVol));
+      store.dispatch(changePlayerScale(socket.id, -1 * player.volume * (1-percentageRemainingVol)/player.volume));
     });
 
     socket.on('new_message', message => {
@@ -193,18 +205,6 @@ const setUpListeners = (io, socket) => {
         io.sockets.in(world).emit('add_message', { nickname, text });
       }
     });
-};
-
-// override swearjar asterisks with rice balls
-swearjar.censor = function (text) {
-  let censored = text;
-  this.scan(text, function (word, index, categories) {
-    censored = censored.substr(0, index) +
-                word.replace(/\S/g, '🍙') +
-                censored.substr(index + word.length);
-  });
-
-  return censored;
 };
 
 
