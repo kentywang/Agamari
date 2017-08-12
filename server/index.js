@@ -35,4 +35,9 @@ require(path.join(__dirname, 'db')).db.sync()
     })
     .catch(console.error);
 
+// stay up
+setInterval(function() {
+    http.get("http://agamari.herokuapp.com");
+}, 300000); // every 5 minutes (300000)
+
 module.exports = app;
