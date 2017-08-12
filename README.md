@@ -1,4 +1,4 @@
-##Agamari
+## Agamari
 
 [![Live Demo](https://img.shields.io/badge/demo-online-green.svg)](http://agamari.herokuapp.com) [![Jenkins](https://img.shields.io/jenkins/s/https/jenkins.qa.ubuntu.com/precise-desktop-amd64_default.svg)]() [![license](https://img.shields.io/github/license/mashape/apistatus.svg)](https://github.com/quirkycorgi/Agamari/blob/master/LICENSE)
 
