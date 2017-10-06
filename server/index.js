@@ -37,9 +37,44 @@ require(path.join(__dirname, 'db')).db.sync()
 
 // keep server from falling asleep
 setInterval(function() {
-    // require(path.join(__dirname, 'db')).db.drop(); // drop previous tables so we don't ever run out of usable rows
+ 	// drop previous tables so we don't ever run out of usable rows
+    require(path.join(__dirname, 'db')).Bug.destroy({
+	  where: {},
+	  truncate: true,
+	  cascade: true,
+	});
+	require(path.join(__dirname, 'db')).Event.destroy({
+	  where: {},
+	  truncate: true,
+	  cascade: true,
+	});
+	require(path.join(__dirname, 'db')).EventType.destroy({
+	  where: {},
+	  truncate: true,
+	  cascade: true,
+	});
+	require(path.join(__dirname, 'db')).Player.destroy({
+	  where: {},
+	  truncate: true,
+	  cascade: true,
+	});
+	require(path.join(__dirname, 'db')).Score.destroy({
+	  where: {},
+	  truncate: true,
+	  cascade: true,
+	});
+	require(path.join(__dirname, 'db')).User.destroy({
+	  where: {},
+	  truncate: true,
+	  cascade: true,
+	});
+	require(path.join(__dirname, 'db')).World.destroy({
+	  where: {},
+	  truncate: true,
+	  cascade: true,
+	});
 
     http.get("http://agamari.herokuapp.com"); // fire ping
-}, 300000); // every 5 minutes (300000)
+}, 3000); // every 5 minutes (300000)
 
 module.exports = app;
