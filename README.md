@@ -22,7 +22,7 @@ Agamari is built on [Node.js](https://nodejs.org/) using [Socket.IO](http://sock
 Handling of the game logic is distributed between the client and the server. Clients run their own physics calculations to compute their next position and orientation, while the server manages and modifies the master game state according to game logic and client events such as collisions with objects or other players.
 
 ### How to Play
-- Use the arrow keys (or WASD) to move your rock.
+- Use the arrow keys (or <kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd>) to move your rock.
 - Roll over objects or players smaller than your rock to pick them up and grow.
 - Avoid being rolled up by larger players.
 - Hold & release the spacebar while holding down an arrow key to launch yourself in that direction.
