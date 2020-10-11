@@ -52,7 +52,7 @@
     "redux": "^3.6.0",
     "redux-logger": "^2.7.4",
     "redux-thunk": "^2.1.0",
-    "sequelize": "^3.26.0",
+    "sequelize": "^6.3.5",
     "socket.io": "^1.5.1",
     "swearjar": "^0.1.3",
     "three": "^0.82.1",
