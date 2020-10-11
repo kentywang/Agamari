@@ -233,7 +233,7 @@ THREE.PlayerControls = function ( camera, player, cannonMesh , id) {
 		    	socket.emit('launched', scope.launchMult);
 		    }
 
-	        this.cannonMesh.applyImpulse(new CANNON.Vec3(launchIntoOrbit.x * 2750 * this.launchMult , launchIntoOrbit.z * 2750 * this.launchMult , launchIntoOrbit.y * 2750 * this.launchMult ), topOfBall);
+	        this.cannonMesh.applyImpulse(new CANNON.Vec3(launchIntoOrbit.x * 3500 * this.launchMult , launchIntoOrbit.z * 3500 * this.launchMult , launchIntoOrbit.y * 3500 * this.launchMult ), topOfBall);
 	        scope.cooldown = Date.now();
 
 	        this.launchMult = 1;
