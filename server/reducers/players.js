@@ -112,8 +112,7 @@ const addPlayer = (id, player) => dispatch => {
 
 const playerEatsPlayer = (eater, eaten, volume) => dispatch => {
     dispatch(incrementPlayersEaten(eater.socketId));
-    // balance change: vol gain only fraction of eaten player's vol
-    dispatch(updateVolume(eater.socketId, (volume - eater.volume) / 3 + eater.volume));
+    dispatch(updateVolume(eater.socketId, volume));
     dispatch(updatePlayer(eaten.socketId, initPos()));
     dispatch(clearDiet(eaten.socketId));
     dispatch(clearFoodEaten(eaten.socketId));
