@@ -6,6 +6,11 @@ const url = process.env.DATABASE_URL || `postgres://localhost:5432/${name}`;
 
 const db = new Sequelize(url, {
   logging: false,
-  define: { underscored: true }
+  define: { underscored: true },
+  dialectOptions: {
+    ssl: {
+      rejectUnauthorized: false
+    }
+  }
 });
 module.exports = db;
