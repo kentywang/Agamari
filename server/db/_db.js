@@ -8,9 +8,13 @@ const db = new Sequelize(url, {
   logging: false,
   define: { underscored: true },
   dialectOptions: {
-    ssl: {
-      rejectUnauthorized: false
-    }
+    ...(  // only add this  when on heroku, since local doesn't support SSL cxns
+      process.env.PORT ? {
+        ssl: {
+          rejectUnauthorized: false
+        }
+      } : {}
+    )
   }
 });
 module.exports = db;
