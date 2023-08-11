@@ -1,24 +1,15 @@
 const Sequelize = require('sequelize');
 
-const name = (process.env.DATABASE_NAME || 'agamari');
+const dbhost = process.env.DB_HOST || 'localhost';
+const dbuser = process.env.DB_USER || 'postgres';
+const dbpass = process.env.DB_PASSWORD || 'password';
+const dbname = process.env.DB_NAME || 'postgres';
 
-const url = process.env.DATABASE_URL || `postgres://localhost:5432/${name}`;
+const url =  `postgres://${dbuser}:${dbpass}@${dbhost}:5432/${dbname}`;
 
-const db = process.env.PORT ? (
-  new Sequelize(url, {
-      logging: false,
-      define: { underscored: true },
-      dialectOptions: {
-        ssl: {
-          rejectUnauthorized: false
-        }
-      }
-  })
-) : (
-  new Sequelize(url, {
+const db = new Sequelize(url, {
     logging: false,
     define: { underscored: true },
-  })
-)
+})
 
 module.exports = db;
