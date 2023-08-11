@@ -5,7 +5,7 @@ const Bug = require('../db/models/bug');
 
 
 router.get('/:id', (req, res, next) => {
- Bug.findById(req.params.id)
+ Bug.findByPk(req.params.id)
     .then(bug => res.json(bug))
     .catch(next);
 });
@@ -21,4 +21,3 @@ router.post('/', (req, res, next) => {
     .then(() => res.json({status: 'OK', message: 'Bug report submitted. Thank you.'}))
     .catch(next);
 });
-

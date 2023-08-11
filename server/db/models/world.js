@@ -9,13 +9,9 @@ const World = db.define('world', {
     type: Sequelize.DATE,
     field: 'destroyed_at'
   }
-},
-{
-  classMethods: {
-    blowUp: function(id) {
-      this.update({ destroyedAt: Date.now() }, { where: { id }});
-    }
-  }
 });
+World.blowUp = function(id) {
+  this.update({destroyedAt: Date.now()}, {where: {id}});
+};
 
 module.exports = World;

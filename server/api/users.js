@@ -14,7 +14,7 @@ router.get('/', (req, res, next) => {
 });
 
 router.get('/:id', function (req, res, next) {
-  User.findById(req.params.id)
+  User.findByPk(req.params.id)
     .then(user => res.json(user))
     .catch(next);
 });

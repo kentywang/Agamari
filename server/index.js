@@ -28,7 +28,7 @@ const indexHtmlPath = path.join(__dirname, '..', 'public', 'index.html');
 app.get('/', (req, res, next) => res.sendFile(indexHtmlPath));
 
 // DB Sync and initialize server
-require(path.join(__dirname, 'db')).db.sync()
+require(path.join(__dirname, 'db')).db.authenticate()
     .then(() => {
       server.listen(PORT, () =>
         console.log(chalk.italic.magenta(`Server listening on ${PORT}...`)));

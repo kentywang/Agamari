@@ -10,7 +10,7 @@ router.get('/', (req, res, next) => {
 });
 
 router.get('/:id', (req, res, next) => {
- World.findById(req.params.id)
+ World.findByPk(req.params.id)
     .then(world => res.json(world))
     .catch(next);
 });

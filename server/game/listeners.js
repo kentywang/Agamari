@@ -44,7 +44,7 @@ const setUpListeners = (io, socket) => {
       let { players, food } = store.getState();
       let user = Player.create({ nickname: data.nickname });
       let foundWorld = getWorld();
-      let playerWorld = foundWorld[1] ? World.create({ name: foundWorld[0] }) : World.findById(foundWorld.id);
+      let playerWorld = foundWorld[1] ? World.create({ name: foundWorld[0] }) : World.findByPk(foundWorld.id);
       Promise.all([playerWorld, user])
         .then(([dbWorld, dbUser]) => {
           let { id, nickname } = dbUser;

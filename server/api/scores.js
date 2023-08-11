@@ -11,7 +11,7 @@ router.get('/', (req, res, next) => {
 });
 
 router.get('/:id', (req, res, next) => {
- World.findById(req.params.id)
+ World.findByPk(req.params.id)
     .then(score => res.json(score))
     .catch(next);
 });
