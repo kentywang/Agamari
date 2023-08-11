@@ -48,11 +48,6 @@ setInterval(function() {
       truncate: true,
       cascade: true,
 	});
-	require(path.join(__dirname, 'db')).EventType.destroy({
-      where: {},
-      truncate: true,
-      cascade: true,
-	});
 	require(path.join(__dirname, 'db')).Player.destroy({
       where: {},
       truncate: true,
