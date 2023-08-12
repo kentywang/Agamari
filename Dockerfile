@@ -1,5 +1,3 @@
-# syntax=docker/dockerfile:1
-
 FROM node:20.5-alpine
 RUN apk --no-cache add git
 

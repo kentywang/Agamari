@@ -37,7 +37,7 @@ Handling of the game logic is distributed between the client and the server. Cli
 The simplest way to have Agamari running locally is to have Docker. Simply do
 
 ```
-docker-compose up
+docker compose up
 ```
 
 to start the both app container and db container, and then access the game at `http://localhost:8000`.
@@ -48,7 +48,7 @@ To do local development, you can run Agamari on your computer without Docker, bu
 Once you have Node.js with NPM installed and Postgres installed and running on port `5432`, install the game's dependencies with the following command:
 
 ```
-npm install
+npm install --force
 ```
 
 Then start the server with the following command:
