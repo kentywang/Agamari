@@ -1,57 +1,11 @@
 version: '3.8'
 services:
-
-  db:
-    image: postgres:14.8
-    restart: always
-    environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=password
-    ports:
-      - '5432:5432'
-    volumes:
-      - db:/var/lib/postgresql/data
-
   api:
     container_name: agamari-api
     build:
       context: ./
     image: agamari
-    depends_on:
-      - db
     ports:
       - 8000:80
     environment:
       PORT: 80
-      NODE_ENV: production
-      DB_HOST: db
-      DB_USER: postgres
-      DB_PASSWORD: password
-      DB_NAME: postgres
-    links:
-      - db
-    volumes:
-      - './:/src'
-
-  migration:
-    build:
-      context: ./
-    command: [
-      "npm",
-      "run",
-      "seed",
-    ]
-    depends_on:
-      - db
-      - api
-    environment:
-      PORT: 80
-      NODE_ENV: production
-      DB_HOST: db
-      DB_USER: postgres
-      DB_PASSWORD: password
-      DB_NAME: postgres
-
-volumes:
-  db:
-    driver: local

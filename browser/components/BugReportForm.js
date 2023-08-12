@@ -1,8 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { closeBugReport } from '../reducers/controlPanel';
-import socket from '../socket';
-import axios from 'axios';
 
 class BugReportForm extends Component {
   constructor(props){
@@ -49,7 +47,8 @@ class BugReportForm extends Component {
 
   submitForm() {
     let { name, email, subject, details } = this.state;
-    axios.post('/api/bugs', { name, email, subject, details }).then(res => this.setState({message: res.data.message}));
+    // Submissions are nonfunctional for now, since we got rid of db. Maybe reenable with AWS DynamoDB since it's free.
+    this.setState({message: "Bug report submitted. Thank you."})
     this.resetForm();
   }
 

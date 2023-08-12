@@ -1,5 +1,4 @@
 let newState;
-const { Score, Event } = require('../db');
 const { initPos, getDivisor } = require('../game/utils');
 const chalk = require('chalk');
 const { removeFood } = require('./food');
@@ -106,8 +105,6 @@ const clearDiet = id => ({
 /*----------  THUNK CREATORS  ----------*/
 const addPlayer = (id, player) => dispatch => {
   dispatch(receivePlayer(id, player));
-  Event.joinWorld(player)
-  Score.add(player);
 };
 
 const playerEatsPlayer = (eater, eaten, volume) => dispatch => {
@@ -117,22 +114,14 @@ const playerEatsPlayer = (eater, eaten, volume) => dispatch => {
     dispatch(clearDiet(eaten.socketId));
     dispatch(clearFoodEaten(eaten.socketId));
     dispatch(clearPlayersEaten(eaten.socketId));
-    let respawnedPlayer = Object.assign({}, eaten, initPos());
-    Event.playerEatsPlayer(eater, eaten);
-    Score.add(eaten);
-    Score.add(respawnedPlayer);
-    Event.playerRespawns(respawnedPlayer);
 };
 
 const playerLeaves = player => dispatch => {
   dispatch(removePlayer(player.socketId));
-  Event.leaveWorld(player);
-  Score.add(player);
 };
 
 const eatFood = (player, foodId, numberPeople, place, volume) => dispatch => {
   console.log(chalk.blue('eating food'));
-  Event.playerEatsFood(player);
   dispatch(removeFood(foodId));
   dispatch(incrementFoodEaten(player.socketId));
 

@@ -68,4 +68,15 @@ const getDivisor = (numberPeople, place) => {
   }
 };
 
-module.exports = { initPos, getDivisor };
+const uuid = function(){
+  return Array
+      .from(Array(16))
+      .map(e => Math.floor(Math.random() * 255)
+          .toString(16)
+          .padStart(2,"0"))
+      .join('')
+      .match(/.{1,4}/g)
+      .join('-')
+}
+
+module.exports = { initPos, getDivisor, uuid };

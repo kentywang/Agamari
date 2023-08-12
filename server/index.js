@@ -6,7 +6,7 @@ const path = require('path');
 const chalk = require('chalk');
 const http = require('http');
 const setUpListeners = require('./game/listeners');
-const { broadcastState } = require('./game/engine');
+const {broadcastState} = require('./game/engine');
 
 // Create server and app
 const server = http.createServer();
@@ -16,7 +16,9 @@ server.on('request', app);
 // Sockets
 const io = require('socket.io')(server);
 // setUpSockets(io);
-io.on('connection', socket => { setUpListeners(io, socket); });
+io.on('connection', socket => {
+    setUpListeners(io, socket)
+});
 broadcastState(io);
 
 // Middleware and routers
@@ -26,12 +28,6 @@ require('./middleware').applyMiddleware(app);
 const indexHtmlPath = path.join(__dirname, '..', 'public', 'index.html');
 app.get('/', (req, res, next) => res.sendFile(indexHtmlPath));
 
-// DB Sync and initialize server
-require(path.join(__dirname, 'db')).db.authenticate()
-    .then(() => {
-      server.listen(PORT, () =>
-        console.log(chalk.italic.magenta(`Server listening on ${PORT}...`)));
-    })
-    .catch(console.error);
+server.listen(PORT, () => console.log(chalk.italic.magenta(`Server listening on ${PORT}...`)));
 
 module.exports = app;

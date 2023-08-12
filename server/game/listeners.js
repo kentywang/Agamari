@@ -1,9 +1,8 @@
 const Promise = require('bluebird');
 const swearjar = require('swearjar');
 const chalk = require('chalk');
-const { initPos } = require('./utils');
+const { initPos, uuid} = require('./utils');
 
-const { Player, World } = require('../db');
 const store = require('../store');
 const { playerIsLeading } = require('../game/engine');
 const worldNames = require('../world-names');
@@ -20,16 +19,16 @@ const { updatePlayer,
         changePlayerScale,
         clearDiet } = require('../reducers/players');
 
-
+const World = {};
 const getWorld = () => {
   let { worlds, players} = store.getState();
   for (let world of worlds) {
     let playerCount = size(pickBy(players, player => player.world === world.id));
     if (playerCount < 20) {
-      return [world, false];
+      return world;
     }
   }
-  return [worldNames[random(worldNames.length - 1)], true];
+  return null;
 };
 
 const setUpListeners = (io, socket) => {
@@ -41,56 +40,47 @@ const setUpListeners = (io, socket) => {
     // Player requests to start game as guest
     socket.on('start_as_guest', data => {
 
-      let { players, food } = store.getState();
-      let user = Player.create({ nickname: data.nickname });
+      let {players, food} = store.getState();
       let foundWorld = getWorld();
-      let playerWorld = foundWorld[1] ? World.create({ name: foundWorld[0] }) : World.findByPk(foundWorld.id);
-      Promise.all([playerWorld, user])
-        .then(([dbWorld, dbUser]) => {
-          let { id, nickname } = dbUser;
-          if (foundWorld[1]) store.dispatch(addWorld({id: dbWorld.id, name: dbWorld.name}));
-          let world = foundWorld[1] ? dbWorld.id : foundWorld[0].id;
+      let playerWorld = foundWorld || {id: uuid(), name: worldNames[random(worldNames.length - 1)]};
+      store.dispatch(addWorld(playerWorld));
+      let world = playerWorld.id;
 
-          // Create new player with db info, initial position and world
-          let player = Object.assign({}, initPos(), {socketId: socket.id, id, nickname, world});
+      // Create new player with db info, initial position and world
+      let player = Object.assign({}, initPos(), {socketId: socket.id, id: uuid(), nickname: data.nickname, world});
 
-          // Log player out of all current worlds (async, stored in array of promises)
-          let leavePromises = [];
-          forOwn(socket.rooms, currentRoom => {
-            leavePromises.push(socket.leaveAsync(currentRoom));
-          });
+      // Log player out of all current worlds (async, stored in array of promises)
+      let leavePromises = [];
+      forOwn(socket.rooms, currentRoom => {
+        leavePromises.push(socket.leaveAsync(currentRoom));
+      });
 
-          // Add player to server game state
-          store.dispatch(addPlayer(socket.id, player));
+      // Add player to server game state
+      store.dispatch(addPlayer(socket.id, player));
 
-          // Tell all players in world to create object for new player
-          io.sockets.in(world).emit('add_player', socket.id, player);
+      // Tell all players in world to create object for new player
+      io.sockets.in(world).emit('add_player', socket.id, player);
 
-          console.log(chalk.green(`adding ${player.nickname} (${socket.id}) to world ${world}`));
+      console.log(chalk.green(`adding ${player.nickname} (${socket.id}) to world ${world}`));
 
-          Promise.all(leavePromises)
-            .then(() => {
-              // Find all players in world and tell new player to add to game state
-              let worldPlayers = pickBy(players, currentPlayer => currentPlayer.world === world);
-              worldPlayers[socket.id] = player;
+      Promise.all(leavePromises)
+          .then(() => {
+            // Find all players in world and tell new player to add to game state
+            let worldPlayers = pickBy(players, currentPlayer => currentPlayer.world === world);
+            worldPlayers[socket.id] = player;
 
-              // here we pass the entire players store (incl. diet arrays)
-              socket.emitAsync('player_data', worldPlayers);
-            })
-            .then(() => {
-              // Find all food in world and tell new player to add to game state
-              let worldFood = pickBy(food, currentFood => currentFood.world === world);
-              // let worldFood = food.filter(({ world }) => world === world);
+            // here we pass the entire players store (incl. diet arrays)
+            socket.emitAsync('player_data', worldPlayers);
+          })
+          .then(() => {
+            // Find all food in world and tell new player to add to game state
+            let worldFood = pickBy(food, currentFood => currentFood.world === world);
+            // let worldFood = food.filter(({ world }) => world === world);
 
-              socket.emitAsync('food_data', worldFood);
-            })
-            .then(() => socket.joinAsync(world)) // Join world
-            .then(() => socket.emit('start_game'))// Tell player to initialize game
-        })
-        .catch(err => {
-          console.error(err);
-          socket.emit('start_fail', err);
-        });
+            socket.emitAsync('food_data', worldFood);
+          })
+          .then(() => socket.joinAsync(world)) // Join world
+          .then(() => socket.emit('start_game'))// Tell player to initialize game
     });
 
     // For every frame of animation, players are emitting their current position
@@ -199,7 +189,7 @@ const setUpListeners = (io, socket) => {
 // override swearjar asterisks with rice balls
 swearjar.censor = function (text) {
   let censored = text;
-  this.scan(text, function (word, index, categories) {
+  this.scan(text, function (word, index) {
     censored = censored.substr(0, index) +
                 word.replace(/\S/g, '🍙') +
                 censored.substr(index + word.length);
