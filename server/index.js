@@ -5,7 +5,6 @@ const express = require('express');
 const path = require('path');
 const chalk = require('chalk');
 const http = require('http');
-const store = require('./store');
 const setUpListeners = require('./game/listeners');
 const { broadcastState } = require('./game/engine');
 
@@ -34,42 +33,5 @@ require(path.join(__dirname, 'db')).db.authenticate()
         console.log(chalk.italic.magenta(`Server listening on ${PORT}...`)));
     })
     .catch(console.error);
-
-// keep server from falling asleep
-setInterval(function() {
- 	// drop previous tables so we don't ever run out of usable rows
-    require(path.join(__dirname, 'db')).Bug.destroy({
-      where: {},
-      truncate: true,
-      cascade: true,
-	});
-	require(path.join(__dirname, 'db')).Event.destroy({
-      where: {},
-      truncate: true,
-      cascade: true,
-	});
-	require(path.join(__dirname, 'db')).Player.destroy({
-      where: {},
-      truncate: true,
-      cascade: true,
-	});
-	require(path.join(__dirname, 'db')).Score.destroy({
-      where: {},
-      truncate: true,
-      cascade: true,
-	});
-	require(path.join(__dirname, 'db')).User.destroy({
-      where: {},
-      truncate: true,
-      cascade: true,
-	});
-	require(path.join(__dirname, 'db')).World.destroy({
-      where: {},
-      truncate: true,
-      cascade: true,
-	});
-
-    // http.get("http://agamari.herokuapp.com"); // fire ping
-}, 300000); // every 5 minutes (300000)
 
 module.exports = app;

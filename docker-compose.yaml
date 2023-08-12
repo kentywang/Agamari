@@ -16,7 +16,6 @@ services:
     container_name: agamari-api
     build:
       context: ./
-      target: production
     image: agamari
     depends_on:
       - db

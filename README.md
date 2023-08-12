@@ -33,25 +33,28 @@ Handling of the game logic is distributed between the client and the server. Cli
 - Players farther ahead in volume gain volume from objects at a slower rate. To keep their lead, hunting other players is a more efficient tactic.
 - The larger you are, the heavier and more unwieldly you become, making movement more cumbersome. Be aware of what and how you pick up different objects and players.
 
-### Installation
-To install Agamari on your computer, you will need [Node.js with NPM](https://nodejs.org/en/download/) and [PostgreSQL](http://postgresguide.com/setup/install.html).
+### Running locally
+The simplest way to have Agamari running locally is to have Docker. Simply do
 
-Once you have Node.js with NPM, install the game's dependencies with the following command:
-
-```js
-npm install
+```
+docker-compose up
 ```
 
-When the dependencies have been installed, open PostgreSQL and create a database with the following command:
+to start the both app container and db container, and then access the game at `http://localhost:8000`.
 
-```SQL
-CREATE DATABASE agamari;
+### Local development
+To do local development, you can run Agamari on your computer without Docker, but you will need [Node.js with NPM](https://nodejs.org/en/download/) and [PostgreSQL](http://postgresguide.com/setup/install.html).
+
+Once you have Node.js with NPM installed and Postgres installed and running on port `5432`, install the game's dependencies with the following command:
+
+```
+npm install
 ```
 
 Then start the server with the following command:
 
-```js
-npm start
+```
+npm run dev
 ```
 
 The game will then be accessible at `http://localhost:8000`.
