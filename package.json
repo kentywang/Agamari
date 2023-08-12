@@ -4,10 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "nodemon --exec 'mocha --reporter spec --timeout 1000 test/**/*.test.js || true'",
-    "start": "webpack & node server/index",
+    "build": "webpack",
     "dev": "webpack -w & nodemon server/index",
-    "seed": "node server/db/seed.js"
+    "start": "node server/index"
   },
   "repository": {
     "type": "git",
