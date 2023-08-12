@@ -8,7 +8,7 @@ Inspired by [Katamari Damacy](https://en.wikipedia.org/wiki/Katamari_Damacy) and
 ![](https://github.com/quirkycorgi/Agamari/blob/master/public/gameplay.gif)
 
 ### Live Demo
-A playable online build of Agamari can be found [here](https://agamari.herokuapp.com).
+A playable online build of Agamari can be found [here](http://vmnckpwxor.us17.qoddiapp.com/).
 
 ### Gameplay Mechanics
 Agamari is designed to be a simple-to-understand game that relies on intuitive physics for its gameplay mechanics. Players join each game as small spherical rocks with one purpose for existence: to roll up everything they can on the planet.
