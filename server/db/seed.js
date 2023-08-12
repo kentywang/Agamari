@@ -1,7 +1,5 @@
 'use strict';
 
-const Promise = require('bluebird');
-
 const { EventType, db } = require('./index');
 
   let eventTypes = [
@@ -16,11 +14,13 @@ const { EventType, db } = require('./index');
 db.sync({force: true})
 .then(() => {
   console.log('Dropped old data, now inserting data');
-  return eventTypes.map((eventType) =>  EventType.create(eventType));
+  return Promise.all(eventTypes.map((eventType) =>  EventType.create(eventType)));
 })
 .then(() => {
- console.log('Finished inserting data (press ctrl-c to exit)');
+ console.log('Finished inserting data.');
+ process.exit(0);
 })
 .catch((err) => {
  console.error('There was totally a problem', err, err.stack);
+ process.exit(1);
 });

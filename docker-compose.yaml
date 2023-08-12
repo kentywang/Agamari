@@ -1,5 +1,6 @@
 version: '3.8'
 services:
+
   db:
     image: postgres:14.8
     restart: always
@@ -10,6 +11,7 @@ services:
       - '5432:5432'
     volumes:
       - db:/var/lib/postgresql/data
+
   api:
     container_name: agamari-api
     build:
@@ -31,6 +33,26 @@ services:
       - db
     volumes:
       - './:/src'
+
+  migration:
+    build:
+      context: ./
+    command: [
+      "npm",
+      "run",
+      "seed",
+    ]
+    depends_on:
+      - db
+      - api
+    environment:
+      PORT: 80
+      NODE_ENV: production
+      DB_HOST: db
+      DB_USER: postgres
+      DB_PASSWORD: password
+      DB_NAME: postgres
+
 volumes:
   db:
     driver: local
