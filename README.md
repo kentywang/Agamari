@@ -43,12 +43,12 @@ docker compose up
 and then access the game at `http://localhost:8000`.
 
 ### Local development
-To do local development, you can run Agamari on your computer without Docker, but you will need [Node.js with NPM](https://nodejs.org/en/download/).
+To do local development, you can run Agamari on your computer without Docker, but you will need [Node.js with NPM](https://nodejs.org/en/download/) (tested on 20.5).
 
 Once you have Node.js with NPM installed, install the game's dependencies with the following command:
 
 ```
-npm install --force
+npm install
 ```
 
 Then start the server with the following command:
