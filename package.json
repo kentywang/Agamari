@@ -59,8 +59,5 @@
     "nodemon": "^1.7.1",
     "supertest": "^1.1.0",
     "supertest-as-promised": "^3.1.0"
-  },
-  "engines": {
-    "node": "20.5.0"
   }
 }
