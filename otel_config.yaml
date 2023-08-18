@@ -1,0 +1,42 @@
+exporters:
+  sumologic:
+    sending_queue:
+      enabled: true
+
+extensions:
+  sumologic:
+    installation_token: # add secret here
+
+receivers:
+#  filelog:
+#    include:
+#      - /var/log/myservice/*.log
+#      - /other/path/**/*.txt
+#    include_file_name: false
+#    include_file_path_resolved: true
+#    operators:
+#      - type: move
+#        from: attributes["log.file.path_resolved"]
+#        to: resource["log.file.path_resolved"]
+#    start_at: beginning
+  hostmetrics:
+    collection_interval: 30s
+    scrapers:
+      cpu:
+      memory:
+#  otlp:
+#    protocols:
+#      grpc:
+
+service:
+  extensions: [sumologic]
+  pipelines:
+#    logs:
+#      receivers: [filelog]
+#      exporters: [sumologic]
+    metrics:
+      receivers: [hostmetrics]
+      exporters: [sumologic]
+#    traces:
+#      receivers: [otlp]
+#      exporters: [sumologic]
