@@ -28,6 +28,7 @@ class Canvas extends Component {
 
     // load sound(s)
     createjs.Sound.registerSound("eat.ogg", "eatSound");
+    createjs.Sound.registerSound("eat_player.wav", "eatPlayerSound");
 
     const leaderboard = ReactDOM.findDOMNode(this.refs.leaderboard);
     const record = ReactDOM.findDOMNode(this.refs.record);

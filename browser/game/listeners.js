@@ -57,6 +57,7 @@ export default socket => {
     socket.on('remove_player', (id, eaterId, eaterData, eatenData) => {
       let playerObject = scene.getObjectByName(id);
         if (eaterId === socket.id){
+          createjs.Sound.play('eatPlayerSound');
           createjs.Sound.play('eatSound');
           // store.dispatch(incrementPlayersEaten());
           store.dispatch(ateSomeone(playerObject.nickname));
@@ -94,6 +95,7 @@ export default socket => {
       });
 
     socket.on('you_got_eaten', eater => {
+        createjs.Sound.play('eatSound');
         store.dispatch(lose(eater));
     });
 
