@@ -1,6 +1,5 @@
 const Promise = require('bluebird');
 const swearjar = require('swearjar');
-const chalk = require('chalk');
 const { initPos, uuid} = require('./utils');
 
 const store = require('../store');
@@ -35,7 +34,7 @@ const setUpListeners = (io, socket) => {
   Promise.promisifyAll(socket);
 
     console.log('A new client has connected');
-    console.log(chalk.yellow('socket id: ', socket.id));
+    console.log('socket id: ', socket.id);
 
     // Player requests to start game as guest
     socket.on('start_as_guest', data => {
@@ -61,7 +60,7 @@ const setUpListeners = (io, socket) => {
       // Tell all players in world to create object for new player
       io.sockets.in(world).emit('add_player', socket.id, player);
 
-      console.log(chalk.green(`adding ${player.nickname} (${socket.id}) to world ${world}`));
+      console.log(`adding ${player.nickname} (${socket.id}) to world ${world}`);
 
       Promise.all(leavePromises)
           .then(() => {
@@ -133,7 +132,7 @@ const setUpListeners = (io, socket) => {
       store.dispatch(playerLeaves(player));
       io.sockets.in(world).emit('remove_player', socket.id);
       }
-      console.log(chalk.grey(`socket id ${socket.id} has disconnected.`));
+      console.log(`socket id ${socket.id} has disconnected.`);
     });
 
     // Verify client disconnect
@@ -145,7 +144,7 @@ const setUpListeners = (io, socket) => {
       store.dispatch(playerLeaves(player));
       let world = worlds[player.world] ? worlds[player.world].name : player.world;
       io.sockets.in(player.world).emit('remove_player', socket.id);
-      console.log(chalk.cyan(`${player.nickname} has left ${world}.`));
+      console.log(`${player.nickname} has left ${world}.`);
       }
     });
 
@@ -171,7 +170,6 @@ const setUpListeners = (io, socket) => {
       let player = players[socket.id];
 
       let percentageRemainingVol = 1 - 0.01 * launchMult;
-      console.log(launchMult, percentageRemainingVol);
       store.dispatch(updateVolume(socket.id, player.volume * percentageRemainingVol));
       store.dispatch(changePlayerScale(socket.id, -1 * player.volume * (1 - percentageRemainingVol)/player.volume));
     });

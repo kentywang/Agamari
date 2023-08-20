@@ -3,7 +3,6 @@ const PORT = process.env.PORT || 8000;
 
 const express = require('express');
 const path = require('path');
-const chalk = require('chalk');
 const http = require('http');
 const setUpListeners = require('./game/listeners');
 const {broadcastState} = require('./game/engine');
@@ -28,6 +27,6 @@ require('./middleware').applyMiddleware(app);
 const indexHtmlPath = path.join(__dirname, '..', 'public', 'index.html');
 app.get('/', (req, res, next) => res.sendFile(indexHtmlPath));
 
-server.listen(PORT, () => console.log(chalk.italic.magenta(`Server listening on ${PORT}...`)));
+server.listen(PORT, () => console.log(`Server listening on ${PORT}...`));
 
 module.exports = app;

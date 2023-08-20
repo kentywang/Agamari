@@ -1,24 +1,16 @@
 import store from '../store';
-import { attachFood, attachPlayer } from './utils';
+import {attachFood, attachPlayer} from './utils';
 
-import {  closeConsole,
-          setError } from '../reducers/controlPanel';
-import {  receivePlayers } from '../reducers/players';
-import {  removeFood,
-          receiveFood,
-          receiveMultipleFood } from '../reducers/food';
-import {  lose,
-          fell,
-          ateSomeone } from '../reducers/gameState';
-import { receiveMessage } from '../reducers/messages';
-import {  casualtyReport } from '../reducers/casualty';
+import {closeConsole, setError} from '../reducers/controlPanel';
+import {receivePlayers} from '../reducers/players';
+import {receiveFood, receiveMultipleFood, removeFood} from '../reducers/food';
+import {ateSomeone, fell, lose} from '../reducers/gameState';
+import {receiveMessage} from '../reducers/messages';
+import {casualtyReport} from '../reducers/casualty';
 
-import { init,
-         animate,
-         scene,
-         world } from '../game/main';
-import { Player } from '../game/player';
-import { Food } from '../game/food';
+import {animate, init, scene, world} from '../game/main';
+import {Player} from '../game/player';
+import {Food} from '../game/food';
 
 
 export default socket => {
@@ -30,7 +22,6 @@ export default socket => {
 
     // Receive current positions for all food. Happens before start.
     socket.on('food_data', state => {
-      //console.log(state)
       store.dispatch(receiveMultipleFood(state));
     });
 

@@ -24,7 +24,6 @@
     "bluebird": "^3.4.6",
     "body-parser": "^1.15.2",
     "cannon": "github:schteppe/cannon.js",
-    "chalk": "^1.1.3",
     "classnames": "^2.2.5",
     "cookie-session": "^2.0.0-alpha.2",
     "express": "^4.14.0",
@@ -52,17 +51,13 @@
     "@babel/preset-env": "^7.22.10",
     "@babel/preset-react": "^7.22.5",
     "babel-loader": "^9.1.3",
-    "chai": "3.4.1",
     "eslint": "^8.47.0",
     "eslint-config-airbnb": "^19.0.4",
     "eslint-plugin-import": "^2.28.1",
     "eslint-plugin-jsx-a11y": "^6.7.1",
     "eslint-plugin-react": "^7.33.2",
     "eslint-plugin-react-hooks": "^4.6.0",
-    "mocha": "^2.3.3",
     "nodemon": "^1.7.1",
-    "supertest": "^1.1.0",
-    "supertest-as-promised": "^3.1.0",
     "webpack-cli": "^5.1.4"
   }
 }

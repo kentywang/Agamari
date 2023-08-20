@@ -1,6 +1,5 @@
 let newState;
 const { initPos, getDivisor } = require('../game/utils');
-const chalk = require('chalk');
 const { removeFood } = require('./food');
 
 /*----------  INITIAL STATE  ----------*/
@@ -121,7 +120,6 @@ const playerLeaves = player => dispatch => {
 };
 
 const eatFood = (player, foodId, numberPeople, place, volume) => dispatch => {
-  console.log(chalk.blue('eating food'));
   dispatch(removeFood(foodId));
   dispatch(incrementFoodEaten(player.socketId));
 
