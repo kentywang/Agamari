@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "module": "esnext",
+    "target": "esnext",
+    "allowJs": true,
+    "checkJs": true,
+    "jsx": "preserve",
+    "declaration": true,
+    "sourceMap": true,
+    "outDir": "public/build",
+    "allowSyntheticDefaultImports": true,
+    "moduleResolution": "nodenext",
+    "skipLibCheck": true
+  },
+
+  "include":["browser/**/*"],
+}
