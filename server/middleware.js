@@ -17,7 +17,6 @@ const applyMiddleware = app => {
    .use(express.static(path.join(__dirname, '..', 'public')))
    .use('/materialize-css',
       express.static(path.join(__dirname, '..', 'node_modules', 'materialize-css', 'dist')))
-   .use('/jquery', express.static(path.join(__dirname, '..', 'node_modules', 'jquery', 'dist')))
 };
 
 module.exports = { applyMiddleware };

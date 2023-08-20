@@ -1,22 +1,22 @@
-import { forOwn } from 'lodash';
+import {forOwn} from 'lodash';
 import store from '../store';
 import socket from '../socket';
 
-import { getMeshData, setCannonPosition, setMeshPosition } from './utils';
-import { fixedTimeStep, maxSubSteps, myColors } from './config';
+import {getMeshData, setCannonPosition, setMeshPosition} from './utils';
+import {fixedTimeStep, maxSubSteps, myColors} from './config';
 
-import { loadEnvironment, loadGame } from './game';
-import { controls, Player } from './player';
-import { Food } from './food';
+import {loadEnvironment, loadGame} from './game';
+import {controls, Player} from './player';
+import {Food} from './food';
 
-import { removeAllFood } from '../reducers/food';
-import { stopGame } from '../reducers/gameState';
+import {removeAllFood} from '../reducers/food';
+import {stopGame} from '../reducers/gameState';
 
 const THREE = require('three');
 const CANNON = require('../../public/cannon.min.js');
 
 let animateTimeout;
-let scene; let camera; let canvas; let renderer; let composer; let stats; let pass; let
+let scene; let camera; let canvas; let renderer; let composer; let pass; let
   shader;
 let world; let groundMaterial; let ballMaterial; let
   shadowLight;
@@ -131,11 +131,6 @@ export const init = () => {
 
   loadGame();
 
-  // FPS monitor
-  // stats = new Stats();
-  // stats.showPanel( 0 ); // 0: fps, 1: ms, 2: mb, 3+: custom
-  // document.body.appendChild( stats.dom );
-
   // effect composer for post-processing (renderer goes thru this)
   const parameters = {
     minFilter: THREE.LinearFilter, magFilter: THREE.LinearFilter, format: THREE.RGBAFormat, stencilBuffer: false,
@@ -155,7 +150,6 @@ export const init = () => {
 };
 
 export function animate() {
-  //   stats.begin();
 
   animateTimeout = setTimeout(() => {
     requestAnimationFrame(animate);
@@ -204,7 +198,6 @@ export function animate() {
     clearTimeout(animateTimeout);
   }
 
-  // stats.end();
 }
 
 function render() {

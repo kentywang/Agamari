@@ -28,7 +28,6 @@
     "classnames": "^2.2.5",
     "cookie-session": "^2.0.0-alpha.2",
     "express": "^4.14.0",
-    "jquery": "^3.1.1",
     "json-loader": "^0.5.4",
     "materialize-css": "^0.97.8",
     "morgan": "^1.7.0",
