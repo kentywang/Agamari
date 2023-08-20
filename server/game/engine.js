@@ -2,7 +2,6 @@ const { pickBy, size, forOwn } = require('lodash');
 const { receiveFood, removeMultipleFood } = require('../reducers/food');
 const { destroyWorld } = require('../reducers/worlds');
 const store = require('../store');
-const chalk = require('chalk');
 
 let types = ['box', 'sphere'];
 let elapsedTime = {},
@@ -134,7 +133,7 @@ const broadcastState = (io) => {
       if (size(worldPlayers)) {
         spawnFood(io, currentWorld.id);
       } else {
-        console.log(chalk.magenta(`Destroying ${currentWorld.name}`))
+        console.log(`Destroying ${currentWorld.name}`)
         let worldFood = pickBy(food, ({ world }) => world === currentWorld.id);
         store.dispatch(removeMultipleFood(worldFood));
         store.dispatch(destroyWorld(currentWorld.id));

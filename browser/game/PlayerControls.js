@@ -1,9 +1,7 @@
 import store from '../store';
 import socket from '../socket';
 
-import {launch , launchReady, buildUp } from '../reducers/abilities';
-
-import { scene } from './main';
+import {buildUp, launch, launchReady} from '../reducers/abilities';
 
 const THREE = require('three');
 const CANNON = require('../../public/cannon.min.js');

@@ -1,13 +1,14 @@
-
 @font-face {
     font-family: "Quicksand";
     src: url("./Quicksand-Regular.ttf");
 }
+
 @font-face {
     font-family: "Quicksand";
     src: url("./Quicksand-Light.ttf");
     font-weight: lighter;
 }
+
 @font-face {
     font-family: "Quicksand";
     src: url("./Quicksand-Bold.ttf");
@@ -27,29 +28,29 @@ body, html {
 
 #title {
     color: white;
-	font-family: "Quicksand", sans-serif;
-	font-weight: lighter;
-	font-size: 7vw;
-	letter-spacing: 0.4em;
-	position: fixed;
-	top: 40%;
-	left: 50%;
-	transform: translate(-50%, -50%);
+    font-family: "Quicksand", sans-serif;
+    font-weight: lighter;
+    font-size: 7vw;
+    letter-spacing: 0.4em;
+    position: fixed;
+    top: 40%;
+    left: 50%;
+    transform: translate(-50%, -50%);
 }
 
 #canvas {
-	position: absolute;
-	width: 100%;
-	height: 100%;
+    position: absolute;
+    width: 100%;
+    height: 100%;
 }
 
 .leaderboard {
-	transform: skewX(3deg) skewY(2deg);
-	font-size: .9em;
-	z-index: 1;
-	position: fixed;
-	margin-top: 5%;
-	margin-left: 7%;
+    transform: skewX(3deg) skewY(2deg);
+    font-size: .9em;
+    z-index: 1;
+    position: fixed;
+    margin-top: 5%;
+    margin-left: 7%;
 }
 
 .record {
@@ -68,36 +69,26 @@ body, html {
     font-size: 2em;
     z-index: 1;
     position: fixed;
-      top: 78%;
-      left: 50%;
-      transform: translate(-50%, -50%);
+    top: 78%;
+    left: 50%;
+    transform: translate(-50%, -50%);
     text-align: center;
 
 }
 
 .status {
-	font-size: 3em;
-	z-index: 1;
-	position: fixed;
-	  top: 20%;
-	  left: 50%;
-	  transform: translate(-50%, -50%);
+    font-size: 3em;
+    z-index: 1;
+    position: fixed;
+    top: 20%;
+    left: 50%;
+    transform: translate(-50%, -50%);
     text-align: center;
-
 }
 
-/*.abilities {
-	transform: skewX(-2deg) skewY(-5deg);
-	font-size: 3em;
-	z-index: 1;
-	position: fixed;
-	bottom: 5%;
-	margin-left: 7%;
-}*/
-
 .score {
-	transform: skewX(2deg) skewY(4deg);
-	position: fixed;
+    transform: skewX(2deg) skewY(4deg);
+    position: fixed;
     text-align: right;
     width: 93%;
     font-size: 1.8em;
@@ -107,7 +98,7 @@ body, html {
     margin-left: auto;
 }
 
-.score-row{
+.score-row {
     text-align: right;
 }
 
@@ -127,7 +118,7 @@ body, html {
     padding: 1vh 1vw;
 }
 
-#name-box{
+#name-box {
     font-weight: bold;
     color: white;
     position: fixed;
@@ -150,17 +141,17 @@ body, html {
     height: 100%;
     top: 95%;
     left: 50%;
-    transform: translate(-50%,0%);
+    transform: translate(-50%, 0%);
     text-align: center;
 
 }
 
 .icon-github {
-  color: white;
+    color: white;
 }
 
 .fa-github {
-  color: white;
+    color: white;
 }
 
 #chat-button {
@@ -204,7 +195,7 @@ body, html {
 }
 
 #message-box, #last-message {
-    background-color: rgba(0,0,0,0.4);
+    background-color: rgba(0, 0, 0, 0.4);
 }
 
 #last-message {
