@@ -1,58 +1,64 @@
+import { forOwn } from 'lodash';
 import store from '../store';
 import socket from '../socket';
 
 import { getMeshData, setCannonPosition, setMeshPosition } from './utils';
-import { myColors, fixedTimeStep, maxSubSteps } from './config';
+import { fixedTimeStep, maxSubSteps, myColors } from './config';
 
-import { forOwn } from 'lodash';
-
-import { loadGame, loadEnvironment } from './game';
-import { controls, Player} from './player';
+import { loadEnvironment, loadGame } from './game';
+import { controls, Player } from './player';
 import { Food } from './food';
 
-import {  removeAllFood } from '../reducers/food';
-import {  stopGame } from '../reducers/gameState';
+import { removeAllFood } from '../reducers/food';
+import { stopGame } from '../reducers/gameState';
 
 const THREE = require('three');
 const CANNON = require('../../public/cannon.min.js');
 
 let animateTimeout;
-let scene, camera, canvas, renderer, composer, stats, pass, shader;
-let world, groundMaterial, ballMaterial, shadowLight;
-let geometry, material, groundShape, groundBody, hemisphereLight, ambientLight;
-let timeFromStart = Date.now();
-let time, lastTime;
-let someColors = myColors();
+let scene; let camera; let canvas; let renderer; let composer; let stats; let pass; let
+  shader;
+let world; let groundMaterial; let ballMaterial; let
+  shadowLight;
+let geometry; let material; let groundShape; let groundBody; let hemisphereLight; let
+  ambientLight;
+const timeFromStart = Date.now();
+let time; let
+  lastTime;
+const someColors = myColors();
 let afkCall;
 
 export const init = () => {
-
   // set afk status to false
   window.onfocus = () => clearTimeout(afkCall);
 
   // start timer for player kick
   window.onblur = () => {
-    afkCall = setTimeout(()=> {
+    afkCall = setTimeout(() => {
       store.dispatch(stopGame());
       store.dispatch(removeAllFood());
       socket.emit('leave');
     }, 60 * 1000);
   };
 
-  let { players, food } = store.getState();
+  const { players, food } = store.getState();
 
   // initialize THREE scene, camera, renderer
   scene = new THREE.Scene();
-  camera = new THREE.PerspectiveCamera(65,
-                                       window.innerWidth / window.innerHeight,
-                                       1,
-                                       2500);
+  camera = new THREE.PerspectiveCamera(
+    65,
+    window.innerWidth / window.innerHeight,
+    1,
+    2500,
+  );
   canvas = document.getElementById('canvas');
-  renderer = new THREE.WebGLRenderer({alpha: true, canvas});
-  renderer.setPixelRatio( window.devicePixelRatio );
-  renderer.setSize(window.innerWidth / 1,
-                   window.innerHeight / 1,
-                   false);
+  renderer = new THREE.WebGLRenderer({ alpha: true, canvas });
+  renderer.setPixelRatio(window.devicePixelRatio);
+  renderer.setSize(
+    window.innerWidth / 1,
+    window.innerHeight / 1,
+    false,
+  );
   scene.add(camera);
 
   // shading
@@ -65,10 +71,11 @@ export const init = () => {
   world.broadphase = new CANNON.NaiveBroadphase();
 
   // initialize all existing players in room
-  let newPlayer, newFood;
+  let newPlayer; let
+    newFood;
 
   forOwn(players, (data, id) => {
-    let isMainPlayer = id === socket.id;
+    const isMainPlayer = id === socket.id;
     newPlayer = new Player(id, data, isMainPlayer);
     newPlayer.init();
   });
@@ -81,17 +88,17 @@ export const init = () => {
   // adjust friction between ball & ground
   groundMaterial = new CANNON.Material('groundMaterial');
   ballMaterial = new CANNON.Material('ballMaterial');
-  var groundGroundCm = new CANNON.ContactMaterial(ballMaterial, groundMaterial, {
-      friction: 0.9,
-      restitution: 0.0,
-      contactEquationStiffness: 1e8,
-      contactEquationRelaxation: 3,
-      frictionEquationStiffness: 1e8,
-      frictionEquationRegularizationTime: 3,
+  const groundGroundCm = new CANNON.ContactMaterial(ballMaterial, groundMaterial, {
+    friction: 0.9,
+    restitution: 0.0,
+    contactEquationStiffness: 1e8,
+    contactEquationRelaxation: 3,
+    frictionEquationStiffness: 1e8,
+    frictionEquationRegularizationTime: 3,
   });
-  var ballCm = new CANNON.ContactMaterial(ballMaterial, ballMaterial, {
-      friction: 0.0,
-      restitution: 0.9
+  const ballCm = new CANNON.ContactMaterial(ballMaterial, ballMaterial, {
+    friction: 0.0,
+    restitution: 0.9,
   });
   world.addContactMaterial(groundGroundCm);
   world.addContactMaterial(ballCm);
@@ -100,7 +107,7 @@ export const init = () => {
   createLevel();
 
   // lighting
-  hemisphereLight = new THREE.HemisphereLight('#004570', someColors['pink'], 0.8);
+  hemisphereLight = new THREE.HemisphereLight('#004570', someColors.pink, 0.8);
 
   shadowLight = new THREE.DirectionalLight('#4ECDC4', 0.3);
 
@@ -119,7 +126,7 @@ export const init = () => {
   scene.add(hemisphereLight);
   scene.add(shadowLight);
 
-  ambientLight = new THREE.AmbientLight(someColors['green'], 0.5);
+  ambientLight = new THREE.AmbientLight(someColors.green, 0.5);
   scene.add(ambientLight);
 
   loadGame();
@@ -130,32 +137,34 @@ export const init = () => {
   // document.body.appendChild( stats.dom );
 
   // effect composer for post-processing (renderer goes thru this)
-  var parameters = { minFilter: THREE.LinearFilter, magFilter: THREE.LinearFilter, format: THREE.RGBAFormat, stencilBuffer: false };
+  const parameters = {
+    minFilter: THREE.LinearFilter, magFilter: THREE.LinearFilter, format: THREE.RGBAFormat, stencilBuffer: false,
+  };
 
-  var renderTarget = new THREE.WebGLRenderTarget( window.innerWidth, window.innerHeight, parameters );
+  const renderTarget = new THREE.WebGLRenderTarget(window.innerWidth, window.innerHeight, parameters);
 
-  composer = new THREE.EffectComposer( renderer, renderTarget );
-  composer.addPass( new THREE.RenderPass( scene, camera ) );
+  composer = new THREE.EffectComposer(renderer, renderTarget);
+  composer.addPass(new THREE.RenderPass(scene, camera));
 
-  var vignetteShader = new THREE.ShaderPass( THREE.VignetteShader );
+  const vignetteShader = new THREE.ShaderPass(THREE.VignetteShader);
   vignetteShader.renderToScreen = true;
-  composer.addPass( vignetteShader );
+  composer.addPass(vignetteShader);
 
   // Events
-  window.addEventListener( 'resize', onWindowResize, false );
+  window.addEventListener('resize', onWindowResize, false);
 };
 
 export function animate() {
-   //   stats.begin();
+  //   stats.begin();
 
-  animateTimeout = setTimeout( function() {
-    requestAnimationFrame( animate );
+  animateTimeout = setTimeout(() => {
+    requestAnimationFrame(animate);
 
     // emit positional data to server
     socket.emit('update_position', getMeshData(playerMesh));
-  }, 1000 / 30 );
+  }, 1000 / 30);
 
-  let { gameState, players } = store.getState();
+  const { gameState, players } = store.getState();
 
   if (!gameState.isPlaying) clearTimeout(animateTimeout);
 
@@ -167,7 +176,7 @@ export function animate() {
     shadowLight.position.multiplyScalar(1.2);
 
     // receive and process controls and camera
-    if ( controls ) controls.update();
+    if (controls) controls.update();
 
     // sync THREE mesh with Cannon mesh
     // Cannon's y & z are swapped from THREE, and w is flipped
@@ -175,15 +184,15 @@ export function animate() {
 
     // for all other players
     forOwn(players, (currentPlayer, id) => {
-      let currentMesh = scene.getObjectByName(id);
+      const currentMesh = scene.getObjectByName(id);
       if (currentPlayer !== socket.id && currentMesh) setCannonPosition(currentMesh);
     });
 
     // run physics
     time = Date.now();
     if (lastTime !== undefined) {
-       let dt = (time - lastTime) / 1000;
-       world.step(fixedTimeStep, dt, maxSubSteps);
+      const dt = (time - lastTime) / 1000;
+      world.step(fixedTimeStep, dt, maxSubSteps);
     }
     lastTime = time;
     loadEnvironment();
@@ -194,8 +203,6 @@ export function animate() {
     socket.emit('leave');
     clearTimeout(animateTimeout);
   }
-
-
 
   // stats.end();
 }
@@ -209,115 +216,117 @@ function onWindowResize() {
   camera.aspect = window.innerWidth / window.innerHeight;
   camera.updateProjectionMatrix();
 
-  renderer.setPixelRatio( window.devicePixelRatio );
-  renderer.setSize(window.innerWidth / 1,
-                   window.innerHeight / 1,
-                   false);
+  renderer.setPixelRatio(window.devicePixelRatio);
+  renderer.setSize(
+    window.innerWidth / 1,
+    window.innerHeight / 1,
+    false,
+  );
 }
 
-function createLevel(){
- // planet creation
-  var planet_geometry = new THREE.TetrahedronBufferGeometry( 500, 4 );
-  var planet_material = new THREE.MeshPhongMaterial( { color: someColors['red'], shading: THREE.FlatShading});
-  var planet = new THREE.Mesh( planet_geometry, planet_material );
+function createLevel() {
+  // planet creation
+  const planet_geometry = new THREE.TetrahedronBufferGeometry(500, 4);
+  const planet_material = new THREE.MeshPhongMaterial({ color: someColors.red, shading: THREE.FlatShading });
+  const planet = new THREE.Mesh(planet_geometry, planet_material);
 
   planet.receiveShadow = true;
 
   scene.add(planet);
 
   // create Cannon planet
-  var planetShape = new CANNON.Sphere(500);
-  var planetBody = new CANNON.Body({ mass: 0, material: groundMaterial, shape: planetShape });
+  const planetShape = new CANNON.Sphere(500);
+  const planetBody = new CANNON.Body({ mass: 0, material: groundMaterial, shape: planetShape });
   world.add(planetBody);
 
   // create stars
-  var particleCount = 1800,
-    particles = new THREE.Geometry(),
-    pMaterial = new THREE.PointsMaterial({
-      color: 0xFFFFFF,
-      size: 2
-    });
+  const particleCount = 1800;
+  const particles = new THREE.Geometry();
+  const pMaterial = new THREE.PointsMaterial({
+    color: 0xFFFFFF,
+    size: 2,
+  });
 
-  for (var p = 0; p < particleCount; p++) {
-    var pX = Math.random() * 1000 - 500,
-        pY = Math.random() * 1000 - 500,
-        pZ = Math.random() * 1000 - 500,
-        particle = new THREE.Vector3(pX, pY, pZ)
-        particle.normalize().multiplyScalar(Math.random() * 1000 + 600)
+  for (let p = 0; p < particleCount; p++) {
+    const pX = Math.random() * 1000 - 500;
+    const pY = Math.random() * 1000 - 500;
+    const pZ = Math.random() * 1000 - 500;
+    const particle = new THREE.Vector3(pX, pY, pZ);
+    particle.normalize().multiplyScalar(Math.random() * 1000 + 600);
     // add it to the geometry
     particles.vertices.push(particle);
   }
 
   // create the particle system
-  var particleSystem = new THREE.Points(
-      particles,
-      pMaterial);
+  const particleSystem = new THREE.Points(
+    particles,
+    pMaterial,
+  );
 
   scene.add(particleSystem);
 }
 
-export { scene, camera, canvas, renderer, world, groundMaterial, ballMaterial, timeFromStart, clearTimeout };
+export {
+  scene, camera, canvas, renderer, world, groundMaterial, ballMaterial, timeFromStart,
+};
 
 // Shaders
 THREE.CopyShader = {
 
   uniforms: {
 
-    "tDiffuse": { value: null },
-    "opacity":  { value: 1.0 }
+    tDiffuse: { value: null },
+    opacity: { value: 1.0 },
 
   },
 
   vertexShader: [
 
-    "varying vec2 vUv;",
+    'varying vec2 vUv;',
 
-    "void main() {",
+    'void main() {',
 
-      "vUv = uv;",
-      "gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );",
+    'vUv = uv;',
+    'gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );',
 
-    "}"
+    '}',
 
-  ].join( "\n" ),
+  ].join('\n'),
 
   fragmentShader: [
 
-    "uniform float opacity;",
+    'uniform float opacity;',
 
-    "uniform sampler2D tDiffuse;",
+    'uniform sampler2D tDiffuse;',
 
-    "varying vec2 vUv;",
+    'varying vec2 vUv;',
 
-    "void main() {",
+    'void main() {',
 
-      "vec4 texel = texture2D( tDiffuse, vUv );",
-      "gl_FragColor = opacity * texel;",
+    'vec4 texel = texture2D( tDiffuse, vUv );',
+    'gl_FragColor = opacity * texel;',
 
-    "}"
+    '}',
 
-  ].join( "\n" )
+  ].join('\n'),
 
 };
 /**
  * @author alteredq / http://alteredqualia.com/
  */
 
-THREE.EffectComposer = function ( renderer, renderTarget ) {
-
+THREE.EffectComposer = function (renderer, renderTarget) {
   this.renderer = renderer;
 
-  if ( renderTarget === undefined ) {
-
-    var parameters = {
+  if (renderTarget === undefined) {
+    const parameters = {
       minFilter: THREE.LinearFilter,
       magFilter: THREE.LinearFilter,
       format: THREE.RGBAFormat,
-      stencilBuffer: false
+      stencilBuffer: false,
     };
-    var size = renderer.getSize();
-    renderTarget = new THREE.WebGLRenderTarget( size.width, size.height, parameters );
-
+    const size = renderer.getSize();
+    renderTarget = new THREE.WebGLRenderTarget(size.width, size.height, parameters);
   }
 
   this.renderTarget1 = renderTarget;
@@ -328,97 +337,73 @@ THREE.EffectComposer = function ( renderer, renderTarget ) {
 
   this.passes = [];
 
-  if ( THREE.CopyShader === undefined )
-    console.error( "THREE.EffectComposer relies on THREE.CopyShader" );
+  if (THREE.CopyShader === undefined) console.error('THREE.EffectComposer relies on THREE.CopyShader');
 
-  this.copyPass = new THREE.ShaderPass( THREE.CopyShader );
-
+  this.copyPass = new THREE.ShaderPass(THREE.CopyShader);
 };
 
-Object.assign( THREE.EffectComposer.prototype, {
+Object.assign(THREE.EffectComposer.prototype, {
 
-  swapBuffers: function() {
-
-    var tmp = this.readBuffer;
+  swapBuffers() {
+    const tmp = this.readBuffer;
     this.readBuffer = this.writeBuffer;
     this.writeBuffer = tmp;
-
   },
 
-  addPass: function ( pass ) {
+  addPass(pass) {
+    this.passes.push(pass);
 
-    this.passes.push( pass );
-
-    var size = this.renderer.getSize();
-    pass.setSize( size.width, size.height );
-
+    const size = this.renderer.getSize();
+    pass.setSize(size.width, size.height);
   },
 
-  insertPass: function ( pass, index ) {
-
-    this.passes.splice( index, 0, pass );
-
+  insertPass(pass, index) {
+    this.passes.splice(index, 0, pass);
   },
 
-  render: function ( delta ) {
+  render(delta) {
+    let maskActive = false;
 
-    var maskActive = false;
+    let pass; let i; const
+      il = this.passes.length;
 
-    var pass, i, il = this.passes.length;
+    for (i = 0; i < il; i++) {
+      pass = this.passes[i];
 
-    for ( i = 0; i < il; i ++ ) {
+      if (pass.enabled === false) continue;
 
-      pass = this.passes[ i ];
+      pass.render(this.renderer, this.writeBuffer, this.readBuffer, delta, maskActive);
 
-      if ( pass.enabled === false ) continue;
+      if (pass.needsSwap) {
+        if (maskActive) {
+          const { context } = this.renderer;
 
-      pass.render( this.renderer, this.writeBuffer, this.readBuffer, delta, maskActive );
+          context.stencilFunc(context.NOTEQUAL, 1, 0xffffffff);
 
-      if ( pass.needsSwap ) {
+          this.copyPass.render(this.renderer, this.writeBuffer, this.readBuffer, delta);
 
-        if ( maskActive ) {
-
-          var context = this.renderer.context;
-
-          context.stencilFunc( context.NOTEQUAL, 1, 0xffffffff );
-
-          this.copyPass.render( this.renderer, this.writeBuffer, this.readBuffer, delta );
-
-          context.stencilFunc( context.EQUAL, 1, 0xffffffff );
-
+          context.stencilFunc(context.EQUAL, 1, 0xffffffff);
         }
 
         this.swapBuffers();
-
       }
 
-      if ( THREE.MaskPass !== undefined ) {
-
-        if ( pass instanceof THREE.MaskPass ) {
-
+      if (THREE.MaskPass !== undefined) {
+        if (pass instanceof THREE.MaskPass) {
           maskActive = true;
-
-        } else if ( pass instanceof THREE.ClearMaskPass ) {
-
+        } else if (pass instanceof THREE.ClearMaskPass) {
           maskActive = false;
-
         }
-
       }
-
     }
-
   },
 
-  reset: function ( renderTarget ) {
-
-    if ( renderTarget === undefined ) {
-
-      var size = this.renderer.getSize();
+  reset(renderTarget) {
+    if (renderTarget === undefined) {
+      const size = this.renderer.getSize();
 
       renderTarget = this.renderTarget1.clone();
-      renderTarget.setSize( size.width, size.height );
-
+      renderTarget.setSize(size.width, size.height);
     }
 
     this.renderTarget1.dispose();
@@ -428,27 +413,20 @@ Object.assign( THREE.EffectComposer.prototype, {
 
     this.writeBuffer = this.renderTarget1;
     this.readBuffer = this.renderTarget2;
-
   },
 
-  setSize: function ( width, height ) {
+  setSize(width, height) {
+    this.renderTarget1.setSize(width, height);
+    this.renderTarget2.setSize(width, height);
 
-    this.renderTarget1.setSize( width, height );
-    this.renderTarget2.setSize( width, height );
-
-    for ( var i = 0; i < this.passes.length; i ++ ) {
-
-      this.passes[i].setSize( width, height );
-
+    for (let i = 0; i < this.passes.length; i++) {
+      this.passes[i].setSize(width, height);
     }
+  },
 
-  }
-
-} );
-
+});
 
 THREE.Pass = function () {
-
   // if set to true, the pass is processed by the composer
   this.enabled = true;
 
@@ -460,28 +438,24 @@ THREE.Pass = function () {
 
   // if set to true, the result of the pass is rendered to screen
   this.renderToScreen = false;
-
 };
 
-Object.assign( THREE.Pass.prototype, {
+Object.assign(THREE.Pass.prototype, {
 
-  setSize: function( width, height ) {},
+  setSize(width, height) {},
 
-  render: function ( renderer, writeBuffer, readBuffer, delta, maskActive ) {
+  render(renderer, writeBuffer, readBuffer, delta, maskActive) {
+    console.error('THREE.Pass: .render() must be implemented in derived pass.');
+  },
 
-    console.error( "THREE.Pass: .render() must be implemented in derived pass." );
-
-  }
-
-} );
+});
 
 /**
  * @author alteredq / http://alteredqualia.com/
  */
 
-THREE.RenderPass = function ( scene, camera, overrideMaterial, clearColor, clearAlpha ) {
-
-  THREE.Pass.call( this );
+THREE.RenderPass = function (scene, camera, overrideMaterial, clearColor, clearAlpha) {
+  THREE.Pass.call(this);
 
   this.scene = scene;
   this.camera = camera;
@@ -489,115 +463,96 @@ THREE.RenderPass = function ( scene, camera, overrideMaterial, clearColor, clear
   this.overrideMaterial = overrideMaterial;
 
   this.clearColor = clearColor;
-  this.clearAlpha = ( clearAlpha !== undefined ) ? clearAlpha : 0;
+  this.clearAlpha = (clearAlpha !== undefined) ? clearAlpha : 0;
 
   this.clear = true;
   this.needsSwap = false;
-
 };
 
-THREE.RenderPass.prototype = Object.assign( Object.create( THREE.Pass.prototype ), {
+THREE.RenderPass.prototype = Object.assign(Object.create(THREE.Pass.prototype), {
 
   constructor: THREE.RenderPass,
 
-  render: function ( renderer, writeBuffer, readBuffer, delta, maskActive ) {
-
-    var oldAutoClear = renderer.autoClear;
+  render(renderer, writeBuffer, readBuffer, delta, maskActive) {
+    const oldAutoClear = renderer.autoClear;
     renderer.autoClear = false;
 
     this.scene.overrideMaterial = this.overrideMaterial;
 
-    var oldClearColor, oldClearAlpha;
+    let oldClearColor; let
+      oldClearAlpha;
 
-    if ( this.clearColor ) {
-
+    if (this.clearColor) {
       oldClearColor = renderer.getClearColor().getHex();
       oldClearAlpha = renderer.getClearAlpha();
 
-      renderer.setClearColor( this.clearColor, this.clearAlpha );
-
+      renderer.setClearColor(this.clearColor, this.clearAlpha);
     }
 
-    renderer.render( this.scene, this.camera, this.renderToScreen ? null : readBuffer, this.clear );
+    renderer.render(this.scene, this.camera, this.renderToScreen ? null : readBuffer, this.clear);
 
-    if ( this.clearColor ) {
-
-      renderer.setClearColor( oldClearColor, oldClearAlpha );
-
+    if (this.clearColor) {
+      renderer.setClearColor(oldClearColor, oldClearAlpha);
     }
 
     this.scene.overrideMaterial = null;
     renderer.autoClear = oldAutoClear;
-  }
+  },
 
-} );
+});
 
 /**
  * @author alteredq / http://alteredqualia.com/
  */
 
-THREE.ShaderPass = function ( shader, textureID ) {
+THREE.ShaderPass = function (shader, textureID) {
+  THREE.Pass.call(this);
 
-  THREE.Pass.call( this );
+  this.textureID = (textureID !== undefined) ? textureID : 'tDiffuse';
 
-  this.textureID = ( textureID !== undefined ) ? textureID : "tDiffuse";
-
-  if ( shader instanceof THREE.ShaderMaterial ) {
-
+  if (shader instanceof THREE.ShaderMaterial) {
     this.uniforms = shader.uniforms;
 
     this.material = shader;
+  } else if (shader) {
+    this.uniforms = THREE.UniformsUtils.clone(shader.uniforms);
 
-  } else if ( shader ) {
-
-    this.uniforms = THREE.UniformsUtils.clone( shader.uniforms );
-
-    this.material = new THREE.ShaderMaterial( {
+    this.material = new THREE.ShaderMaterial({
 
       defines: shader.defines || {},
       uniforms: this.uniforms,
       vertexShader: shader.vertexShader,
-      fragmentShader: shader.fragmentShader
+      fragmentShader: shader.fragmentShader,
 
-    } );
-
+    });
   }
 
-  this.camera = new THREE.OrthographicCamera( - 1, 1, 1, - 1, 0, 1 );
+  this.camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
   this.scene = new THREE.Scene();
 
-  this.quad = new THREE.Mesh( new THREE.PlaneBufferGeometry( 2, 2 ), null );
-  this.scene.add( this.quad );
-
+  this.quad = new THREE.Mesh(new THREE.PlaneBufferGeometry(2, 2), null);
+  this.scene.add(this.quad);
 };
 
-THREE.ShaderPass.prototype = Object.assign( Object.create( THREE.Pass.prototype ), {
+THREE.ShaderPass.prototype = Object.assign(Object.create(THREE.Pass.prototype), {
 
   constructor: THREE.ShaderPass,
 
-  render: function( renderer, writeBuffer, readBuffer, delta, maskActive ) {
-
-    if ( this.uniforms[ this.textureID ] ) {
-
-      this.uniforms[ this.textureID ].value = readBuffer.texture;
-
+  render(renderer, writeBuffer, readBuffer, delta, maskActive) {
+    if (this.uniforms[this.textureID]) {
+      this.uniforms[this.textureID].value = readBuffer.texture;
     }
 
     this.quad.material = this.material;
 
-    if ( this.renderToScreen ) {
-
-      renderer.render( this.scene, this.camera );
-
+    if (this.renderToScreen) {
+      renderer.render(this.scene, this.camera);
     } else {
-
-      renderer.render( this.scene, this.camera, writeBuffer, this.clear );
-
+      renderer.render(this.scene, this.camera, writeBuffer, this.clear);
     }
+  },
 
-  }
-
-} );
+});
 
 /**
  * @author alteredq / http://alteredqualia.com/
@@ -611,43 +566,43 @@ THREE.VignetteShader = {
 
   uniforms: {
 
-    "tDiffuse": { value: null },
-    "offset":   { value: 1.0 },
-    "darkness": { value: 1.0 }
+    tDiffuse: { value: null },
+    offset: { value: 1.0 },
+    darkness: { value: 1.0 },
 
   },
 
   vertexShader: [
 
-    "varying vec2 vUv;",
+    'varying vec2 vUv;',
 
-    "void main() {",
+    'void main() {',
 
-      "vUv = uv;",
-      "gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );",
+    'vUv = uv;',
+    'gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );',
 
-    "}"
+    '}',
 
-  ].join( "\n" ),
+  ].join('\n'),
 
   fragmentShader: [
 
-    "uniform float offset;",
-    "uniform float darkness;",
+    'uniform float offset;',
+    'uniform float darkness;',
 
-    "uniform sampler2D tDiffuse;",
+    'uniform sampler2D tDiffuse;',
 
-    "varying vec2 vUv;",
+    'varying vec2 vUv;',
 
-    "void main() {",
+    'void main() {',
 
-      // Eskil's vignette
+    // Eskil's vignette
 
-      "vec4 texel = texture2D( tDiffuse, vUv );",
-      "vec2 uv = ( vUv - vec2( 0.5 ) ) * vec2( offset );",
-      "gl_FragColor = vec4( mix( texel.rgb, vec3( 1.0 - darkness ), dot( uv, uv ) ), texel.a );",
+    'vec4 texel = texture2D( tDiffuse, vUv );',
+    'vec2 uv = ( vUv - vec2( 0.5 ) ) * vec2( offset );',
+    'gl_FragColor = vec4( mix( texel.rgb, vec3( 1.0 - darkness ), dot( uv, uv ) ), texel.a );',
 
-      /*
+    /*
       // alternative version from glfx.js
       // this one makes more "dusty" look (as opposed to "burned")
 
@@ -657,9 +612,8 @@ THREE.VignetteShader = {
       "gl_FragColor = color;",
       */
 
-    "}"
+    '}',
 
-  ].join( "\n" )
+  ].join('\n'),
 
 };
-
