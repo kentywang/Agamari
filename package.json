@@ -20,8 +20,6 @@
   },
   "homepage": "https://github.com/quirkycorgi/agamari#readme",
   "dependencies": {
-    "babel": "^6.5.2",
-    "bluebird": "^3.4.6",
     "body-parser": "^1.15.2",
     "cannon": "github:schteppe/cannon.js",
     "classnames": "^2.2.5",
@@ -50,6 +48,7 @@
     "@babel/core": "^7.22.10",
     "@babel/preset-env": "^7.22.10",
     "@babel/preset-react": "^7.22.5",
+    "babel": "^6.5.2",
     "babel-loader": "^9.1.3",
     "eslint": "^8.47.0",
     "eslint-config-airbnb": "^19.0.4",

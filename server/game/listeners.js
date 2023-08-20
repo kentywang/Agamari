@@ -1,4 +1,3 @@
-const Promise = require('bluebird');
 const swearjar = require('swearjar');
 const { initPos, uuid} = require('./utils');
 
@@ -18,7 +17,6 @@ const { updatePlayer,
         changePlayerScale,
         clearDiet } = require('../reducers/players');
 
-const World = {};
 const getWorld = () => {
   let { worlds, players} = store.getState();
   for (let world of worlds) {
@@ -31,8 +29,6 @@ const getWorld = () => {
 };
 
 const setUpListeners = (io, socket) => {
-  Promise.promisifyAll(socket);
-
     console.log('A new client has connected');
     console.log('socket id: ', socket.id);
 
@@ -51,7 +47,7 @@ const setUpListeners = (io, socket) => {
       // Log player out of all current worlds (async, stored in array of promises)
       let leavePromises = [];
       forOwn(socket.rooms, currentRoom => {
-        leavePromises.push(socket.leaveAsync(currentRoom));
+        leavePromises.push(socket.leave(currentRoom));
       });
 
       // Add player to server game state
@@ -69,16 +65,16 @@ const setUpListeners = (io, socket) => {
             worldPlayers[socket.id] = player;
 
             // here we pass the entire players store (incl. diet arrays)
-            socket.emitAsync('player_data', worldPlayers);
+            socket.emit('player_data', worldPlayers);
           })
           .then(() => {
             // Find all food in world and tell new player to add to game state
             let worldFood = pickBy(food, currentFood => currentFood.world === world);
             // let worldFood = food.filter(({ world }) => world === world);
 
-            socket.emitAsync('food_data', worldFood);
+            socket.emit('food_data', worldFood);
           })
-          .then(() => socket.joinAsync(world)) // Join world
+          .then(() => socket.join(world)) // Join world
           .then(() => socket.emit('start_game'))// Tell player to initialize game
     });
 
