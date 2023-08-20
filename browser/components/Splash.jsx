@@ -1,11 +1,9 @@
-import React, { Component } from 'react';
-import { connect } from 'react-redux';
+import React, {Component} from 'react';
+import {connect} from 'react-redux';
 import socket from '../socket';
 
-import { openBugReport } from '../reducers/controlPanel';
-import {
-  setNickname, startAsGuest, startGame, stopGame,
-} from '../reducers/gameState.js';
+import {openBugReport} from '../reducers/controlPanel';
+import {setNickname, startAsGuest, startGame, stopGame,} from '../reducers/gameState.js';
 
 class Splash extends Component {
   render() {
@@ -52,7 +50,7 @@ class Splash extends Component {
           <button
             className="Buttons"
             type="submit"
-            style={nickname.trim() ? { color: 'white' } : { color: 'grey' }}
+            style={nickname.trim() ? { color: 'white' } : { display: 'none' }}
             onClick={play}
             id="play-box"
           >
