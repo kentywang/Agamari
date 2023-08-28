@@ -1,59 +1,48 @@
-/*----------  INITIAL STATE  ----------*/
+/* ----------  INITIAL STATE  ----------*/
 const initialState = {
   isOpen: false,
-  bugReportOpen: false,
   nickname: '',
-  error: null };
+  error: null,
+};
 
-/*----------  ACTION TYPES  ----------*/
+/* ----------  ACTION TYPES  ----------*/
 const OPEN_CONSOLE = 'OPEN_CONSOLE';
 const CLOSE_CONSOLE = 'CLOSE_CONSOLE';
-const OPEN_BUG_REPORT = 'OPEN_BUG_REPORT';
-const CLOSE_BUG_REPORT = 'CLOSE_BUG_REPORT';
 const SET_NICKNAME = 'SET_NICKNAME';
 const RESET_NICKNAME = 'RESET_NICKNAME';
 const SET_ERROR = 'SET_ERROR';
 const RESET_ERROR = 'RESET_ERROR';
 
-/*----------  ACTION CREATORS  ----------*/
+/* ----------  ACTION CREATORS  ----------*/
 export const openConsole = () => ({
-  type: OPEN_CONSOLE
+  type: OPEN_CONSOLE,
 });
 
 export const closeConsole = () => ({
-  type: CLOSE_CONSOLE
+  type: CLOSE_CONSOLE,
 });
 
-export const openBugReport = () => ({
-  type: OPEN_BUG_REPORT
-});
-
-export const closeBugReport = () => ({
-  type: CLOSE_BUG_REPORT
-});
-
-export const setNickname = text => ({
+export const setNickname = (text) => ({
   type: SET_NICKNAME,
-  text
+  text,
 });
 
 export const resetNickname = () => ({
-  type: RESET_NICKNAME
+  type: RESET_NICKNAME,
 });
 
-export const setError = error => ({
+export const setError = (error) => ({
   type: SET_ERROR,
-  error
+  error,
 });
 
 export const resetError = () => ({
-  type: RESET_ERROR
+  type: RESET_ERROR,
 });
 
+/* ----------  THUNK CREATORS  ----------*/
 
-/*----------  THUNK CREATORS  ----------*/
-
-export const startAsGuest = (nickname, socket) => dispatch => {
+export const startAsGuest = (nickname, socket) => (dispatch) => {
   if (nickname) {
     socket.emit('start_as_guest', { nickname });
     dispatch(resetError());
@@ -62,25 +51,21 @@ export const startAsGuest = (nickname, socket) => dispatch => {
   }
 };
 
-/*----------  REDUCER  ----------*/
+/* ----------  REDUCER  ----------*/
 export default (state = initialState, action) => {
   switch (action.type) {
     case OPEN_CONSOLE:
-      return Object.assign({}, state, {isOpen: true});
+      return { ...state, isOpen: true };
     case CLOSE_CONSOLE:
-      return Object.assign({}, state, {isOpen: false});
-    case OPEN_BUG_REPORT:
-      return Object.assign({}, state, {bugReportOpen: true});
-    case CLOSE_BUG_REPORT:
-      return Object.assign({}, state, {bugReportOpen: false});
+      return { ...state, isOpen: false };
     case SET_NICKNAME:
-      return Object.assign({}, state, {nickname: action.text});
+      return { ...state, nickname: action.text };
     case RESET_NICKNAME:
-      return Object.assign({}, state, {nickname: ''});
+      return { ...state, nickname: '' };
     case SET_ERROR:
-      return Object.assign({}, state, { error: action.error });
+      return { ...state, error: action.error };
     case RESET_ERROR:
-      return Object.assign({}, state, { error: null });
+      return { ...state, error: null };
     default: return state;
   }
 };

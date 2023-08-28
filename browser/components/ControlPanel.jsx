@@ -2,71 +2,46 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import socket from '../socket';
 
-import { closeConsole, openBugReport, openConsole } from '../reducers/controlPanel';
+import { closeConsole, openConsole } from '../reducers/controlPanel';
 import { removeAllFood } from '../reducers/food';
 import { stopGame } from '../reducers/gameState';
 
 class ControlPanel extends Component {
   render() {
     const {
-      controlPanel,
-      open,
-      close,
-      openBugReportForm,
       leave,
     } = this.props;
-    const { isOpen, bugReportOpen } = controlPanel;
 
     return (
       <div style={{
-        position: 'absolute', zIndex: 1, right: '10px', top: '10px',
+        position: 'absolute',
+        zIndex: 1,
+        right: '10px',
+        top: '10px',
       }}
       >
-        {isOpen
-          ? (
-            <div className="card-content white-text">
-              { !bugReportOpen
-                    && (
-                      <button
-                        className="btn-floating"
-                        onClick={openBugReportForm}
-                      >
-                        <i className="material-icons">bug_report</i>
-                      </button>
-                    )}
-              <button
-                className="btn-floating"
-                onClick={leave}
-              >
-                <i className="material-icons">exit_to_app</i>
-              </button>
-              <button
-                className="btn-floating"
-                style={{ float: 'right' }}
-                onClick={close}
-              >
-                X
-              </button>
-            </div>
-          )
-          : (
-            <div>
-              <button className="btn-floating" onClick={open}>
-                <i className="material-icons">menu</i>
-              </button>
-            </div>
-          ) }
+        <div className="card-content white-text">
+          <button
+            className="btn-floating"
+            onClick={leave}
+          >
+            <i className="material-icons">exit_to_app</i>
+          </button>
+        </div>
       </div>
     );
   }
 }
 
-const mapStateToProps = ({ players, controlPanel }) => ({ players, controlPanel });
+const mapStateToProps = ({
+  players,
+}) => ({
+  players,
+});
 
 const mapDispatchToProps = (dispatch) => ({
   open: () => dispatch(openConsole()),
   close: () => dispatch(closeConsole()),
-  openBugReportForm: () => dispatch(openBugReport()),
   leave: () => {
     dispatch(stopGame());
     dispatch(removeAllFood());
@@ -79,8 +54,11 @@ const mergeProps = (stateProps, dispatchProps, ownProps) => ({
   ...dispatchProps,
   ...ownProps,
   toggle: () => {
-    if (stateProps.isOpen) dispatchProps.close();
-    else dispatchProps.open();
+    if (stateProps.isOpen) {
+      dispatchProps.close();
+    } else {
+      dispatchProps.open();
+    }
   },
 });
 

@@ -1,9 +1,10 @@
-import React, {Component} from 'react';
-import {connect} from 'react-redux';
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import socket from '../socket';
 
-import {openBugReport} from '../reducers/controlPanel';
-import {setNickname, startAsGuest, startGame, stopGame,} from '../reducers/gameState.js';
+import {
+  setNickname, startAsGuest, startGame, stopGame,
+} from '../reducers/gameState.js';
 
 class Splash extends Component {
   render() {
@@ -12,29 +13,11 @@ class Splash extends Component {
       gameState, play,
       playEnter,
       controlPanel,
-      openBugReport,
     } = this.props;
     const { nickname } = gameState;
-    const { bugReportOpen } = controlPanel;
 
     return (
       <div id="splash">
-        { !bugReportOpen
-              && (
-                <div style={{
-                  position: 'absolute', zIndex: 1, right: '10px', bottom: '10px',
-                }}
-                >
-                  <div className="card-content white-text">
-                    <button
-                      className="btn-floating"
-                      onClick={openBugReport}
-                    >
-                      <i className="material-icons">bug_report</i>
-                    </button>
-                  </div>
-                </div>
-              )}
         <div id="title">AGAMARI</div>
         <div className="input-field">
           <input
@@ -77,7 +60,6 @@ const mapDispatchToProps = (dispatch) => ({
     dispatch(startGame());
     dispatch(startAsGuest(nickname, socket));
   },
-  openBugReport: () => dispatch(openBugReport()),
 });
 
 const mergeProps = (stateProps, dispatchProps, ownProps) => (
