@@ -1,8 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import socket from '../socket';
-
-import { closeConsole, openConsole } from '../reducers/controlPanel';
 import { removeAllFood } from '../reducers/food';
 import { stopGame } from '../reducers/gameState';
 
@@ -40,8 +38,6 @@ const mapStateToProps = ({
 });
 
 const mapDispatchToProps = (dispatch) => ({
-  open: () => dispatch(openConsole()),
-  close: () => dispatch(closeConsole()),
   leave: () => {
     console.log('exit app');
     dispatch(stopGame());
@@ -54,13 +50,6 @@ const mergeProps = (stateProps, dispatchProps, ownProps) => ({
   ...stateProps,
   ...dispatchProps,
   ...ownProps,
-  toggle: () => {
-    if (stateProps.isOpen) {
-      dispatchProps.close();
-    } else {
-      dispatchProps.open();
-    }
-  },
 });
 
 export default connect(

@@ -1,26 +1,16 @@
 /* ----------  INITIAL STATE  ----------*/
 const initialState = {
-  isOpen: false,
   nickname: '',
   error: null,
 };
 
 /* ----------  ACTION TYPES  ----------*/
-const OPEN_CONSOLE = 'OPEN_CONSOLE';
-const CLOSE_CONSOLE = 'CLOSE_CONSOLE';
 const SET_NICKNAME = 'SET_NICKNAME';
 const RESET_NICKNAME = 'RESET_NICKNAME';
 const SET_ERROR = 'SET_ERROR';
 const RESET_ERROR = 'RESET_ERROR';
 
 /* ----------  ACTION CREATORS  ----------*/
-export const openConsole = () => ({
-  type: OPEN_CONSOLE,
-});
-
-export const closeConsole = () => ({
-  type: CLOSE_CONSOLE,
-});
 
 export const setNickname = (text) => ({
   type: SET_NICKNAME,
@@ -54,10 +44,6 @@ export const startAsGuest = (nickname, socket) => (dispatch) => {
 /* ----------  REDUCER  ----------*/
 export default (state = initialState, action) => {
   switch (action.type) {
-    case OPEN_CONSOLE:
-      return { ...state, isOpen: true };
-    case CLOSE_CONSOLE:
-      return { ...state, isOpen: false };
     case SET_NICKNAME:
       return { ...state, nickname: action.text };
     case RESET_NICKNAME:

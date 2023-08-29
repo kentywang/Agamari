@@ -1,7 +1,7 @@
 import store from '../store';
 import { attachFood, attachPlayer } from './utils';
 
-import { closeConsole, setError } from '../reducers/controlPanel';
+import { setError } from '../reducers/controlPanel';
 import { receivePlayers } from '../reducers/players';
 import { receiveFood, receiveMultipleFood, removeFood } from '../reducers/food';
 import { ateSomeone, fell, lose } from '../reducers/gameState';
@@ -37,7 +37,6 @@ export default (socket) => {
       init();
     }
     requestAnimationFrame(animate);
-    store.dispatch(closeConsole());
   });
 
   // Create player object when new player joins or on respawn

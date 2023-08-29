@@ -5,13 +5,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="4c850b0d-f3ed-4cae-946a-d30be6bf238f" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/browser/components/ControlPanel.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/browser/components/ControlPanel.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/browser/game/config.js" beforeDir="false" afterPath="$PROJECT_DIR$/browser/game/config.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/browser/game/listeners.js" beforeDir="false" afterPath="$PROJECT_DIR$/browser/game/listeners.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/browser/game/main.js" beforeDir="false" afterPath="$PROJECT_DIR$/browser/game/main.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/browser/game/player.js" beforeDir="false" afterPath="$PROJECT_DIR$/browser/game/player.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/browser/reducers/gameState.js" beforeDir="false" afterPath="$PROJECT_DIR$/browser/reducers/gameState.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/browser/reducers/controlPanel.js" beforeDir="false" afterPath="$PROJECT_DIR$/browser/reducers/controlPanel.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -193,7 +190,7 @@
       <workItem from="1692539398446" duration="10850000" />
       <workItem from="1692552468953" duration="6623000" />
       <workItem from="1693181677041" duration="2035000" />
-      <workItem from="1693258117692" duration="9738000" />
+      <workItem from="1693258117692" duration="10210000" />
     </task>
     <task id="LOCAL-00001" summary="Minimal updates to get it working again">
       <option name="closed" value="true" />
