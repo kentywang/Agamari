@@ -1,0 +1,360 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="4c850b0d-f3ed-4cae-946a-d30be6bf238f" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/browser/components/ControlPanel.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/browser/components/ControlPanel.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/browser/game/config.js" beforeDir="false" afterPath="$PROJECT_DIR$/browser/game/config.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/browser/game/listeners.js" beforeDir="false" afterPath="$PROJECT_DIR$/browser/game/listeners.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/browser/game/main.js" beforeDir="false" afterPath="$PROJECT_DIR$/browser/game/main.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/browser/game/player.js" beforeDir="false" afterPath="$PROJECT_DIR$/browser/game/player.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/browser/reducers/gameState.js" beforeDir="false" afterPath="$PROJECT_DIR$/browser/reducers/gameState.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Dockerfile" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="PUSH_AUTO_UPDATE" value="true" />
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="master" />
+      </map>
+    </option>
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+    <option name="UPDATE_TYPE" value="REBASE" />
+  </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
+  </component>
+  <component name="OptimizeOnSaveOptions">
+    <option name="myRunOnSave" value="true" />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 1
+}</component>
+  <component name="ProjectId" id="2TchMlRdd4jBcu8VosrrWfszjvb" />
+  <component name="ProjectLevelVcsManager">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
+    &quot;code.cleanup.on.save&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
+    &quot;javascript.nodejs.core.library.configured.version&quot;: &quot;20.5.0&quot;,
+    &quot;javascript.nodejs.core.library.typings.version&quot;: &quot;20.5.0&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/Users/kentywang/Documents/coding/agamari&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.standard&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.standard&quot;: &quot;&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;rearrange.code.on.save&quot;: &quot;true&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;settings.javascript.linters.eslint&quot;,
+    &quot;ts.external.directory.path&quot;: &quot;/Applications/WebStorm.app/Contents/plugins/JavaScriptLanguage/jsLanguageServicesImpl/external&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  },
+  &quot;keyToStringList&quot;: {
+    &quot;com.intellij.ide.scratch.ScratchImplUtil$2/New Scratch File&quot;: [
+      &quot;JSON&quot;,
+      &quot;yaml&quot;,
+      &quot;TEXT&quot;
+    ]
+  }
+}</component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/public" />
+      <recent name="$PROJECT_DIR$" />
+      <recent name="$PROJECT_DIR$/public/images" />
+    </key>
+  </component>
+  <component name="RunAnythingCache">
+    <option name="myCommands">
+      <command value="npm start" />
+      <command value="npm build" />
+      <command value="tsc" />
+      <command value="npm run dev" />
+      <command value="npm install" />
+      <command value="npm run build" />
+    </option>
+  </component>
+  <component name="RunManager" selected="npm.build">
+    <configuration default="true" type="docker-deploy" factoryName="docker-compose.yml" temporary="true">
+      <deployment type="docker-compose.yml">
+        <settings />
+      </deployment>
+      <method v="2" />
+    </configuration>
+    <configuration default="true" type="docker-deploy" factoryName="dockerfile" temporary="true">
+      <deployment type="dockerfile">
+        <settings />
+      </deployment>
+      <method v="2" />
+    </configuration>
+    <configuration name="build" type="js.build_tools.npm" temporary="true" nameIsGenerated="true">
+      <package-json value="$PROJECT_DIR$/package.json" />
+      <command value="run" />
+      <scripts>
+        <script value="build" />
+      </scripts>
+      <node-interpreter value="project" />
+      <envs />
+      <method v="2" />
+    </configuration>
+    <configuration name="dev" type="js.build_tools.npm" temporary="true" nameIsGenerated="true">
+      <package-json value="$PROJECT_DIR$/package.json" />
+      <command value="run" />
+      <scripts>
+        <script value="dev" />
+      </scripts>
+      <node-interpreter value="project" />
+      <envs />
+      <method v="2" />
+    </configuration>
+    <configuration name="seed" type="js.build_tools.npm" temporary="true" nameIsGenerated="true">
+      <package-json value="$PROJECT_DIR$/package.json" />
+      <command value="run" />
+      <scripts>
+        <script value="seed" />
+      </scripts>
+      <node-interpreter value="project" />
+      <envs />
+      <method v="2" />
+    </configuration>
+    <configuration name="start" type="js.build_tools.npm" temporary="true" nameIsGenerated="true">
+      <package-json value="$PROJECT_DIR$/package.json" />
+      <command value="run" />
+      <scripts>
+        <script value="start" />
+      </scripts>
+      <node-interpreter value="project" />
+      <envs />
+      <method v="2" />
+    </configuration>
+    <configuration name="test" type="js.build_tools.npm" temporary="true" nameIsGenerated="true">
+      <package-json value="$PROJECT_DIR$/package.json" />
+      <command value="run" />
+      <scripts>
+        <script value="test" />
+      </scripts>
+      <node-interpreter value="project" />
+      <envs />
+      <method v="2" />
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="npm.build" />
+        <item itemvalue="npm.dev" />
+        <item itemvalue="npm.start" />
+        <item itemvalue="npm.seed" />
+        <item itemvalue="npm.test" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="4c850b0d-f3ed-4cae-946a-d30be6bf238f" name="Changes" comment="" />
+      <created>1691348230982</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1691348230982</updated>
+      <workItem from="1691348232156" duration="5555000" />
+      <workItem from="1691460189635" duration="5423000" />
+      <workItem from="1691546252277" duration="6970000" />
+      <workItem from="1691710150438" duration="28750000" />
+      <workItem from="1691847129796" duration="14786000" />
+      <workItem from="1691879073570" duration="905000" />
+      <workItem from="1692188373016" duration="10363000" />
+      <workItem from="1692490490378" duration="3522000" />
+      <workItem from="1692495027254" duration="739000" />
+      <workItem from="1692530162947" duration="7588000" />
+      <workItem from="1692539398446" duration="10850000" />
+      <workItem from="1692552468953" duration="6623000" />
+      <workItem from="1693181677041" duration="2035000" />
+      <workItem from="1693258117692" duration="9738000" />
+    </task>
+    <task id="LOCAL-00001" summary="Minimal updates to get it working again">
+      <option name="closed" value="true" />
+      <created>1691353388134</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1691353388134</updated>
+    </task>
+    <task id="LOCAL-00002" summary="saving (docker-compose works, sql doesnt) progressˆ">
+      <option name="closed" value="true" />
+      <created>1691791349590</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1691791349590</updated>
+    </task>
+    <task id="LOCAL-00003" summary="get it working">
+      <option name="closed" value="true" />
+      <created>1691793365577</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1691793365577</updated>
+    </task>
+    <task id="LOCAL-00004" summary="dont drop seed data">
+      <option name="closed" value="true" />
+      <created>1691793749583</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1691793749583</updated>
+    </task>
+    <task id="LOCAL-00005" summary="docker composed app working!">
+      <option name="closed" value="true" />
+      <created>1691803855482</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1691803855482</updated>
+    </task>
+    <task id="LOCAL-00006" summary="npm start doesnt need watchers">
+      <option name="closed" value="true" />
+      <created>1691811561377</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1691811561377</updated>
+    </task>
+    <task id="LOCAL-00007" summary="package things nicely, update readme">
+      <option name="closed" value="true" />
+      <created>1691842003773</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1691842003773</updated>
+    </task>
+    <task id="LOCAL-00008" summary="docker updates">
+      <option name="closed" value="true" />
+      <created>1691847652079</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1691847652079</updated>
+    </task>
+    <task id="LOCAL-00009" summary="remove db to make it easier/cheaper to get it hosted on cloud services">
+      <option name="closed" value="true" />
+      <created>1691865868860</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1691865868860</updated>
+    </task>
+    <task id="LOCAL-00010" summary="remove db to make it easier/cheaper to get it hosted on cloud services">
+      <option name="closed" value="true" />
+      <created>1691865926641</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1691865926641</updated>
+    </task>
+    <task id="LOCAL-00011" summary="add procfile, cleanup npm scripts">
+      <option name="closed" value="true" />
+      <created>1691867211105</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1691867211105</updated>
+    </task>
+    <task id="LOCAL-00012" summary="remove node version from package json">
+      <option name="closed" value="true" />
+      <created>1691867498045</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1691867498045</updated>
+    </task>
+    <task id="LOCAL-00013" summary="new version, so new background">
+      <option name="closed" value="true" />
+      <created>1691879592124</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1691879592124</updated>
+    </task>
+    <task id="LOCAL-00014" summary="new google tag manager">
+      <option name="closed" value="true" />
+      <created>1692190000871</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1692190000871</updated>
+    </task>
+    <task id="LOCAL-00015" summary="add open telemetry collector container configured for sumo logic usage">
+      <option name="closed" value="true" />
+      <created>1692361860663</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1692361860663</updated>
+    </task>
+    <task id="LOCAL-00016" summary="rm cookie session">
+      <created>1692551391341</created>
+      <option name="number" value="00016" />
+      <option name="presentableId" value="LOCAL-00016" />
+      <option name="project" value="LOCAL" />
+      <updated>1692551391341</updated>
+    </task>
+    <option name="localTasksCounter" value="17" />
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Minimal updates to get it working again" />
+    <MESSAGE value="saving (docker-compose works, sql doesnt) progressˆ" />
+    <MESSAGE value="get it working" />
+    <MESSAGE value="dont drop seed data" />
+    <MESSAGE value="docker composed app working!" />
+    <MESSAGE value="npm start doesnt need watchers" />
+    <MESSAGE value="package things nicely, update readme" />
+    <MESSAGE value="docker updates" />
+    <MESSAGE value="remove db to make it easier/cheaper to get it hosted on cloud services" />
+    <MESSAGE value="add procfile, cleanup npm scripts" />
+    <MESSAGE value="remove node version from package json" />
+    <MESSAGE value="new version, so new background" />
+    <MESSAGE value="new google tag manager" />
+    <MESSAGE value="add open telemetry collector container configured for sumo logic usage" />
+    <MESSAGE value="rm cookie session" />
+    <option name="LAST_COMMIT_MESSAGE" value="rm cookie session" />
+  </component>
+</project>

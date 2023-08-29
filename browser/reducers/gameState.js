@@ -14,6 +14,7 @@ const LOSE = 'LOSE';
 const CONTINUE = 'CONTINUE';
 const ATE = 'ATE';
 const FELL = 'FELL';
+const INITIALIZED = 'INITIALIZED';
 
 /*= ------ACTION CREATORS-------*/
 
@@ -24,6 +25,7 @@ const initialState = {
   world: '',
   status: '',
   error: null,
+  isInitialized: false,
 };
 
 export const startGame = () => ({
@@ -32,6 +34,10 @@ export const startGame = () => ({
 
 export const stopGame = () => ({
   type: STOP_GAME,
+});
+
+export const initialized = () => ({
+  type: INITIALIZED,
 });
 
 export const startChat = () => ({
@@ -134,6 +140,8 @@ export default (state = initialState, action) => {
       return { ...state, status: '' };
     case ATE:
       return { ...state, status: `you rolled up ${action.eaten}` };
+    case INITIALIZED:
+      return { ...state, isInitialized: true };
     default:
       return state;
   }

@@ -43,6 +43,7 @@ const mapDispatchToProps = (dispatch) => ({
   open: () => dispatch(openConsole()),
   close: () => dispatch(closeConsole()),
   leave: () => {
+    console.log('exit app');
     dispatch(stopGame());
     dispatch(removeAllFood());
     socket.emit('leave');

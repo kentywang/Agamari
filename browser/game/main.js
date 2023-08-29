@@ -1,16 +1,16 @@
-import {forOwn} from 'lodash';
+import { forOwn } from 'lodash';
 import store from '../store';
 import socket from '../socket';
 
-import {getMeshData, setCannonPosition, setMeshPosition} from './utils';
-import {fixedTimeStep, maxSubSteps, myColors} from './config';
+import { getMeshData, setCannonPosition, setMeshPosition } from './utils';
+import { fixedTimeStep, maxSubSteps, myColors } from './config';
 
-import {loadEnvironment, loadGame} from './game';
-import {controls, Player} from './player';
-import {Food} from './food';
+import { loadEnvironment, loadGame } from './game';
+import { controls, Player } from './player';
+import { Food } from './food';
 
-import {removeAllFood} from '../reducers/food';
-import {stopGame} from '../reducers/gameState';
+import { removeAllFood } from '../reducers/food';
+import { initialized, stopGame } from '../reducers/gameState';
 
 const THREE = require('three');
 const CANNON = require('../../public/cannon.min.js');
@@ -29,6 +29,8 @@ const someColors = myColors();
 let afkCall;
 
 export const init = () => {
+  store.dispatch(initialized());
+  console.log('initialized!!!');
   // set afk status to false
   window.onfocus = () => clearTimeout(afkCall);
 
@@ -37,6 +39,7 @@ export const init = () => {
     afkCall = setTimeout(() => {
       store.dispatch(stopGame());
       store.dispatch(removeAllFood());
+      console.log('onblur');
       socket.emit('leave');
     }, 60 * 1000);
   };
@@ -149,22 +152,29 @@ export const init = () => {
   window.addEventListener('resize', onWindowResize, false);
 };
 
-export function animate() {
+let prevTs;
+let requestedFrame;
 
-  animateTimeout = setTimeout(() => {
-    requestAnimationFrame(animate);
+export function animate(ts) {
+  requestedFrame = requestAnimationFrame(animate);
 
-    // emit positional data to server
-    socket.emit('update_position', getMeshData(playerMesh));
-  }, 1000 / 30);
+  if (prevTs === undefined) {
+    prevTs = ts;
+  }
 
-  const { gameState, players } = store.getState();
+  if (ts - prevTs < (1000 / 30)) {
+    return;
+  }
 
-  if (!gameState.isPlaying) clearTimeout(animateTimeout);
+  prevTs = ts;
 
-  let playerMesh = scene.getObjectByName(socket.id);
+  const { players } = store.getState();
+
+  const playerMesh = scene.getObjectByName(socket.id);
 
   if (playerMesh) {
+    socket.emit('update_position', getMeshData(playerMesh));
+
     // Set the direction of the light
     shadowLight.position.copy(playerMesh.position);
     shadowLight.position.multiplyScalar(1.2);
@@ -183,21 +193,17 @@ export function animate() {
     });
 
     // run physics
-    time = Date.now();
-    if (lastTime !== undefined) {
-      const dt = (time - lastTime) / 1000;
-      world.step(fixedTimeStep, dt, maxSubSteps);
-    }
-    lastTime = time;
+    world.step(fixedTimeStep, ts - prevTs, maxSubSteps);
+
     loadEnvironment();
     render();
   } else {
     store.dispatch(stopGame());
     store.dispatch(removeAllFood());
+    console.log('nomesh');
+    cancelAnimationFrame(requestedFrame);
     socket.emit('leave');
-    clearTimeout(animateTimeout);
   }
-
 }
 
 function render() {
