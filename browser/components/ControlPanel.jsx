@@ -6,10 +6,6 @@ import { stopGame } from '../reducers/gameState';
 
 class ControlPanel extends Component {
   render() {
-    const {
-      leave,
-    } = this.props;
-
     return (
       <div style={{
         position: 'absolute',
@@ -21,7 +17,7 @@ class ControlPanel extends Component {
         <div className="card-content white-text">
           <button
             className="btn-floating"
-            onClick={leave}
+            onClick={() => window.location.reload()}
           >
             <i className="material-icons">exit_to_app</i>
           </button>

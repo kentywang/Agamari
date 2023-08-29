@@ -7,8 +7,6 @@
     <list default="true" id="4c850b0d-f3ed-4cae-946a-d30be6bf238f" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/browser/components/ControlPanel.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/browser/components/ControlPanel.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/browser/game/listeners.js" beforeDir="false" afterPath="$PROJECT_DIR$/browser/game/listeners.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/browser/reducers/controlPanel.js" beforeDir="false" afterPath="$PROJECT_DIR$/browser/reducers/controlPanel.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
