@@ -22,7 +22,7 @@
   "dependencies": {
     "cannon": "^0.6.2",
     "express": "^4.14.0",
-    "materialize-css": "^0.97.8",
+    "materialize-css": "^1.0.0",
     "path": "^0.12.7",
     "react": "^15.4.0",
     "react-dom": "^15.4.0",
